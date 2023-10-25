@@ -251,12 +251,16 @@
                             /> Help
                         </x-base.menu.item>
                         <x-base.menu.divider class="bg-white/[0.08]" />
-                        <x-base.menu.item class="hover:bg-white/5">
+                        <x-base.menu.item class="hover:bg-white/5" href="{{ route('logout') }}" onclick="event.preventDefault();
+                        document.getElementById('logout-form').submit();">
                             <x-base.lucide
                                 class="mr-2 h-4 w-4"
                                 icon="ToggleRight"
                             /> Logout
                         </x-base.menu.item>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
                     </x-base.menu.items>
                 </x-base.menu>
                 <!-- END: Account Menu -->
@@ -274,7 +278,7 @@
                                 $firstLevelActiveIndex == $menuKey
                                     ? 'top-menu top-menu--active'
                                     : 'top-menu',
-                            
+
                                 // Animation
                                 '[&:not(.top-menu--active)]:opacity-0 [&:not(.top-menu--active)]:translate-y-[50px] animate-[0.4s_ease-in-out_0.3s_intro-top-menu] animate-fill-mode-forwards animate-delay-' .
                                 (array_search($menuKey, array_keys($topMenu)) + 1) * 10,
