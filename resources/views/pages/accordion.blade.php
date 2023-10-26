@@ -18,7 +18,7 @@
                         Basic Accordion
                     </h2>
                     <x-base.form-switch class="mt-3 w-full sm:ml-auto sm:mt-0 sm:w-auto">
-                        <x-base.form-switch.label for="show-example-1">
+                        <x-base.form-switch.label for="show-e`xample-1">
                             Show example code
                         </x-base.form-switch.label>
                         <x-base.form-switch.input
