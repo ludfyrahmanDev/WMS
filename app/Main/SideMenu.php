@@ -56,35 +56,13 @@ class SideMenu
                 ],
                 'title' => 'Dashboard'
             ],
-            'menu-layout' => [
-                'icon' => 'box',
-                'title' => 'Produk',
-                'sub_menu' => [
-                    'side-menu' => [
-                        'icon' => 'box',
-                        'route_name' => 'product-list',
-                        'params' => [
-                            'layout' => 'side-menu'
-                        ],
-                        'title' => 'Kategori Produk'
-                    ],
-                    'simple-menu' => [
-                        'icon' => 'box',
-                        'route_name' => 'product-list',
-                        'params' => [
-                            'layout' => 'side-menu'
-                        ],
-                        'title' => 'Produk'
-                    ],
-                ]
-            ],
             'users' => [
                 'icon' => 'users',
                 'title' => 'Users',
                 'sub_menu' => [
                     'users-layout-1' => [
                         'icon' => 'activity',
-                        'route_name' => 'users-layout-1',
+                        'route_name' => 'users.index',
                         'params' => [
                             'layout' => 'side-menu'
                         ],
@@ -106,6 +84,28 @@ class SideMenu
                         ],
                         'title' => 'Supir'
                     ]
+                ]
+            ],
+            'menu-layout' => [
+                'icon' => 'box',
+                'title' => 'Produk',
+                'sub_menu' => [
+                    'side-menu' => [
+                        'icon' => 'box',
+                        'route_name' => 'product-list',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Kategori Produk'
+                    ],
+                    'simple-menu' => [
+                        'icon' => 'box',
+                        'route_name' => 'product-list',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Produk'
+                    ],
                 ]
             ],
             'master' => [

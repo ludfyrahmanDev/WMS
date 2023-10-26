@@ -62,4 +62,8 @@ class User extends Authenticatable
             return url('media-example/no-image.png');
         }
     }
+
+    public function getPhotoAttribute(){
+        return '';
+    }
 }
