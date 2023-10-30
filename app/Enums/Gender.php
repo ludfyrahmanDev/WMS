@@ -4,20 +4,19 @@ namespace App\Enums;
 
 use BenSampo\Enum\Enum;
 
-final class RoleType extends Enum
+final class Gender extends Enum
 {
-    const SUPERADMIN    = "admin";
-    const USER       = "user";
+    const MALE      = 'male';
+    const FEMALE    = 'female';
+
 
     public static function getDescription($value): string
     {
         $result = '';
-        if ($value === self::SUPERADMIN) {
-            $result = 'Super Admin';
-        } elseif ($value === self::USER) {
-            $result = 'User';
-        } elseif ($value === self::EMPLOYEE) {
-            $result = 'Employee';
+        if ($value === self::MALE) {
+            $result = 'Laki-laki';
+        } elseif ($value === self::FEMALE) {
+            $result = 'Perempuan';
         }
         return $result;
     }

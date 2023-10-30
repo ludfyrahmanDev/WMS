@@ -16,7 +16,7 @@
                     Add Data
                 </x-base.button>
             </a>
-            <x-base.menu>
+            <x-base.menu class="hidden">
                 <x-base.menu.button
                     class="!box px-2"
                     as="x-base.button"
@@ -132,7 +132,7 @@
                                 <div class="flex items-center justify-center">
                                     <a
                                         class="mr-3 flex items-center"
-                                        href="#"
+                                        href="{{route('users.edit', $item->id)}}"
                                     >
                                         <x-base.lucide
                                             class="mr-1 h-4 w-4"
@@ -143,7 +143,7 @@
                                     <a
                                         class="flex items-center text-danger"
                                         data-tw-toggle="modal"
-                                        data-tw-target="#delete-confirmation-modal"
+                                        data-tw-target="#delete-confirmation-modal-{{$item->id}}"
                                         href="#"
                                     >
                                         <x-base.lucide
@@ -151,6 +151,43 @@
                                             icon="Trash"
                                         /> Delete
                                     </a>
+                                    <x-base.dialog id="delete-confirmation-modal-{{$item->id}}">
+                                        <x-base.dialog.panel>
+                                            <div class="p-5 text-center">
+                                                <x-base.lucide
+                                                    class="mx-auto mt-3 h-16 w-16 text-danger"
+                                                    icon="XCircle"
+                                                />
+                                                <div class="mt-5 text-3xl">Are you sure?</div>
+                                                <div class="mt-2 text-slate-500">
+                                                    Do you really want to delete these records? <br />
+                                                    This process cannot be undone.
+                                                </div>
+                                            </div>
+                                            <div class="px-5 pb-8 text-center flex justify-center">
+                                                <x-base.button
+                                                    class="mr-1 w-24"
+                                                    data-tw-dismiss="modal"
+                                                    type="button"
+                                                    variant="outline-secondary"
+                                                >
+                                                    Cancel
+                                                </x-base.button>
+                                                <form action="{{route('users.destroy', $item->id)}}" method="post" class="w-24">
+                                                    @method('delete')
+                                                    @csrf
+                                                    <x-base.button
+                                                        class="w-24"
+                                                        type="submit"
+                                                        variant="danger"
+                                                    >
+                                                        Delete
+                                                </x-base.button>
+                                                </form>
+                                            </div>
+                                        </x-base.dialog.panel>
+                                    </x-base.dialog>
+
                                 </div>
                             </x-base.table.td>
                         </x-base.table.tr>
@@ -160,45 +197,8 @@
         </div>
         <!-- END: Data List -->
         <!-- BEGIN: Pagination -->
-        <div class="intro-y col-span-12 flex flex-wrap items-center sm:flex-row sm:flex-nowrap">
-            <x-base.pagination class="w-full sm:mr-auto sm:w-auto">
-                <x-base.pagination.link>
-                    <x-base.lucide
-                        class="h-4 w-4"
-                        icon="ChevronsLeft"
-                    />
-                </x-base.pagination.link>
-                <x-base.pagination.link>
-                    <x-base.lucide
-                        class="h-4 w-4"
-                        icon="ChevronLeft"
-                    />
-                </x-base.pagination.link>
-                <x-base.pagination.link>...</x-base.pagination.link>
-                <x-base.pagination.link>1</x-base.pagination.link>
-                <x-base.pagination.link active>2</x-base.pagination.link>
-                <x-base.pagination.link>3</x-base.pagination.link>
-                <x-base.pagination.link>...</x-base.pagination.link>
-                <x-base.pagination.link>
-                    <x-base.lucide
-                        class="h-4 w-4"
-                        icon="ChevronRight"
-                    />
-                </x-base.pagination.link>
-                <x-base.pagination.link>
-                    <x-base.lucide
-                        class="h-4 w-4"
-                        icon="ChevronsRight"
-                    />
-                </x-base.pagination.link>
-            </x-base.pagination>
-            <x-base.form-select class="!box mt-3 w-20 sm:mt-0">
-                <option>10</option>
-                <option>25</option>
-                <option>35</option>
-                <option>50</option>
-            </x-base.form-select>
-        </div>
+        <x-base.pagination.base
+        data="{{$data}}"></x-base.pagination.base>
         <!-- END: Pagination -->
     </div>
     <!-- BEGIN: Delete Confirmation Modal -->
