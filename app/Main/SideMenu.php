@@ -70,7 +70,7 @@ class SideMenu
                     ],
                     'users-layout-2' => [
                         'icon' => 'activity',
-                        'route_name' => 'users-layout-2',
+                        'route_name' => 'role.index',
                         'params' => [
                             'layout' => 'side-menu'
                         ],

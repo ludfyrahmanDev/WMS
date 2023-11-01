@@ -7,6 +7,7 @@ use App\Http\Controllers\DarkModeController;
 use App\Http\Controllers\ColorSchemeController;
 // import controller
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
     // Route::resource('users', 'usersLayout1')->name('users');
     Route::resource('users', UserController::class);
+    Route::resource('role', RoleController::class);
+    // Route::get('users/role',  [RoleController::class, 'index'])->name('role.show');
     Route::controller(PageController::class)->group(function () {
         Route::get('/', 'dashboardOverview1')->name('dashboard');
         // template begin here
