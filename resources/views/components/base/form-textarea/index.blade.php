@@ -1,4 +1,4 @@
-@props(['formTextareaSize' => null, 'rounded' => null])
+@props(['formTextareaSize' => null, 'rounded' => null, 'value' => null])
 @aware(['formInline' => null, 'inputGroup' => null])
 
 <textarea
@@ -18,4 +18,4 @@
                 $attributes->whereStartsWith('class')->first(),
             ]),
         )->merge($attributes->whereDoesntStartWith('class')->getAttributes()) }}
-></textarea>
+>{{$value}}</textarea>

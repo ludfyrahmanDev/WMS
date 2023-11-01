@@ -41,6 +41,15 @@
                 @endif
                 <!-- BEGIN: Form Layout -->
                 <div class="intro-y box p-5">
+                    <x-base.form-textarea
+                                    class="form-control"
+                                    id="validation-form-6"
+                                    name="comment"
+                                    placeholder="Type your comments"
+                                    minlength="10"
+                                    required
+                                    value="works"
+                                ></x-base.form-textarea>
                     <div class="input-form">
                         <x-base.form-label for="crud-form-1">Nama</x-base.form-label>
                         <x-base.form-input
