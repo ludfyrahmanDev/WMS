@@ -78,11 +78,11 @@ class SideMenu
                     ],
                     'users-layout-3' => [
                         'icon' => 'activity',
-                        'route_name' => 'users-layout-3',
+                        'route_name' => 'driver.index',
                         'params' => [
                             'layout' => 'side-menu'
                         ],
-                        'title' => 'Supir'
+                        'title' => 'Driver'
                     ]
                 ]
             ],
