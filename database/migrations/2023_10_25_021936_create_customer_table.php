@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
+            $table->integer('ongkosan')->nullable();
+            $table->integer('borongan')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

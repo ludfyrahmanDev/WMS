@@ -130,7 +130,7 @@ class SideMenu
                     ],
                     'users-layout-3' => [
                         'icon' => 'activity',
-                        'route_name' => 'users-layout-3',
+                        'route_name' => 'customer.index',
                         'params' => [
                             'layout' => 'side-menu'
                         ],

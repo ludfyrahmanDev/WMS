@@ -8,6 +8,7 @@ use App\Http\Controllers\ColorSchemeController;
 // import controller
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\CustomerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,7 @@ Route::middleware('auth')->group(function () {
     // Route::resource('users', 'usersLayout1')->name('users');
     Route::resource('users', UserController::class);
     Route::resource('role', RoleController::class);
+    Route::resource('customer', CustomerController::class);
     // Route::get('users/role',  [RoleController::class, 'index'])->name('role.show');
     Route::controller(PageController::class)->group(function () {
         Route::get('/', 'dashboardOverview1')->name('dashboard');
