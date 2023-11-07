@@ -8,17 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 // import traits
 use App\Models\Traits\Filterable;
 
-class Driver extends Model
+class Vehicle extends Model
 {
     use HasFactory, Filterable;
 
-    protected $table = 'driver';
+    protected $table = 'vehicle';
 
     protected $fillable = [
         'name',
-        'address',
-        'phone'
+        'license_plate',
+        'brand'
     ];
-
-
 }

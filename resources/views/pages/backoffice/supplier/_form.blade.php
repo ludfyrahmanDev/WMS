@@ -40,9 +40,8 @@
                     </div>
                     <div class="mt-3 input-form">
                         <x-base.form-label for="crud-form-1">Alamat</x-base.form-label>
-
                         <x-base.form-textarea class="form-control" id="validation-form-6" name="address"
-                            placeholder="Input Alamat" 
+                            placeholder="Input Alamat"
                             value="{{ $data->address ?? old('address') }}"></x-base.form-textarea>
                         @error('address')
                             <div class="pristine-error text-danger mt-2">
@@ -52,10 +51,19 @@
                     </div>
                     <div class="mt-3 input-form">
                         <x-base.form-label for="crud-form-1">No Telp</x-base.form-label>
-                        <x-base.form-input class="w-full" id="crud-form-1" type="number" pattern="\d{1,13}" maxlength="13"
-                            required value="{{ $data->phone ?? old('phone') }}" name="phone"
-                            placeholder="Input No Telp" />
+                        <x-base.form-input class="w-full" id="crud-form-1" type="text" required
+                            value="{{ $data->phone ?? old('phone') }}" name="phone" placeholder="Input No Telp" />
                         @error('phone')
+                            <div class="pristine-error text-danger mt-2">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    <div class="mt-3 input-form">
+                        <x-base.form-label for="crud-form-1">PIC (Penanggung Jawab)</x-base.form-label>
+                        <x-base.form-input class="w-full" id="crud-form-1" type="text" required
+                            value="{{ $data->pic ?? old('pic') }}" name="pic" placeholder="Input Penanggung Jawab" />
+                        @error('pic')
                             <div class="pristine-error text-danger mt-2">
                                 {{ $message }}
                             </div>
@@ -65,7 +73,7 @@
                     <div class="mt-5 text-right">
 
                         <x-base.button class="mr-1 w-24" type="button" variant="outline-secondary">
-                            <a href="{{ route('driver.index') }}" variant="outline-secondary">
+                            <a href="{{ route('supplier.index') }}" variant="outline-secondary">
                                 Cancel
                             </a>
                         </x-base.button>
