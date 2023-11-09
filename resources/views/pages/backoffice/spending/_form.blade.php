@@ -29,41 +29,50 @@
                 <!-- BEGIN: Form Layout -->
                 <div class="intro-y box p-5">
                     <div class="input-form">
-                        <x-base.form-label for="crud-form-1">Nama</x-base.form-label>
-                        <x-base.form-input class="w-full" id="crud-form-1" type="text" name="name"
-                            value="{{ $data->name ?? old('name') }}" placeholder="Input Nama" required />
-                        @error('name')
+                        <x-base.form-label for="crud-form-1">Kategori Pengeluaran</x-base.form-label>
+                        <x-base.tom-select name="spending_category" class="w-full"
+                            data-placeholder="Pilih Kategori Pengeluaran" required> 
+                            <option value="">Pilih Kategori Pengeluaran</option>
+                            @foreach ($kategori as $item)
+                                <option value="{{ $item->id }}" {{$data->spending_category_id == $item->id ? 'selected' : ''}}>{{ $item->name }}</option>
+                            @endforeach
+                        </x-base.tom-select>
+                        @error('spending_category')
                             <div class="pristine-error text-danger mt-2">
                                 {{ $message }}
                             </div>
                         @enderror
                     </div>
                     <div class="mt-3 input-form">
-                        <x-base.form-label for="crud-form-1">Alamat</x-base.form-label>
-                        <x-base.form-textarea class="form-control" id="validation-form-6" name="address"
-                            placeholder="Input Alamat"
-                            value="{{ $data->address ?? old('address') }}"></x-base.form-textarea>
-                        @error('address')
+                        <x-base.form-label for="crud-form-1">Deskripsi</x-base.form-label>
+                        <x-base.form-textarea class="form-control" id="validation-form-6" name="description"
+                            placeholder="Input Deskripsi"
+                            value="{{ $data->description ?? old('description') }}" required></x-base.form-textarea>
+                        @error('description')
                             <div class="pristine-error text-danger mt-2">
                                 {{ $message }}
                             </div>
                         @enderror
                     </div>
                     <div class="mt-3 input-form">
-                        <x-base.form-label for="crud-form-1">No Telp</x-base.form-label>
-                        <x-base.form-input class="w-full" id="crud-form-1" type="text" required
-                            value="{{ $data->phone ?? old('phone') }}" name="phone" placeholder="Input No Telp" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
-                        @error('phone')
+                        <x-base.form-label for="crud-form-1">Metode Pembayaran</x-base.form-label>
+                        <x-base.tom-select name="payment_method" class="w-full" data-placeholder="Pilih Metode Pembayaran" required>
+                           @foreach ($enum as $option)
+                               <option value="{{$option['value']}}" {{$data->payment_method == $option['value'] ? 'selected' : ''}}>{{$option['label']}}</option>
+                           @endforeach
+                        </x-base.tom-select>
+                        @error('payment_method')
                             <div class="pristine-error text-danger mt-2">
                                 {{ $message }}
                             </div>
                         @enderror
                     </div>
                     <div class="mt-3 input-form">
-                        <x-base.form-label for="crud-form-1">PIC (Penanggung Jawab)</x-base.form-label>
-                        <x-base.form-input class="w-full" id="crud-form-1" type="text" required
-                            value="{{ $data->pic ?? old('pic') }}" name="pic" placeholder="Input Penanggung Jawab" />
-                        @error('pic')
+                        <x-base.form-label for="crud-form-1">Nominal</x-base.form-label>
+                        <x-base.form-input class="w-full" id="crud-form-1" type="text" name="nominal"
+                            value="{{ $data->nominal ?? old('nominal') }}" placeholder="Input Nominal Pengeluaran"
+                            required onkeypress="return event.charCode >= 48 && event.charCode <= 57"  />
+                        @error('nominal')
                             <div class="pristine-error text-danger mt-2">
                                 {{ $message }}
                             </div>
@@ -73,7 +82,7 @@
                     <div class="mt-5 text-right">
 
                         <x-base.button class="mr-1 w-24" type="button" variant="outline-secondary">
-                            <a href="{{ route('supplier.index') }}" variant="outline-secondary">
+                            <a href="{{ route('spending.index') }}" variant="outline-secondary">
                                 Cancel
                             </a>
                         </x-base.button>

@@ -52,9 +52,9 @@
                     </div>
                     <div class="mt-3 input-form">
                         <x-base.form-label for="crud-form-1">No Telp</x-base.form-label>
-                        <x-base.form-input class="w-full" id="crud-form-1" type="number" pattern="\d{1,13}" maxlength="13"
+                        <x-base.form-input class="w-full" id="crud-form-1" type="text"
                             required value="{{ $data->phone ?? old('phone') }}" name="phone"
-                            placeholder="Input No Telp" />
+                            placeholder="Input No Telp" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                         @error('phone')
                             <div class="pristine-error text-danger mt-2">
                                 {{ $message }}
