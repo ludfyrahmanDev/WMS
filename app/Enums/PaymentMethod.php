@@ -6,9 +6,9 @@ use BenSampo\Enum\Enum;
 
 final class PaymentMethod extends Enum
 {
+    const CASH      = 'CASH';
     const QRIS      = 'QRIS';
     const KWB       = 'KWB';
-    const CASH      = 'CASH';
 
     public static function getDescription($value): string
     {
