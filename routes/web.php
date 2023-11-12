@@ -8,10 +8,9 @@ use App\Http\Controllers\DriverController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\SpendingController;
 use App\Http\Controllers\DarkModeController;
-// import controller
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ColorSchemeController;
-// import controller
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('vehicle', VehicleController::class);
     Route::resource('supplier', SupplierController::class);
     Route::resource('spending', SpendingController::class);
+    Route::resource('product', ProductController::class);
     Route::controller(PageController::class)->group(function () {
         Route::get('/', 'dashboardOverview1')->name('dashboard');
         // template begin here

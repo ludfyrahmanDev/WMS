@@ -100,7 +100,7 @@ class SideMenu
                     ],
                     'simple-menu' => [
                         'icon' => 'box',
-                        'route_name' => 'product-list',
+                        'route_name' => 'product.index',
                         'params' => [
                             'layout' => 'side-menu'
                         ],
