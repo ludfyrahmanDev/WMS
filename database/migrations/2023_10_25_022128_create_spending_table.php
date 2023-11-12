@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreign('created_by')->references('id')->on('users');
             // payment method
             $table->string('payment_method')->default(PaymentType::CASH)->nullable();
+            $table->integer('nominal')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

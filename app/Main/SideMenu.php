@@ -78,11 +78,11 @@ class SideMenu
                     ],
                     'users-layout-3' => [
                         'icon' => 'activity',
-                        'route_name' => 'users-layout-3',
+                        'route_name' => 'driver.index',
                         'params' => [
                             'layout' => 'side-menu'
                         ],
-                        'title' => 'Supir'
+                        'title' => 'Driver'
                     ]
                 ]
             ],
@@ -114,7 +114,7 @@ class SideMenu
                 'sub_menu' => [
                     'users-layout-1' => [
                         'icon' => 'activity',
-                        'route_name' => 'users-layout-1',
+                        'route_name' => 'vehicle.index',
                         'params' => [
                             'layout' => 'side-menu'
                         ],
@@ -122,7 +122,7 @@ class SideMenu
                     ],
                     'users-layout-2' => [
                         'icon' => 'activity',
-                        'route_name' => 'users-layout-2',
+                        'route_name' => 'supplier.index',
                         'params' => [
                             'layout' => 'side-menu'
                         ],
@@ -150,6 +150,14 @@ class SideMenu
                             'layout' => 'side-menu'
                         ],
                         'title' => 'Kategori Pengeluaran'
+                    ],
+                    'spending' => [
+                        'icon' => 'activity',
+                        'route_name' => 'spending.index',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Pengeluaran'
                     ],
 
 

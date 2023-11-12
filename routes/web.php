@@ -3,12 +3,15 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\DriverController;
+use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\SpendingController;
 use App\Http\Controllers\DarkModeController;
+// import controller
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ColorSchemeController;
 // import controller
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\CustomerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +39,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('role', RoleController::class);
     Route::resource('customer', CustomerController::class);
     // Route::get('users/role',  [RoleController::class, 'index'])->name('role.show');
+    Route::resource('driver', DriverController::class);
+    Route::resource('vehicle', VehicleController::class);
+    Route::resource('supplier', SupplierController::class);
+    Route::resource('spending', SpendingController::class);
     Route::controller(PageController::class)->group(function () {
         Route::get('/', 'dashboardOverview1')->name('dashboard');
         // template begin here
