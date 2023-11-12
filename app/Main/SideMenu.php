@@ -70,7 +70,7 @@ class SideMenu
                     ],
                     'users-layout-2' => [
                         'icon' => 'activity',
-                        'route_name' => 'users-layout-2',
+                        'route_name' => 'role.index',
                         'params' => [
                             'layout' => 'side-menu'
                         ],
@@ -100,7 +100,7 @@ class SideMenu
                     ],
                     'simple-menu' => [
                         'icon' => 'box',
-                        'route_name' => 'product-list',
+                        'route_name' => 'product.index',
                         'params' => [
                             'layout' => 'side-menu'
                         ],
@@ -130,7 +130,7 @@ class SideMenu
                     ],
                     'users-layout-3' => [
                         'icon' => 'activity',
-                        'route_name' => 'users-layout-3',
+                        'route_name' => 'customer.index',
                         'params' => [
                             'layout' => 'side-menu'
                         ],

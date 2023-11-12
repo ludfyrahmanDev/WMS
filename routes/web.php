@@ -8,8 +8,8 @@ use App\Http\Controllers\DriverController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\SpendingController;
 use App\Http\Controllers\DarkModeController;
-// import controller
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ColorSchemeController;
 
 /*
@@ -35,10 +35,14 @@ Route::middleware('auth')->group(function () {
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
     // Route::resource('users', 'usersLayout1')->name('users');
     Route::resource('users', UserController::class);
+    Route::resource('role', RoleController::class);
+    Route::resource('customer', CustomerController::class);
+    // Route::get('users/role',  [RoleController::class, 'index'])->name('role.show');
     Route::resource('driver', DriverController::class);
     Route::resource('vehicle', VehicleController::class);
     Route::resource('supplier', SupplierController::class);
     Route::resource('spending', SpendingController::class);
+    Route::resource('product', ProductController::class);
     Route::controller(PageController::class)->group(function () {
         Route::get('/', 'dashboardOverview1')->name('dashboard');
         // template begin here
