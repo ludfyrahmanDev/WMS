@@ -6,6 +6,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\SpendingCategoryController;
 use App\Http\Controllers\SpendingController;
 use App\Http\Controllers\DarkModeController;
 use App\Http\Controllers\SupplierController;
@@ -41,6 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('driver', DriverController::class);
     Route::resource('vehicle', VehicleController::class);
     Route::resource('supplier', SupplierController::class);
+    Route::resource('spendingCategory', SpendingCategoryController::class);
     Route::resource('spending', SpendingController::class);
     Route::resource('product', ProductController::class);
     Route::controller(PageController::class)->group(function () {

@@ -14,11 +14,23 @@ class CustomerStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'      => ['string', 'required'],
-            'phone'     => ['string', 'required'],
+            'name'      => ['required'],
+            'phone'     => ['required', 'numeric'],
             'ongkosan'  => ['required'],
             'borongan'  => ['required'],
-            'address'   => ['string', 'required']
+            'address'   => ['required']
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'name.required'     => 'Nama customer tidak boleh kosong',
+            'phone.required'    => 'No Handphone tidak boleh kosong',
+            'phone.numeric'     => 'No Handphone hanya boleh angka',
+            'ongkosan'          => 'Ongkosan tidak boleh kosong',
+            'borongan'          => 'Borongan tidak boleh kosong',
+            'address'           => 'Alamat tidak boleh kosong'
         ];
     }
 }

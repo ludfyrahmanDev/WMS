@@ -54,16 +54,6 @@
                         @enderror
                     </div>
                     <div class="mt-3 input-form">
-                        <x-base.form-label for="crud-form-1">Stok</x-base.form-label>
-                        <x-base.form-input class="w-full" id="crud-form-1" type="text" name="stock"
-                            value="{{ $data->stock ?? old('stock') }}" placeholder="Masukkan stok produk..." onkeypress="return event.charCode >= 48 && event.charCode <= 57"/>
-                        @error('stock')
-                            <div class="pristine-error text-danger mt-2">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                    <div class="mt-3 input-form">
                         <x-base.form-label for="crud-form-1">Harga/KG</x-base.form-label>
                         <x-base.form-input class="w-full" id="crud-form-1" type="text" name="price"
                             value="{{ $data->price ?? old('price') }}" placeholder="Masukkan harga/KG..." onkeypress="return event.charCode >= 48 && event.charCode <= 57"/>

@@ -135,6 +135,14 @@ class SideMenu
                             'layout' => 'side-menu'
                         ],
                         'title' => 'Customer'
+                    ],
+                    'users-layout-4' => [
+                        'icon' => 'activity',
+                        'route_name' => 'spendingCategory.index',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Kategori Pengeluaran'
                     ]
                 ]
             ],

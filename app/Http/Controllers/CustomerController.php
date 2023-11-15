@@ -57,16 +57,8 @@ class CustomerController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CustomerStoreRequest $request)
     {
-        $request->validate([
-            'name'      => 'required',
-            'phone'     => 'required',
-            'ongkosan'  => 'required|numeric',
-            'borongan'  => 'required|numeric',
-            'address'   => 'required'
-        ]);
-
         try {
             $cust = new Customer();
             $cust->name = $request->name;
@@ -108,16 +100,8 @@ class CustomerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Customer $customer)
+    public function update(CustomerStoreRequest $request, Customer $customer)
     {
-        $request->validate([
-            'name'      => 'required',
-            'phone'     => 'required',
-            'ongkosan'  => 'required|numeric',
-            'borongan'  => 'required|numeric',
-            'address'   => 'required'
-        ]);
-
         try {
             $customer->name = $request->name;
             $customer->phone = $request->phone;

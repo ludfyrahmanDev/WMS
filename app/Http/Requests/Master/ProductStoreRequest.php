@@ -14,18 +14,20 @@ class ProductStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'spending_category' => ['required'],
-            'description' => ['required'],
-            'nominal' => ['required'],
+            'product_category'  => ['required'],
+            'product'           => ['required'],
+            'price'             => ['required'],
+            'price_sell'        => ['required']
         ];
     }
 
     public function messages()
     {
         return [
-            'spending_category.required' => 'Kategori Pengeluaran tidak boleh kosong',
-            'description.required' => 'Deskripsi tidak boleh kosong',
-            'nominal' => 'Nominal tidak boleh kosong'
+            'product_category.required' => 'Kategori produk tidak boleh kosong',
+            'product.required'          => 'Nama produk tidak boleh kosong',
+            'price'                     => 'Harga/KG tidak boleh kosong',
+            'price_sell'                => 'Harga jual tidak boleh kosong'
         ];
     }
 }
