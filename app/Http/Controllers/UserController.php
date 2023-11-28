@@ -23,10 +23,6 @@ class UserController extends Controller
         $data = User::filterResource($request, [
             'name',
             'email',
-            'phone_number',
-            'address',
-            'avatar',
-            'roles.name',
         ], [])
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
             ->paginate($request->get('per_page', 10));

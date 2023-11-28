@@ -34,3 +34,20 @@ if (!function_exists('uncamelize')) {
         return strtolower($camel);
     }
 }
+// make function helper page
+if(!function_exists('linkPagination')){
+    function linkPagination($path, $perPage = 10, $search = null, $page = null)
+    {
+        $url = $path . '?';
+        if ($search) {
+            $url .= 'search=' . $search . '&';
+        }
+        if ($perPage) {
+            $url .= 'per_page=' . $perPage . '&';
+        }
+        if ($page) {
+            $url .= 'page=' . $page . '&';
+        }
+        return $url;
+    }
+}

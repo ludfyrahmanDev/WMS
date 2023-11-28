@@ -7,6 +7,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\SpendingController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\DarkModeController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ProductController;
