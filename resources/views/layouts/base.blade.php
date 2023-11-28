@@ -61,6 +61,24 @@ License: You must have a valid license purchased only from themeforest(the above
 
     <!-- BEGIN: Pages, layouts, components JS Assets-->
     @stack('scripts')
+    <script>
+        // make live search and reload page using #search
+        const search = document.querySelector('#search');
+        if (search) {
+            search.addEventListener('keyup', function (e) {
+                if (e.key === 'Enter') {
+                    window.location.href = window.location.origin + window.location.pathname + '?search=' + e.target.value;
+                }
+            });
+        }
+        // on change per page reload page append param ?per_page=10
+        const perPage = document.querySelector('#per_page');
+        if (perPage) {
+            perPage.addEventListener('change', function (e) {
+                window.location.href = window.location.origin + window.location.pathname + '?per_page=' + e.target.value;
+            });
+        }
+    </script>
     <!-- END: Pages, layouts, components JS Assets-->
 </body>
 
