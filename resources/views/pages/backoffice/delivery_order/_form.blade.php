@@ -142,8 +142,8 @@
                             <!-- Tambahkan header lainnya sesuai kebutuhan -->
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr class="border-b">
+                    <tbody id="products">
+                        {{-- <tr class="border-b">
                             <td class="py-2 px-4">Data 1</td>
                             <td class="py-2 px-4">Data 2</td>
                             <td class="py-2 px-4">Data 3</td>
@@ -154,7 +154,7 @@
                             <td class="py-2 px-4">Data 5</td>
                             <td class="py-2 px-4">Data 6</td>
                             <!-- Tambahkan data lainnya sesuai kebutuhan -->
-                        </tr>
+                        </tr> --}}
                         <!-- Tambahkan baris lainnya sesuai kebutuhan -->
                     </tbody>
                 </table>
@@ -254,14 +254,14 @@
                 var kendaraan = $('#kendaraanA').val();
                 var qty = $('#qty').val();
                 var subtotal = $('#subtotal').val();
-                
-                $('#table_product').append(`
-                    <tr class="border-b">
+                var products = `
+                    <tr class="row-data">
                             <td class="py-2 px-4">${kendaraan}</td>
                             <td class="py-2 px-4">${qty}</td>
                             <td class="py-2 px-4">${subtotal}</td>
                     </tr>
-                `)
+                `;
+                $('#products').html($('#products').html() + products);
             }
         </script>
     @endpush
