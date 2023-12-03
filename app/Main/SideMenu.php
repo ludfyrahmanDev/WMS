@@ -90,14 +90,14 @@ class SideMenu
                 'icon' => 'box',
                 'title' => 'Produk',
                 'sub_menu' => [
-                    'side-menu' => [
-                        'icon' => 'box',
-                        'route_name' => 'product-list',
-                        'params' => [
-                            'layout' => 'side-menu'
-                        ],
-                        'title' => 'Kategori Produk'
-                    ],
+                    // 'side-menu' => [
+                    //     'icon' => 'box',
+                    //     'route_name' => 'product-list',
+                    //     'params' => [
+                    //         'layout' => 'side-menu'
+                    //     ],
+                    //     'title' => 'Kategori Produk'
+                    // ],
                     'simple-menu' => [
                         'icon' => 'box',
                         'route_name' => 'product.index',
