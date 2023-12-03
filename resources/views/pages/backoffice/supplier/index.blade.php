@@ -43,7 +43,7 @@
                 </x-base.menu.items>
             </x-base.menu>
             <div class="mx-auto hidden text-slate-500 md:block">
-                Showing 1 to 10 of 150 entries
+                Showing 1 to {{$data->total() < 10 ? $data->total() : 10}} of {{$data->total()}} entries
             </div>
             <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto md:ml-0">
                 <div class="relative w-56 text-slate-500">
@@ -146,11 +146,29 @@
                         </x-base.table.tr>
                     @endforeach
                 </x-base.table.tbody>
+                @if ($data->isEmpty())
+                    <x-base.table.tbody>
+                        <x-base.table.tr>
+                            <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600" colspan="6">
+                                <div class="flex justify-center items-center">
+                                    <x-base.lucide
+                                        class="h-16 w-16 text-slate-500"
+                                        icon="Inbox"
+                                    />
+                                    <div class="ml-2 text-slate-500">
+                                        Data not found
+                                    </div>
+                                </div>
+                            </x-base.table.td>
+                        </x-base.table.tr>
+                    </x-base.table.tbody>
+                @endif
             </x-base.table>
         </div>
         <!-- END: Data List -->
         <!-- BEGIN: Pagination -->
-        <x-base.pagination.base data="{{ $data }}"></x-base.pagination.base>
+        <x-base.pagination.base
+        :data="$data"></x-base.pagination.base>
         <!-- END: Pagination -->
     </div>
     <!-- BEGIN: Delete Confirmation Modal -->

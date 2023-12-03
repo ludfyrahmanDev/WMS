@@ -218,7 +218,6 @@
         </div>
         <!-- END: Data List -->
         <!-- BEGIN: Pagination -->
-        {{-- show pagination laravel--}}
         <x-base.pagination.base
         :data="$data"></x-base.pagination.base>
         <!-- END: Pagination -->
