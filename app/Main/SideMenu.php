@@ -183,9 +183,9 @@ class SideMenu
                         'params' => [
                             'layout' => 'side-menu'
                         ],
-                        'route_name' => 'transaction-list',
+                        'route_name' => 'selling.create',
                     ],
-                    'sellings' => [
+                    'trans_etc' => [
                         'icon' => 'activity',
                         'title' => 'Transaksi Lain Lain',
                         'params' => [

@@ -15,6 +15,7 @@ use App\Http\Controllers\DarkModeController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ColorSchemeController;
 use App\Http\Controllers\DeliveryOrderController;
+use App\Http\Controllers\SellingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('spending', SpendingController::class);
     Route::resource('product', ProductController::class);
     Route::resource('delivery_order', DeliveryOrderController::class);
+    Route::resource('selling', SellingController::class);
     Route::controller(PageController::class)->group(function () {
         Route::get('/', 'dashboardOverview1')->name('dashboard');
         // template begin here
