@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Selling;
+use App\Models\Customer;
+use App\Models\Driver;
+use App\Models\Vehicle;
+use App\Models\Product;
 use App\Http\Requests\Transaksi\SellingStoreRequest;
 
 class SellingController extends Controller
@@ -20,8 +24,10 @@ class SellingController extends Controller
 
     public function create()
     {
-        $customer = new Selling();
-        $customer = $customer->customer;
+        $customer = Customer::all();
+        $driver = Driver::all();
+        $vehicle = Vehicle::all();
+        $product = Product::all();
         $data = (object)[
             'date' => '',
             'customer' => '',
@@ -39,8 +45,6 @@ class SellingController extends Controller
         $route = route('selling.store');
         $type = 'create';
 
-        var_dump($customer); die;
-
-        return view('pages.backoffice.selling._form', compact('data', 'title', 'route', 'type'));
+        return view('pages.backoffice.selling._form', compact('data', 'title', 'route', 'type', 'customer', 'driver', 'vehicle', 'product'));
     }
 }

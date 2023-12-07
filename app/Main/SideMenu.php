@@ -151,14 +151,14 @@ class SideMenu
                 'icon' => 'shopping-bag',
                 'title' => 'Transaksi',
                 'sub_menu' => [
-                    'categories' => [
-                        'icon' => 'activity',
-                        'route_name' => 'categories',
-                        'params' => [
-                            'layout' => 'side-menu'
-                        ],
-                        'title' => 'Kategori Pengeluaran'
-                    ],
+                    // 'categories' => [
+                    //     'icon' => 'activity',
+                    //     'route_name' => 'categories',
+                    //     'params' => [
+                    //         'layout' => 'side-menu'
+                    //     ],
+                    //     'title' => 'Kategori Pengeluaran'
+                    // ],
                     'spending' => [
                         'icon' => 'activity',
                         'route_name' => 'spending.index',

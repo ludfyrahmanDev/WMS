@@ -43,6 +43,9 @@
                         <x-base.form-label for="crud-form-1">Pelanggan</x-base.form-label>
                         <x-base.tom-select name="customer" class="w-full" data-placeholder="Pilih Pelanggan">
                             <option value="">Pilih Pelanggan</option>
+                            @foreach ($customer as $data) 
+                                <option value="{{ $data->id }}">{{ $data->name }}</option>
+                            @endforeach
                         </x-base.tom-select>
                         @error('customer')
                             <div class="pristine-error text-danger mt-2">
@@ -54,6 +57,9 @@
                         <x-base.form-label for="crud-form-1">Pengemudi</x-base.form-label>
                         <x-base.tom-select name="driver" class="w-full" data-placeholder="Pilih driver">
                             <option value="">Pilih Pengemudi</option>
+                            @foreach ($driver as $data) 
+                                <option value="{{ $data->id }}">{{ $data->name }}</option>
+                            @endforeach
                         </x-base.tom-select>
                         @error('driver')
                             <div class="pristine-error text-danger mt-2">
@@ -67,8 +73,9 @@
                         <x-base.form-label for="crud-form-1">Kendaraan</x-base.form-label>
                         <x-base.tom-select name="kendaraan" class="w-full" data-placeholder="Pilih Kendaraan">
                             <option value="">Pilih Kendaraan</option>
-                            <option value="a">Mobil</option>
-                            <option value="b">Sepeda Motor</option>
+                            @foreach ($vehicle as $data) 
+                                <option value="{{ $data->id }}">{{ '[' . $data->license_plate . '] ' . $data->name }}</option>
+                            @endforeach
                         </x-base.tom-select>
                         @error('kendaraan')
                             <div class="pristine-error text-danger mt-2">
@@ -120,17 +127,18 @@
                     </div>
                 </div>
                 <br>
-                <table class="min-w-full bg-white border-gray-300" id="table2">
+                <table class="min-w-full bg-white border-gray-300" id="transDetail">
                     <thead>
                         <tr class="bg-dark text-white">
                             <th class="py-2 px-4 border-b text-left">No</th>
                             <th class="py-2 px-4 border-b text-left">Produk</th>
                             <th class="py-2 px-4 border-b text-left">Qty</th>
                             <th class="py-2 px-4 border-b text-left">Subtotal</th>
+                            <th class="py-2 px-4 border-b text-left">Action</th>
                             <!-- Tambahkan header lainnya sesuai kebutuhan -->
                         </tr>
                     </thead>
-                    <tbody id="products">
+                    <tbody id="transDetail">
                         {{-- <tr class="border-b">
                             <td class="py-2 px-4">Data 1</td>
                             <td class="py-2 px-4">Data 2</td>
@@ -242,14 +250,26 @@
                 var produk = $('#produk').val();
                 var qty = $('#qty').val();
                 var subtotal = $('#subtotal').val();
+                var noCount = $("#transDetail > tbody > tr").length + 1;
                 var products = `
                     <tr class="row-data">
+                            <td class="py-2 px-4">${noCount++}</td>
                             <td class="py-2 px-4">${produk}</td>
                             <td class="py-2 px-4">${qty}</td>
                             <td class="py-2 px-4">${subtotal}</td>
+                            <td class="py-2 px-4">
+                                <button class="flex items-center text-danger" onclick="delRow('${noCount++}', $(this))">
+                                    <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" />
+                                    Hapus
+                                </button>
+                            </td>
                     </tr>
                 `;
-                $('#products').html($('#products').html() + products);
+                $('#transDetail > tbody').html($('#transDetail > tbody').html() + products);
+            }
+
+            function delrow(idx, el) {
+                el.closest('tr').remove();
             }
         </script>
     @endpush
