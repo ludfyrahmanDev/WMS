@@ -14,8 +14,8 @@ return new class extends Migration
     {
         Schema::create('delivery_order', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('purchase_date');
-            $table->dateTime('pick_up_date');
+            $table->date('purchase_date');
+            $table->date('pick_up_date');
 
             $table->unsignedBigInteger('supplier_id');
             $table->foreign('supplier_id')->references('id')->on('supplier');
@@ -30,9 +30,10 @@ return new class extends Migration
             // $table->foreign('product_id')->references('id')->on('product');
 
             // $table->integer('purchase_amount');
-            $table->enum('transaction status', ['tempo_panjang', 'kontan']);
+            $table->enum('transaction_type', ['Tempo Panjang', 'Kontan']);
             $table->integer('grand_total');
             $table->integer('total_payment');
+            $table->string('status');
             $table->string('who_create');
             $table->string('who_update');
             $table->timestamps();
