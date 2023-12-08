@@ -32,7 +32,7 @@
                         <div class="input-form col-span-4">
                             <x-base.form-label for="crud-form-1">Tanggal Pembelian</x-base.form-label>
                             <x-base.form-input class="w-full" id="tanggal_pembelian" type="date" name="tanggal_pembelian"
-                                value="{{ $data['header']->purchase_date ?? date('Y-m-d') }}" required
+                                value="{{ $data['header']->purchase_date ?? date('Y-m-d') }}" required disabled
                                 placeholder="Pilih Tanggal Pembelian" />
                             @error('tanggal_pembelian')
                                 <div class="pristine-error text-danger mt-2">
@@ -44,7 +44,8 @@
                             <x-base.form-label for="crud-form-1">Tanggal Pengambilan</x-base.form-label>
                             <x-base.form-input class="w-full" id="tanggal_pengambilan" type="date"
                                 name="tanggal_pengambilan" value="{{ $data['header']->pick_up_date ?? date('Y-m-d') }}"
-                                placeholder="Pilih Tanggal Pengambilan" required />
+                                placeholder="Pilih Tanggal Pengambilan" required disabled
+                                 />
                             @error('tanggal_pengambilan')
                                 <div class="pristine-error text-danger mt-2">
                                     {{ $message }}
@@ -54,7 +55,7 @@
                         <div class="input-form col-span-4">
                             <x-base.form-label for="supplier">Supplier</x-base.form-label>
                             <x-base.tom-select name="supplier" id="supplier" class="w-full"
-                                data-placeholder="Pilih Supplier" required>
+                                data-placeholder="Pilih Supplier" required disabled>
                                 <option value="">Pilih Supplier</option>
                                 @foreach ($data['supplier'] as $supplier)
                                     <option value="{{ $supplier->id }}"
@@ -74,7 +75,7 @@
                         <div class="input-form col-span-4">
                             <x-base.form-label for="driver">Driver</x-base.form-label>
                             <x-base.tom-select name="driver" id="driver" class="w-full" data-placeholder="Pilih Driver"
-                                required>
+                                required disabled>
                                 <option value="">Pilih Driver</option>
                                 @foreach ($data['driver'] as $driver)
                                     <option value="{{ $driver->id }}"
@@ -91,7 +92,7 @@
                         <div class="input-form col-span-4">
                             <x-base.form-label for="kendaraan">Kendaraan</x-base.form-label>
                             <x-base.tom-select name="kendaraan" id="kendaraan" class="w-full"
-                                data-placeholder="Pilih Kendaraan" required>
+                                data-placeholder="Pilih Kendaraan" required disabled>
                                 <option value="">Pilih Kendaraan</option>
                                 @foreach ($data['vehicle'] as $vehicle)
                                     <option value="{{ $vehicle->id }}"
@@ -110,7 +111,7 @@
                         <div class="input-form col-span-4">
                             <x-base.form-label for="tipe_pembelian">Tipe Pembelian</x-base.form-label>
                             <x-base.tom-select name="tipe_pembelian" id="tipe_pembelian" class="w-full"
-                                data-placeholder="Pilih Tipe Pembelian" required>
+                                data-placeholder="Pilih Tipe Pembelian" required disabled>
                                 <option value="">Pilih Tipe Pembelian</option>
                                 <option value="Tempo Panjang"
                                     {{ $data['header']->transaction_type == 'Tempo Panjang' ? 'selected' : '' }}>Tempo
@@ -127,42 +128,6 @@
                     </div>
                     <br>
                     <hr style="border: 1px solid black;">
-
-                    <div class="mt-3 grid grid-cols-12 gap-2">
-                        <div class="input-form col-span-4">
-                            <x-base.form-label for="crud-form-1">Produk</x-base.form-label>
-                            <x-base.tom-select name="produk" id="produk" class="w-full" data-placeholder="Pilih Produk">
-                                <option value="">Pilih Produk</option>
-                                @foreach ($data['product'] as $product)
-                                    <option value="{{ $product->id }}_{{ $product->product }}">{{ $product->product }}
-                                    </option>
-                                @endforeach
-                            </x-base.tom-select>
-                        </div>
-                        <div class="input-form col-span-4">
-                            <x-base.form-label for="crud-form-1">Qty</x-base.form-label>
-                            <x-base.form-input class="w-full" id="crud-form-1" type="text" name="qty" id="qty"
-                                value="" placeholder="Input Qty Produk"
-                                onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
-                        </div>
-                        <div class="input-form col-span-4">
-                            <x-base.form-label for="crud-form-1">Subtotal</x-base.form-label>
-                            <x-base.form-input class="w-full" type="text" name="subtotal" id="subtotal" value=""
-                                placeholder="Input Subtotal Produk"
-                                onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
-                        </div>
-                    </div>
-
-                    <div class="mt-3 grid grid-cols-12">
-                        <div class="col-span-6 flex">
-                            {{-- <h3><strong>Produk</strong></h3> --}}
-                        </div>
-                        <div class="col-span-6 flex justify-end">
-                            <x-base.button onclick="tambahProduk()" type="button" variant="primary">
-                                Tambah Produk
-                            </x-base.button>
-                        </div>
-                    </div>
                     <br>
                     @error('produk_id')
                         <div class="pristine-error text-danger mt-2">
@@ -180,7 +145,6 @@
                                 <th class="py-2 px-4 border-b text-left w-1/4">Produk</th>
                                 <th class="py-2 px-4 border-b text-left w-1/4">Qty</th>
                                 <th class="py-2 px-4 border-b text-left w-1/4">Subtotal</th>
-                                <th class="py-2 px-4 border-b text-left w-1/4">Action</th>
                                 <!-- Tambahkan header lainnya sesuai kebutuhan -->
                             </tr>
                         </thead>
@@ -198,17 +162,13 @@
                                         <td class="py-2 px-4 subtotal w-1/4">{{ $item['subtotal'] }}<input type="hidden"
                                                 class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]"
                                                 value="{{ $item['subtotal'] }}" /></td>
-                                        <td class="py-2 px-4 w-1/4">
-                                            <button onclick="hapusRow(this)" class="flex items-center text-danger">
-                                                Hapus</button>
-                                        </td>
                                     </tr>
                                 @endforeach
                             @endif
                         </tbody>
                         <tfoot>
                             <tr class="bg-dark text-white">
-                                <th class="py-2 px-4 border-b text-center" colspan="3">Grand Total</th>
+                                <th class="py-2 px-4 border-b text-center" colspan="2">Grand Total</th>
                                 <th class="py-2 px-4 border-b text-center grand_total">
                                     {{ $data['header']->grand_total ?? 0 }}</th>
                                 <th class="py-2 px-4 border-b text-center" hidden><x-base.form-input
@@ -216,12 +176,9 @@
                                         value="{{ $data['header']->grand_total ?? 0 }}" /></th>
                             </tr>
                             <tr class="bg-dark ">
-                                <th class="py-2 px-4 border-b text-center text-white" colspan="3">Total Bayar</th>
-                                <th class="py-2 px-4 border-b text-center">
-                                    <x-base.form-input class="w-3/5 text-center" id="total_bayar" type="text"
-                                        name="total_bayar" value="{{ $data['header']->total_payment ?? 0 }}"
-                                        placeholder="Input Total Bayar" required
-                                        onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                                <th class="py-2 px-4 border-b text-center text-white" colspan="2">Total Bayar</th>
+                                <th class="py-2 px-4 border-b text-center text-white">
+                                        {{ $data['header']->total_payment ?? 0 }}
                                 </th>
                             </tr>
                         </tfoot>
@@ -235,15 +192,6 @@
                                 Cancel
                             </a>
                         </x-base.button>
-                        <x-base.button class="w-24" onclick="saveDeliveryOrder()" type="submit" variant="primary">
-                            Save
-                        </x-base.button>
-                        @if ($type != 'create')
-                            <x-base.button class="w-24" onclick="confirmDeliveryOrder()" type="submit"
-                                variant="success">
-                                Konfirmasi
-                            </x-base.button>
-                        @endif
                     </div>
                 </div>
                 <!-- END: Form Layout -->
@@ -310,56 +258,6 @@
                 $('.grand_total').text(totalSubtotal);
                 $('#grand_total').val(totalSubtotal);
             }
-
-            // function saveDeliveryOrder() {
-            //     // Header
-            //     var tanggal_pembelian = $('#tanggal_pembelian').val();
-            //     var tanggal_pengambilan = $('#tanggal_pengambilan').val();
-            //     var supplier = $('#supplier').val();
-            //     var driver = $('#driver').val();
-            //     var kendaraan = $('#kendaraan').val();
-
-            //     var arr = [];
-            //     // getProdukID
-            //     $('.produk_id').each(function() {
-            //         var produk_id = $(this).text();
-
-            //         arr.push({
-            //             produk_id: produk_id,
-            //             qty: 0,
-            //             subtotal: 0,
-            //         })
-            //     })
-
-            //     $('.jumlah_qty').each(function(i, v) {
-            //         var qty = $(this).text();
-
-            //         arr[i].qty = qty
-            //     })
-
-            //     $('.subtotal').each(function(i, v) {
-            //         var subtotal = $(this).text();
-
-            //         arr[i].subtotal = subtotal
-            //     })
-
-            //     // $.ajax({
-            //     //     type: "POST",
-            //     //     url: "{{ route('delivery_order.store') }}",
-            //     //     data: {
-            //     //         tanggal_pembelian: tanggal_pembelian,
-            //     //         tanggal_pengambilan: tanggal_pengambilan,
-            //     //         supplier: supplier,
-            //     //         driver: driver,
-            //     //         kendaraan: kendaraan,
-            //     //         detail: arr
-            //     //     },
-            //     //     dataType: "JSON",
-            //     //     success: function(response) {
-
-            //     //     }
-            //     // })
-            // }
 
             function confirmDeliveryOrder() {
                 $('.mode').html('<input type="hidden" name="mode" id="mode" value="konfirmasi"/>');

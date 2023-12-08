@@ -175,7 +175,7 @@ class SideMenu
                         'params' => [
                             'layout' => 'side-menu'
                         ],
-                        'route_name' => 'delivery_order.create',
+                        'route_name' => 'delivery_order.index',
                     ],
                     'sellings' => [
                         'icon' => 'activity',
