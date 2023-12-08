@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('spending_category', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('spending_category');
+            $table->string('spending_types');
             $table->softDeletes();
             $table->timestamps();
         });

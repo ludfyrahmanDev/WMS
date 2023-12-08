@@ -135,6 +135,14 @@ class SideMenu
                             'layout' => 'side-menu'
                         ],
                         'title' => 'Customer'
+                    ],
+                    'users-layout-4' => [
+                        'icon' => 'activity',
+                        'route_name' => 'spendingCategory.index',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Kategori Pengeluaran'
                     ]
                 ]
             ],
@@ -143,14 +151,14 @@ class SideMenu
                 'icon' => 'shopping-bag',
                 'title' => 'Transaksi',
                 'sub_menu' => [
-                    'categories' => [
-                        'icon' => 'activity',
-                        'route_name' => 'categories',
-                        'params' => [
-                            'layout' => 'side-menu'
-                        ],
-                        'title' => 'Kategori Pengeluaran'
-                    ],
+                    // 'categories' => [
+                    //     'icon' => 'activity',
+                    //     'route_name' => 'categories',
+                    //     'params' => [
+                    //         'layout' => 'side-menu'
+                    //     ],
+                    //     'title' => 'Kategori Pengeluaran'
+                    // ],
                     'spending' => [
                         'icon' => 'activity',
                         'route_name' => 'spending.index',
@@ -175,9 +183,9 @@ class SideMenu
                         'params' => [
                             'layout' => 'side-menu'
                         ],
-                        'route_name' => 'transaction-list',
+                        'route_name' => 'selling.create',
                     ],
-                    'sellings' => [
+                    'trans_etc' => [
                         'icon' => 'activity',
                         'title' => 'Transaksi Lain Lain',
                         'params' => [

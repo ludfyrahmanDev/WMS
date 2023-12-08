@@ -32,10 +32,20 @@
                 <!-- BEGIN: Form Layout -->
                 <div class="intro-y box p-5">
                     <div class="input-form">
-                        <x-base.form-label for="role">Jabatan</x-base.form-label>
-                        <x-base.form-input class="w-full" id="role" type="text" required name="role"
-                            value="{{ $data->role ?? old('role') }}" placeholder="Masukkan jabatan..." />
-                        @error('role')
+                        <x-base.form-label for="spending_category">Kategori pengeluaran</x-base.form-label>
+                        <x-base.form-input class="w-full" id="spending_category" type="text" name="spending_category"
+                            value="{{ $data->spending_category ?? old('spending_category') }}" placeholder="Masukkan kategori pengeluaran..." />
+                        @error('spending_category')
+                            <div class="pristine-error text-danger mt-2">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    <div class="mt-3 input-form">
+                        <x-base.form-label for="spending_types">Tipe pengeluaran</x-base.form-label>
+                        <x-base.form-input class="w-full" id="spending_types" type="text" name="spending_types"
+                            value="{{ $data->spending_types ?? old('spending_types') }}" placeholder="Masukkan tipe pengeluaran..." />
+                        @error('spending_types')
                             <div class="pristine-error text-danger mt-2">
                                 {{ $message }}
                             </div>

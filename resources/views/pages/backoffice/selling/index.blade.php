@@ -1,13 +1,13 @@
 @extends('../../../layouts/' . $layout)
 
 @section('subhead')
-    <title>CRUD Data List - Midone - Tailwind HTML Admin Template</title>
+    <title>{{ $title }}</title>
 @endsection
 
 @section('subcontent')
     <h2 class="intro-y mt-10 text-lg font-medium">{{ $title }}</h2>
     @if (session('success'))
-        <x-base.alert class="mb-2 flex items-center" variant="outline-success">
+        <x-base.alert class="mb-2 mt-5 flex items-center" variant="outline-success">
             <x-base.lucide class="mr-2 h-6 w-6" icon="AlertOctagon" />
             {{ session('success') }}
             <x-base.alert.dismiss-button class="btn-close" type="button" aria-label="Close">
@@ -19,7 +19,7 @@
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
             <a href="{{ route($route . '.create') }}">
                 <x-base.button class="mr-2 shadow-md" variant="primary">
-                    Add Data
+                    Buat transaksi baru
                 </x-base.button>
             </a>
             <x-base.menu class="hidden">
@@ -43,7 +43,7 @@
                 </x-base.menu.items>
             </x-base.menu>
             <div class="mx-auto hidden text-slate-500 md:block">
-                Showing 1 to {{$data->total() < 10 ? $data->total() : 10}} of {{$data->total()}} entries
+                Showing 1 to 10 of 150 entries
             </div>
             <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto md:ml-0">
                 <div class="relative w-56 text-slate-500">
@@ -52,6 +52,8 @@
                 </div>
             </div>
         </div>
+
+
         <!-- BEGIN: Data List -->
         <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
             <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
@@ -61,7 +63,22 @@
                             No
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">
-                            Jabatan
+                            Tanggal
+                        </x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                            Customer
+                        </x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                            Supir
+                        </x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                            Metode Pembayaran
+                        </x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                            Tipe Pembayaran
+                        </x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                            Status
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             ACTIONS
@@ -77,14 +94,36 @@
                             </x-base.table.td>
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                <a class="whitespace-nowrap font-medium" href="">
-                                    {{ $item['role'] }}
+                                <a class="whitespace-nowrap font-medium">
+                                    {{ $item['date'] }}
                                 </a>
+                            </x-base.table.td>
+                            <x-base.table.td
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                <a class="whitespace-nowrap font-medium">
+                                    {{ $item['customer']['name'] }}
+                                </a>
+                            </x-base.table.td>
+                            <x-base.table.td
+                                class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                {{ $item['driver']['name'] }}
+                            </x-base.table.td>
+                            <x-base.table.td
+                                class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                {{ $item['purchasing_method'] }}
+                            </x-base.table.td>
+                            <x-base.table.td
+                                class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                {{ $item['payment_type'] }}
+                            </x-base.table.td>
+                            <x-base.table.td
+                                class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                {{ $item['status'] }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
                                 <div class="flex items-center justify-center">
-                                    <a class="mr-3 flex items-center" href="{{ route('role.edit', $item->id) }}">
+                                    <a class="mr-3 flex items-center" href="{{ route('selling.edit', $item->id) }}">
                                         <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
                                         Edit
                                     </a>
@@ -96,10 +135,9 @@
                                         <x-base.dialog.panel>
                                             <div class="p-5 text-center">
                                                 <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger" icon="XCircle" />
-                                                <div class="mt-5 text-3xl">Are you sure?</div>
+                                                <div class="mt-5 text-3xl">Apakah anda yakin?</div>
                                                 <div class="mt-2 text-slate-500">
-                                                    Do you really want to delete these records? <br />
-                                                    This process cannot be undone.
+                                                    Proses ini tidak dapat dibatalkan.
                                                 </div>
                                             </div>
                                             <div class="px-5 pb-8 text-center flex justify-center">
@@ -107,7 +145,7 @@
                                                     variant="outline-secondary">
                                                     Cancel
                                                 </x-base.button>
-                                                <form action="{{ route('role.destroy', $item->id) }}" method="post"
+                                                <form action="{{ route('selling.destroy', $item->id) }}" method="post"
                                                     class="w-24">
                                                     @method('delete')
                                                     @csrf
@@ -118,35 +156,17 @@
                                             </div>
                                         </x-base.dialog.panel>
                                     </x-base.dialog>
+
                                 </div>
                             </x-base.table.td>
                         </x-base.table.tr>
                     @endforeach
                 </x-base.table.tbody>
-
-                @if ($data->isEmpty())
-                    <x-base.table.tbody>
-                        <x-base.table.tr>
-                            <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600" colspan="6">
-                                <div class="flex justify-center items-center">
-                                    <x-base.lucide
-                                        class="h-16 w-16 text-slate-500"
-                                        icon="Inbox"
-                                    />
-                                    <div class="ml-2 text-slate-500">
-                                        Data not found
-                                    </div>
-                                </div>
-                            </x-base.table.td>
-                        </x-base.table.tr>
-                    </x-base.table.tbody>
-                @endif
             </x-base.table>
         </div>
         <!-- END: Data List -->
         <!-- BEGIN: Pagination -->
-        <x-base.pagination.base
-        :data="$data"></x-base.pagination.base>
+        <x-base.pagination.base data="{{ $data }}"></x-base.pagination.base>
         <!-- END: Pagination -->
     </div>
     <!-- BEGIN: Delete Confirmation Modal -->
@@ -154,10 +174,9 @@
         <x-base.dialog.panel>
             <div class="p-5 text-center">
                 <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger" icon="XCircle" />
-                <div class="mt-5 text-3xl">Are you sure?</div>
+                <div class="mt-5 text-3xl">Apakah anda yakin?</div>
                 <div class="mt-2 text-slate-500">
-                    Do you really want to delete these records? <br />
-                    This process cannot be undone.
+                    Proses ini tidak dapat dibatalkan.
                 </div>
             </div>
             <div class="px-5 pb-8 text-center">

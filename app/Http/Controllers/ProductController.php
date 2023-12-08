@@ -33,7 +33,6 @@ class ProductController extends Controller
         $data = (object)[
             'product_category_id' => '',
             'product' => '',
-            'stock' => '',
             'price' => '',
             'price_sell' => ''
         ];
@@ -51,7 +50,6 @@ class ProductController extends Controller
             $product = new Product();
             $product->product_category_id = $request->product_category;
             $product->product = $request->product;
-            $product->stock = $request->stock;
             $product->price = $request->price;
             $product->price_sell = $request->price_sell;
             $product->save();
@@ -83,7 +81,6 @@ class ProductController extends Controller
         try {
             $product->product_category_id = $request->product_category;
             $product->product = $request->product;
-            $product->stock = $request->stock;
             $product->price = $request->price;
             $product->price_sell = $request->price_sell;
             $product->save();
