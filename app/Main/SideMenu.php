@@ -193,6 +193,15 @@ class SideMenu
                         ],
                         'route_name' => 'transaction-list',
                     ],
+
+                    'vehicle_service' => [
+                        'icon' => 'activity',
+                        'title' => 'Servis Kendaraan',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'route_name' => 'vehicle_service.create',
+                    ],
                 ]
             ],
         ];
