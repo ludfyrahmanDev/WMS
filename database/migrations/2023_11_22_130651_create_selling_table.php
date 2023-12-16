@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('drivers_pocket_money');
             $table->integer('net_profit');
             $table->integer('grand_total');
+            $table->integer('total_payment');
             $table->enum('purchasing_method', ['tempo', 'titipan', 'kontan']);
             $table->text('notes');
             $table->enum('status', ['in_progress', 'completed']);
