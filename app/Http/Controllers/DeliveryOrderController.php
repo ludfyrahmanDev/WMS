@@ -99,8 +99,8 @@ class DeliveryOrderController extends Controller
 
             return redirect(route('delivery_order.index'))->with('success', 'Berhasil menambah data!');
         } catch (\Throwable $th) {
-            var_dump($th->getMessage());
-            die;
+            // var_dump($th->getMessage());
+            // die;
             return back()->with('failed', 'Gagal menambah data!');
         }
     }
