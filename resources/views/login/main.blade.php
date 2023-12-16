@@ -1,7 +1,7 @@
 @extends('../layouts/' . $layout)
 
 @section('head')
-    <title>Login - Rubick - Tailwind HTML Admin Template</title>
+    <title>Login - WMS(Warehouse Management System)</title>
 @endsection
 
 @section('content')
