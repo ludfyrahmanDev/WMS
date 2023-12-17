@@ -1,0 +1,1 @@
+(function(){$(".preview-component").each(function(){const e=this;$(this).find('input[type="checkbox"]').first().on("click",function(){$(this).is(":checked")?($(e).find(".preview").hide(),$(e).find(".source").fadeIn(200)):($(e).find(".preview").fadeIn(200),$(e).find(".source").hide())})})})();

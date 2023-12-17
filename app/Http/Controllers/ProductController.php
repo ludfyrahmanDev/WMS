@@ -105,4 +105,14 @@ class ProductController extends Controller
             return back()->with('failed', 'Gagal menghapus data!');
         }
     }
+
+    public function getDataProduct($product)
+    {
+        try {
+            $product = Product::findOrFail($product);
+            return response()->json($product);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+    }
 }

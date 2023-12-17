@@ -30,11 +30,11 @@ License: You must have a valid license purchased only from themeforest(the above
     >
     <meta
         name="description"
-        content="Rubick admin is super flexible, powerful, clean & modern responsive tailwind admin template with unlimited possibilities."
+        content="WMS mempermudah manajemen gudang dengan pelacakan inventaris dan pengelolaan pesanan."
     >
     <meta
         name="keywords"
-        content="admin template, Rubick Admin Template, dashboard template, flat admin template, responsive admin template, web app"
+        content="Manajemen Gudang, Sistem Penyimpanan, Pelacakan Inventaris, Efisiensi Operasional, Pengelolaan Pesanan, Optimasi Gudang, Stok Real-time, Otomatisasi Gudang, Kepatuhan Inventaris, Pemantauan Persediaan, Pengembangan Efisiensi, Kontrol Distribusi"
     >
     <meta
         name="author"

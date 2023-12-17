@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Traits\Filterable;
 use App\Models\Driver;
-use App\Models\customer;
+use App\Models\Customer;
+use App\Models\SellingDetail;
 
 class Selling extends Model
 {
@@ -36,5 +37,20 @@ class Selling extends Model
     public function customer()
     {
         return $this->belongsTo(Customer::class, 'customer_id', 'id');
+    }
+
+    public function getVehicle()
+    {
+        return Vehicle::all();
+    }
+
+    public function getProduct()
+    {
+        return Product::select('id', 'product')->get();
+    }
+
+    public function selling_detail()
+    {
+        return $this->hasMany(SellingDetail::class);
     }
 }

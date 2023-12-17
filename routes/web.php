@@ -43,7 +43,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('role', RoleController::class);
     Route::resource('customer', CustomerController::class);
-    // Route::get('users/role',  [RoleController::class, 'index'])->name('role.show');
     Route::resource('driver', DriverController::class);
     Route::resource('vehicle', VehicleController::class);
     Route::resource('supplier', SupplierController::class);
@@ -53,6 +52,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('delivery_order', DeliveryOrderController::class);
     Route::resource('vehicle_service', VehicleService::class);
     Route::resource('selling', SellingController::class);
+    Route::get('product/{product}', [ProductController::class, 'getDataProduct'])->name('product.get');
     Route::controller(PageController::class)->group(function () {
         Route::get('/', 'dashboardOverview1')->name('dashboard');
         // template begin here

@@ -183,7 +183,7 @@ class SideMenu
                         'params' => [
                             'layout' => 'side-menu'
                         ],
-                        'route_name' => 'selling.create',
+                        'route_name' => 'selling.index',
                     ],
                     'trans_etc' => [
                         'icon' => 'activity',
