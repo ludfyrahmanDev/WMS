@@ -9,10 +9,10 @@ class VehicleServiceStoreRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
-    {
-        return false;
-    }
+    // public function authorize(): bool
+    // {
+    //     return false;
+    // }
 
     /**
      * Get the validation rules that apply to the request.
@@ -22,7 +22,20 @@ class VehicleServiceStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'tanggal' => ['required'],
+            'driver' => ['required'],
+            'kendaraan' => ['required'],
+            'kategori_id' => ['required'],
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'tanggal.required' => 'Tanggal tidak boleh kosong!',
+            'driver.required' => 'Driver tidak boleh kosong!',
+            'kendaraan.required' => 'Kendaraan tidak boleh kosong!',
+            'kategori_id.required' => 'Tabel Pengeluaran wajib ada data minimal 1!'
         ];
     }
 }

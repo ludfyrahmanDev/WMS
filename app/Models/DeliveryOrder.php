@@ -11,10 +11,11 @@ use App\Models\Traits\Filterable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DeliveryOrder extends Model
 {
-    use HasFactory, Filterable;
+    use HasFactory, Filterable, SoftDeletes;
 
     protected $table = 'delivery_order';
 
@@ -31,6 +32,8 @@ class DeliveryOrder extends Model
         'who_create',
         'who_update'
     ];
+
+    protected $dates = ['deleted_at'];
 
     public function getSupplier()
     {

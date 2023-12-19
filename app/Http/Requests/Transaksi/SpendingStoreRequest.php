@@ -25,6 +25,8 @@ class SpendingStoreRequest extends FormRequest
             'spending_category' => ['required'],
             'description' => ['required'],
             'nominal' => ['required'],
+            'tanggal' => ['required'],
+            'mutasi' => ['required'],
         ];
     }
 
@@ -33,7 +35,9 @@ class SpendingStoreRequest extends FormRequest
         return [
             'spending_category.required' => 'Kategori Pengeluaran tidak boleh kosong',
             'description.required' => 'Deskripsi tidak boleh kosong',
-            'nominal' => 'Nominal tidak boleh kosong'
+            'nominal' => 'Nominal tidak boleh kosong',
+            'tanggal' => 'Tanggal tidak boleh kosong',
+            'mutasi' => 'Mutasi tidak boleh kosong'
         ];
     }
 }

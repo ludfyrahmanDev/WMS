@@ -5,7 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\VehicleService;
+use App\Http\Controllers\StockController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SellingController;
@@ -16,6 +16,7 @@ use App\Http\Controllers\SpendingController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ColorSchemeController;
 use App\Http\Controllers\DeliveryOrderController;
+use App\Http\Controllers\VehicleServiceController;
 use App\Http\Controllers\SpendingCategoryController;
 
 /*
@@ -50,9 +51,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('spending', SpendingController::class);
     Route::resource('product', ProductController::class);
     Route::resource('delivery_order', DeliveryOrderController::class);
-    Route::resource('vehicle_service', VehicleService::class);
+    Route::resource('vehicle_service', VehicleServiceController::class);
     Route::resource('selling', SellingController::class);
     Route::get('product/{product}', [ProductController::class, 'getDataProduct'])->name('product.get');
+    Route::get('stock', [StockController::class, 'index'])->name('stockIndex');
     Route::controller(PageController::class)->group(function () {
         Route::get('/', 'dashboardOverview1')->name('dashboard');
         // template begin here

@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
 
 // import traits
-use App\Models\Traits\Filterable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Driver extends Model
 {
-    use HasFactory, Filterable;
+    use HasFactory, Filterable, SoftDeletes;
 
     protected $table = 'driver';
 
@@ -19,6 +20,8 @@ class Driver extends Model
         'address',
         'phone'
     ];
+
+    protected $dates = ['deleted_at'];
 
 
 }

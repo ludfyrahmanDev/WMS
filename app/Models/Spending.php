@@ -5,11 +5,12 @@ namespace App\Models;
 use App\Models\SpendingCategory;
 use App\Models\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Spending extends Model
 {
-    use HasFactory, Filterable;
+    use HasFactory, Filterable, SoftDeletes;
 
     protected $table = 'spending';
 
@@ -21,13 +22,15 @@ class Spending extends Model
         'nominal'
     ];
 
+    protected $dates = ['deleted_at'];
+
     public function spendingCategory()
     {
         return $this->belongsTo(SpendingCategory::class, 'spending_category_id', 'id');
     }
 
-    public function user()
+    public function getSpendingCategory()
     {
-        return $this->belongsTo(User::class, 'created_by', 'id');
+        return SpendingCategory::select('id', 'spending_category')->where('spending_types', '<>', 'kendaraan')->get();
     }
 }

@@ -25,7 +25,7 @@ return new class extends Migration
             $table->integer('first_stock');
             $table->integer('stock_in_use');
             $table->integer('last_stock');
-
+            $table->softDeletes();
             $table->timestamps();
         });
     }

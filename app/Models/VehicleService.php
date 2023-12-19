@@ -5,10 +5,11 @@ namespace App\Models;
 use App\Models\Traits\Filterable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class VehicleService extends Model
 {
-    use HasFactory, Filterable;
+    use HasFactory, Filterable, SoftDeletes;
 
     protected $table = 'vehicle_service';
 
@@ -16,10 +17,39 @@ class VehicleService extends Model
         'date',
         'driver_id',
         'vehicle_id',
-        'information',
-        'amount_of_expenditure',
-        'mutation_category_id',
         'who_create',
         'who_update'
     ];
+
+    protected $dates = ['deleted_at'];
+
+    public function getDriver()
+    {
+        return Driver::select('id', 'name')->get();
+    }
+
+    public function getVehicle()
+    {
+        return Vehicle::all();
+    }
+
+    public function getSpendingCategory()
+    {
+        return SpendingCategory::select('id', 'spending_category')->where('spending_types', 'kendaraan')->get();
+    }
+
+    public function driver()
+    {
+        return $this->belongsTo(Driver::class);
+    }
+
+    public function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class);
+    }
+
+    public function vehicleServiceDetail()
+    {
+        return $this->hasMany(VehicleServiceDetail::class);
+    }
 }

@@ -106,6 +106,14 @@ class SideMenu
                         ],
                         'title' => 'Produk'
                     ],
+                    'simple-menu' => [
+                        'icon' => 'box',
+                        'route_name' => 'stockIndex',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Stok'
+                    ],
                 ]
             ],
             'master' => [
@@ -185,14 +193,14 @@ class SideMenu
                         ],
                         'route_name' => 'selling.index',
                     ],
-                    'trans_etc' => [
-                        'icon' => 'activity',
-                        'title' => 'Transaksi Lain Lain',
-                        'params' => [
-                            'layout' => 'side-menu'
-                        ],
-                        'route_name' => 'transaction-list',
-                    ],
+                    // 'trans_etc' => [
+                    //     'icon' => 'activity',
+                    //     'title' => 'Transaksi Lain Lain',
+                    //     'params' => [
+                    //         'layout' => 'side-menu'
+                    //     ],
+                    //     'route_name' => 'transaction-list',
+                    // ],
 
                     'vehicle_service' => [
                         'icon' => 'activity',
@@ -200,7 +208,7 @@ class SideMenu
                         'params' => [
                             'layout' => 'side-menu'
                         ],
-                        'route_name' => 'vehicle_service.create',
+                        'route_name' => 'vehicle_service.index',
                     ],
                 ]
             ],

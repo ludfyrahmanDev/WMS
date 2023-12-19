@@ -14,15 +14,18 @@ return new class extends Migration
     {
         Schema::create('spending', function (Blueprint $table) {
             $table->id();
+            $table->date('date');
             $table->string('description');
+            
             $table->unsignedBigInteger('spending_category_id');
             $table->foreign('spending_category_id')->references('id')->on('spending_category');
-            // make createdby
-            $table->unsignedBigInteger('created_by');
-            $table->foreign('created_by')->references('id')->on('users');
+            
+            $table->enum('mutation', ['Uang Masuk', 'Uang Keluar']);
             // payment method
             $table->string('payment_method')->default(PaymentType::CASH)->nullable();
             $table->integer('nominal')->nullable();
+            $table->string('who_create');
+            $table->string('who_update');
             $table->softDeletes();
             $table->timestamps();
         });

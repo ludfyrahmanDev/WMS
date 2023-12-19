@@ -29,12 +29,37 @@
                 <!-- BEGIN: Form Layout -->
                 <div class="intro-y box p-5">
                     <div class="input-form">
+                        <x-base.form-label for="crud-form-1">Tanggal</x-base.form-label>
+                        <x-base.form-input class="w-full" id="tanggal" type="date" name="tanggal"
+                            value="{{ $data->date ?? date('Y-m-d') }}" required placeholder="Pilih Tanggal" />
+                        @error('tanggal')
+                            <div class="pristine-error text-danger mt-2">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    <div class="mt-3 input-form">
+                        <x-base.form-label for="crud-form-1">Mutasi</x-base.form-label>
+                        <x-base.tom-select name="mutasi" class="w-full" data-placeholder="Pilih Mutasi" required>
+                            <option value="">Pilih Mutasi</option>
+                            <option value="Uang Masuk" {{ $data->mutation == 'Uang Masuk' ? 'selected' : '' }}>Uang
+                                Masuk</option>
+                            <option value="Uang Keluar" {{ $data->mutation == 'Uang Keluar' ? 'selected' : '' }}>Uang
+                                Keluar</option>
+                        </x-base.tom-select>
+                        @error('mutasi')
+                            <div class="pristine-error text-danger mt-2">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    <div class="mt-3 input-form">
                         <x-base.form-label for="crud-form-1">Kategori Pengeluaran</x-base.form-label>
                         <x-base.tom-select name="spending_category" class="w-full"
                             data-placeholder="Pilih Kategori Pengeluaran" required> 
                             <option value="">Pilih Kategori Pengeluaran</option>
                             @foreach ($kategori as $item)
-                                <option value="{{ $item->id }}" {{$data->spending_category_id == $item->id ? 'selected' : ''}}>{{ $item->name }}</option>
+                                <option value="{{ $item->id }}" {{$data->spending_category_id == $item->id ? 'selected' : ''}}>{{ $item->spending_category  }}</option>
                             @endforeach
                         </x-base.tom-select>
                         @error('spending_category')
