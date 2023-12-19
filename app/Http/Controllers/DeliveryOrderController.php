@@ -16,7 +16,8 @@ class DeliveryOrderController extends Controller
             'purchase_date',
             'pick_up_date',
             'supplier.name',
-            'transaction_type'
+            'transaction_type',
+            'status'
         ], [])
             ->with('supplier')
             ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'))
@@ -72,6 +73,7 @@ class DeliveryOrderController extends Controller
             $delivery_order->total_payment = $request->total_bayar;
             $delivery_order->status = 'In Progress';
             $delivery_order->who_create = $user['name'];
+            $delivery_order->who_update = $user['name'];
             $delivery_order->transaction_type = $request->tipe_pembelian;
             $delivery_order->save();
 
@@ -93,7 +95,7 @@ class DeliveryOrderController extends Controller
                 $stock->is_active = 0;
                 $stock->first_stock = $request->jumlah_qty[$i];
                 $stock->stock_in_use = 0;
-                $stock->last_stock   = 0;
+                $stock->last_stock   = $request->jumlah_qty[$i];
                 $stock->save();
             }
 
@@ -143,6 +145,7 @@ class DeliveryOrderController extends Controller
         try {
             if ($request->mode == 'confirm') {
                 $delivery_order->status = 'Completed';
+                $delivery_order->who_update = $user['name'];
                 $delivery_order->save();
 
                 return redirect(route('delivery_order.index'))->with('success', 'Berhasil update data!');
@@ -164,7 +167,7 @@ class DeliveryOrderController extends Controller
                 $delivery_order->status = 'In Progress';
             }
 
-            $delivery_order->who_create = $user['name'];
+            $delivery_order->who_update = $user['name'];
             $delivery_order->transaction_type = $request->tipe_pembelian;
             $delivery_order->save();
 
@@ -196,19 +199,23 @@ class DeliveryOrderController extends Controller
 
                 $stock->first_stock = $request->jumlah_qty[$i];
                 $stock->stock_in_use = 0;
-                $stock->last_stock   = 0;
+                $stock->last_stock   = $request->jumlah_qty[$i];
                 $stock->save();
             }
 
             if ($request->mode != null) {
-                return redirect(route('delivery_order.index'))->with('success', 'Berhasil menambah data!');
+                return redirect(route('delivery_order.index'))->with('success', 'Berhasil konfirmasi data!');
             } else {
-                return redirect(route('delivery_order.edit', $delivery_order->id))->with('success', 'Berhasil update data!');
+                return redirect(route('delivery_order.edit', $delivery_order->id))->with('success', 'Berhasil mengubah data!');
             }
         } catch (\Throwable $th) {
             // var_dump($th->getMessage());
             // die;
-            return back()->with('failed', 'Gagal menambah data!');
+            if ($request->mode != null) {
+                return back()->with('failed', 'Gagal konfirmasi data!');
+            } else {
+                return back()->with('failed', 'Gagal mengubah data!');
+            }
         }
     }
 

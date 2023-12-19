@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 // import traits
 use App\Models\Traits\Filterable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Vehicle extends Model
 {
-    use HasFactory, Filterable;
+    use HasFactory, Filterable, SoftDeletes;
 
     protected $table = 'vehicle';
 
@@ -19,4 +20,6 @@ class Vehicle extends Model
         'license_plate',
         'brand'
     ];
+
+    protected $dates = ['deleted_at'];
 }

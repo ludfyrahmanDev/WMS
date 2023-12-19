@@ -4,7 +4,7 @@ namespace App\Http\Requests\Transaksi;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class SpendingStoreRequest extends FormRequest
+class VehicleServiceStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,22 +22,20 @@ class SpendingStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'spending_category' => ['required'],
-            'description' => ['required'],
-            'nominal' => ['required'],
             'tanggal' => ['required'],
-            'mutasi' => ['required'],
+            'driver' => ['required'],
+            'kendaraan' => ['required'],
+            'kategori_id' => ['required'],
         ];
     }
 
     public function messages()
     {
         return [
-            'spending_category.required' => 'Kategori Pengeluaran tidak boleh kosong',
-            'description.required' => 'Deskripsi tidak boleh kosong',
-            'nominal' => 'Nominal tidak boleh kosong',
-            'tanggal' => 'Tanggal tidak boleh kosong',
-            'mutasi' => 'Mutasi tidak boleh kosong'
+            'tanggal.required' => 'Tanggal tidak boleh kosong!',
+            'driver.required' => 'Driver tidak boleh kosong!',
+            'kendaraan.required' => 'Kendaraan tidak boleh kosong!',
+            'kategori_id.required' => 'Tabel Pengeluaran wajib ada data minimal 1!'
         ];
     }
 }
