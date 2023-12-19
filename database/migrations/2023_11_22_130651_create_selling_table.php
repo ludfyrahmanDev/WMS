@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('selling', function (Blueprint $table) {
             $table->id();
-            $table->datetime('date');
+            $table->date('date');
             $table->unsignedBigInteger('customer_id');
             $table->foreign('customer_id')->references('id')->on('customer');
             $table->unsignedBigInteger('vehicle_id');
@@ -32,6 +32,7 @@ return new class extends Migration
             $table->foreign('created_by')->references('id')->on('users');
             $table->unsignedBigInteger('updated_by');
             $table->foreign('updated_by')->references('id')->on('users');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

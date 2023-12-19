@@ -89,20 +89,16 @@
                     @foreach ($data as $item)
                         <x-base.table.tr class="intro-x">
                             <x-base.table.td
-                                class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 {{ $loop->iteration }}
                             </x-base.table.td>
                             <x-base.table.td
-                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                <a class="whitespace-nowrap font-medium">
-                                    {{ $item['date'] }}
-                                </a>
+                                class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                    {{ date('d-m-Y', strtotime($item['date'])) }}
                             </x-base.table.td>
                             <x-base.table.td
-                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                <a class="whitespace-nowrap font-medium">
+                                class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                     {{ $item['customer']['name'] }}
-                                </a>
                             </x-base.table.td>
                             <x-base.table.td
                                 class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
@@ -110,15 +106,15 @@
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['purchasing_method'] }}
+                                {{ $item['purchasing_method'] == 'kontan' ? 'Kontan' : ($item['purchasing_method'] == 'titipan' ? 'Titipan' : 'Tempo') }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['payment_type'] }}
+                                {{ $item['payment_type'] == 'cash' ? 'Cash' : 'Transfer'}}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['status'] }}
+                                {{ $item['status'] == 'in_progress' ? 'In Progress' : 'Completed' }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
@@ -161,12 +157,29 @@
                             </x-base.table.td>
                         </x-base.table.tr>
                     @endforeach
+                    
                 </x-base.table.tbody>
+                @if ($data->isEmpty())
+                    <x-base.table.tbody>
+                        <x-base.table.tr>
+                            <x-base.table.td
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600"
+                                colspan="8">
+                                <div class="flex justify-center items-center">
+                                    <x-base.lucide class="h-16 w-16 text-slate-500" icon="Inbox" />
+                                    <div class="ml-2 text-slate-500">
+                                        Data not found
+                                    </div>
+                                </div>
+                            </x-base.table.td>
+                        </x-base.table.tr>
+                    </x-base.table.tbody>
+                @endif
             </x-base.table>
         </div>
         <!-- END: Data List -->
         <!-- BEGIN: Pagination -->
-        <x-base.pagination.base data="{{ $data }}"></x-base.pagination.base>
+        <x-base.pagination.base :data="$data"></x-base.pagination.base>
         <!-- END: Pagination -->
     </div>
     <!-- BEGIN: Delete Confirmation Modal -->
