@@ -44,7 +44,6 @@ class SellingController extends Controller
         $route  = route('selling.store');
         $type   = 'create';
 
-
         return view('pages.backoffice.selling._form', compact('data', 'title', 'route', 'type'));
     }
 
@@ -69,8 +68,8 @@ class SellingController extends Controller
             $selling->total_payment         = $request->total_bayar;
             $selling->net_profit            = $request->laba_bersih;
             $selling->status                = 'in_progress';
-            $selling->created_by            = $user['id'];
-            $selling->updated_by            = $user['id'];
+            $selling->created_by            = $user['name'];
+            $selling->updated_by            = $user['name'];
             $selling->save();
 
             //insert Table Selling Detail
@@ -121,10 +120,11 @@ class SellingController extends Controller
     public function update(SellingStoreRequest $request, Selling $selling)
     {
         $user = auth()->user();
-
+        
         try {
             if ($request->mode == 'confirm') {
                 $selling->status = 'completed';
+                $selling->updated_by = $user['name'];
                 $selling->save();
 
                 return redirect(route('selling.index'))->with('success', 'Berhasil update data!');
@@ -146,8 +146,8 @@ class SellingController extends Controller
             $selling->total_payment         = $request->total_bayar;
             $selling->net_profit            = $request->laba_bersih;
             $selling->status                = 'in_progress';
-            $selling->created_by            = $user['id'];
-            $selling->updated_by            = $user['id'];
+            $selling->created_by            = $user['name'];
+            $selling->updated_by            = $user['name'];
             $selling->save();
 
             $selling->selling_detail()->delete();
@@ -190,5 +190,27 @@ class SellingController extends Controller
             $errorMessage = $th->getMessage() . " at line " . $th->getLine();
             return back()->with('failed', 'Gagal menghapus data, karena : ' . $errorMessage);
         }
+    }
+
+    public function show(Selling $Selling)
+    {
+        $selling = new Selling;
+
+        $selling->load('selling_detail.product');
+
+        $data['customer']   = $selling->getCustomer();
+        $data['driver']     = $selling->getDriver();
+        $data['vehicle']    = $selling->getVehicle();
+        $data['product']    = $selling->getProduct();
+        $data['header']     = $Selling;
+        $data['detail']     = $Selling->selling_detail;
+
+        // echo json_encode($data['product']); die;
+
+        $title = 'Data Penjualan';
+        $route = route('selling.update', $Selling);
+        $type = 'show';
+
+        return view('pages.backoffice.selling._view', compact('data', 'title', 'route', 'type'));
     }
 }

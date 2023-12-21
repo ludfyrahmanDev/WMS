@@ -49,10 +49,12 @@ class Selling extends Model
     {
         return DB::table('stock AS s')
             ->select('p.id', 'p.product', DB::raw('SUM(s.last_stock) AS last_stock'))
-            ->leftJoin('product AS p', 's.id', '=', 'p.id')
-            ->groupBy('p.id', 'p.product', 's.id')
+            ->leftJoin('product AS p', 's.product_id', '=', 'p.id')
+            ->where('s.is_active', 1)
+            ->groupBy('p.id', 'p.product') 
             ->get();
     }
+
 
     public function getCustomer()
     {

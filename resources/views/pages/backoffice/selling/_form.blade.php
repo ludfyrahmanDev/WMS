@@ -83,7 +83,7 @@
                                 @foreach ($data['vehicle'] as $row)
                                     <option value="{{ $row->id }}"
                                         {{ $data['header']->vehicle_id == $row->id ? 'selected' : '' }}>
-                                        {{ '[' . $row->license_plate . '] ' . $row->name }}
+                                        {{ '[ ' . $row->license_plate . ' ] ' . $row->name }}
                                     </option>
                                 @endforeach
                             </x-base.tom-select>
@@ -260,6 +260,8 @@
                         </tfoot>
                     </table>
 
+                    <div class="mode"></div>
+
                     <div class="mt-5 text-right">
                         <x-base.button class="mr-1 w-24" type="button" variant="outline-secondary">
                             <a href="{{ route('selling.index') }}" variant="outline-secondary">
@@ -269,9 +271,14 @@
                         <x-base.button class="w-24 lala" type="submit" variant="primary">
                             Save
                         </x-base.button>
+                        @if ($type != 'create')
+                            <x-base.button class="w-24" type="submit" onclick="closingSelling()" variant="success">
+                                Konfirmasi
+                            </x-base.button>
+                        @endif
                     </div>
                 </div>
-                <!-- END: Form Layout -->
+                <!-- END: Form Layout -->                
             </form>
         </div>
     </div>
@@ -391,6 +398,10 @@
 
                 $('.grand_total').text(totalSubtotal);
                 $('#grand_total').val(totalSubtotal);
+            }
+
+            function closingSelling() {
+                $('.mode').html('<input type="hidden" name="mode" id="mode" value="confirm"/>');
             }
         </script>
     @endpush
