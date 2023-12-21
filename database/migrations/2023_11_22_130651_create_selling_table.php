@@ -28,10 +28,8 @@ return new class extends Migration
             $table->text('notes');
             $table->enum('status', ['in_progress', 'completed']);
             $table->enum('payment_type', ['cash', 'transfer']);
-            $table->unsignedBigInteger('created_by');
-            $table->foreign('created_by')->references('id')->on('users');
-            $table->unsignedBigInteger('updated_by');
-            $table->foreign('updated_by')->references('id')->on('users');
+            $table->string('created_by');
+            $table->string('updated_by');
             $table->softDeletes();
             $table->timestamps();
         });
