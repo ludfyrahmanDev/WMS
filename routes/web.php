@@ -39,10 +39,17 @@ Route::controller(AuthController::class)->middleware('loggedin')->group(function
 });
 
 Route::middleware('auth')->group(function () {
+    // auth section
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
-    // Route::resource('users', 'usersLayout1')->name('users');
+    Route::get('profile', [UserController::class, 'profile'])->name('profile');
+    // end section auth
+    // start user management
     Route::resource('users', UserController::class);
+    // end user management
+    // start role management
     Route::resource('role', RoleController::class);
+    // end role management
+    // start master data
     Route::resource('customer', CustomerController::class);
     Route::resource('driver', DriverController::class);
     Route::resource('vehicle', VehicleController::class);
@@ -50,9 +57,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('spendingCategory', SpendingCategoryController::class);
     Route::resource('spending', SpendingController::class);
     Route::resource('product', ProductController::class);
+    Route::get('product/{product}', [ProductController::class, 'getDataProduct'])->name('product.get');
+    // end master data section
+    // transaction
     Route::resource('delivery_order', DeliveryOrderController::class);
     Route::resource('vehicle_service', VehicleServiceController::class);
     Route::resource('selling', SellingController::class);
+    // end transaction
     Route::get('product/{product}', [ProductController::class, 'getDataProduct'])->name('product.get');
     Route::get('stock', [StockController::class, 'index'])->name('stockIndex');
     Route::controller(PageController::class)->group(function () {

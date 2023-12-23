@@ -21,7 +21,7 @@
                         src="{{ Vite::asset('resources/images/logo.svg') }}"
                         alt="Midone Tailwind HTML Admin Template"
                     />
-                    <span class="ml-3 hidden text-lg text-white xl:block"> Rubick </span>
+                    <span class="ml-3 hidden text-lg text-white xl:block"> WMS </span>
                 </a>
                 <div class="side-nav__divider my-6"></div>
                 <ul>
