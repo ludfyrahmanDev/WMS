@@ -154,7 +154,8 @@ class UserController extends Controller
 
     public function profile(){
         $data = auth()->user();
-        return view('auth.profile', compact('data'));
+        $title = 'Profile';
+        return view('pages.auth.profile', compact('data','title'));
     }
 
 
