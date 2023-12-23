@@ -32,7 +32,8 @@
                         <div class="input-form col-span-4">
                             <x-base.form-label for="crud-form-1">Tanggal Penjualan</x-base.form-label>
                             <x-base.form-input class="w-full" id="crud-form-1" type="date" name="tgl_jual"
-                                value="{{ $data->tgl_jual ?? date('Y-m-d') }}" placeholder="Pilih Tanggal Pembelian" />
+                                value="{{ $data['header']->date ?? date('Y-m-d') }}"
+                                placeholder="Pilih Tanggal Pembelian" />
                             @error('tgl_jual')
                                 <div class="pristine-error text-danger mt-2">
                                     {{ $message }}
@@ -44,8 +45,10 @@
                             <x-base.tom-select name="customer" class="w-full" data-placeholder="Pilih Pelanggan"
                                 id="customer">
                                 <option value="">Pilih Pelanggan</option>
-                                @foreach ($customer as $data)
-                                    <option value="{{ $data->id }}">{{ $data->name }}</option>
+                                @foreach ($data['customer'] as $row)
+                                    <option value="{{ $row->id }}"
+                                        {{ $data['header']->customer_id == $row->id ? 'selected' : '' }}>
+                                        {{ $row->name }}</option>
                                 @endforeach
                             </x-base.tom-select>
                             @error('customer')
@@ -58,8 +61,10 @@
                             <x-base.form-label for="crud-form-1">Pengemudi</x-base.form-label>
                             <x-base.tom-select name="driver" class="w-full" data-placeholder="Pilih driver" id="driver">
                                 <option value="">Pilih Pengemudi</option>
-                                @foreach ($driver as $data)
-                                    <option value="{{ $data->id }}">{{ $data->name }}</option>
+                                @foreach ($data['driver'] as $row)
+                                    <option value="{{ $row->id }}"
+                                        {{ $data['header']->driver_id == $row->id ? 'selected' : '' }}>
+                                        {{ $row->name }}</option>
                                 @endforeach
                             </x-base.tom-select>
                             @error('driver')
@@ -75,9 +80,10 @@
                             <x-base.tom-select name="kendaraan" class="w-full" data-placeholder="Pilih Kendaraan"
                                 id="kendaraan">
                                 <option value="">Pilih Kendaraan</option>
-                                @foreach ($vehicle as $data)
-                                    <option value="{{ $data->id }}">
-                                        {{ '[' . $data->license_plate . '] ' . $data->name }}
+                                @foreach ($data['vehicle'] as $row)
+                                    <option value="{{ $row->id }}"
+                                        {{ $data['header']->vehicle_id == $row->id ? 'selected' : '' }}>
+                                        {{ '[ ' . $row->license_plate . ' ] ' . $row->name }}
                                     </option>
                                 @endforeach
                             </x-base.tom-select>
@@ -90,7 +96,7 @@
                         <div class="input-form col-span-4">
                             <x-base.form-label for="crud-form-1">Uang Saku Pengemudi</x-base.form-label>
                             <x-base.form-input class="w-full" id="crud-form-1" type="text" name="uang_saku"
-                                id="uang_saku" value="{{ $data->uang_saku ?? old('uang_saku') }}"
+                                id="uang_saku" value="{{ $data['header']->drivers_pocket_money ?? old('uang_saku') }}"
                                 placeholder="Masukkan uang saku pengemudi"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                         </div>
@@ -98,9 +104,14 @@
                             <x-base.form-label for="tipe_pembelian">Tipe Pembelian</x-base.form-label>
                             <x-base.tom-select name="tipe_pembelian" id="tipe_pembelian" class="w-full"
                                 data-placeholder="Pilih Tipe Pembelian" required>
-                                <option value="Tempo">Tempo Panjang</option>
-                                <option value="Titipan">Titipan</option>
-                                <option value="Kontan">Kontan</option>
+                                <option value="tempo"
+                                    {{ $data['header']->purchasing_method == 'tempo' ? 'selected' : '' }}>Tempo Panjang
+                                </option>
+                                <option value="titipan"
+                                    {{ $data['header']->purchasing_method == 'titipan' ? 'selected' : '' }}>Titipan
+                                </option>
+                                <option value="kontan"
+                                    {{ $data['header']->purchasing_method == 'kontan' ? 'selected' : '' }}>Kontan</option>
                             </x-base.tom-select>
                             @error('tipe_pembelian')
                                 <div class="pristine-error text-danger mt-2">
@@ -112,8 +123,10 @@
                             <x-base.form-label for="tipe_pembayaran">Tipe Pembayaran</x-base.form-label>
                             <x-base.tom-select name="tipe_pembayaran" id="tipe_pembayaran" class="w-full"
                                 data-placeholder="Pilih Tipe Pembayaran" required>
-                                <option value="Cash">Cash</option>
-                                <option value="Transfer">Transfer</option>
+                                <option value="cash" {{ $data['header']->payment_type == 'cash' ? 'selected' : '' }}>Cash
+                                </option>
+                                <option value="transfer"
+                                    {{ $data['header']->payment_type == 'transfer' ? 'selected' : '' }}>Transfer</option>
                             </x-base.tom-select>
                             @error('tipe_pembayaran')
                                 <div class="pristine-error text-danger mt-2">
@@ -124,7 +137,8 @@
                         <div class="input-form col-span-8">
                             <x-base.form-label for="catatan">Catatan</x-base.form-label>
                             <x-base.form-textarea class="form-control" id="catatan" name="catatan"
-                                placeholder="Masukkan catatan (Optional)..." value=""></x-base.form-textarea>
+                                placeholder="Masukkan catatan (Optional)..."
+                                value="{{ $data['header']->notes ?? old('catatan') }}"></x-base.form-textarea>
                         </div>
                     </div>
                     <br>
@@ -134,26 +148,27 @@
                             <x-base.form-label for="crud-form-1">Produk</x-base.form-label>
                             <x-base.tom-select name="produk" id="produk" class="w-full" data-placeholder="Pilih Produk">
                                 <option value="">Pilih Produk</option>
-                                @foreach ($product as $data)
-                                    <option value="{{ $data->id }}_{{ $data->product }}">{{ $data->product }}
+                                @foreach ($data['product'] as $row)
+                                    <option value="{{ $row->id }}_{{ $row->product }}_{{ $row->last_stock }}">
+                                        {{ $row->product . ' ( Sisa Stok : ' . $row->last_stock . ' )' }}
                                     </option>
                                 @endforeach
                             </x-base.tom-select>
                         </div>
                         <div class="input-form col-span-4">
                             <x-base.form-label for="harga">Harga/KG</x-base.form-label>
-                            <x-base.form-input class="w-full" type="text" name="harga"
-                                value="0" id="harga" disabled />
+                            <x-base.form-input class="w-full" type="text" name="harga" value="0"
+                                id="harga" disabled />
                         </div>
                         <div class="input-form col-span-4">
                             <x-base.form-label for="harga_jual">Harga Jual</x-base.form-label>
-                            <x-base.form-input class="w-full" type="text" name="harga_jual"
-                                value="0" id="harga_jual" disabled />
+                            <x-base.form-input class="w-full" type="text" name="harga_jual" value="0"
+                                id="harga_jual" disabled />
                         </div>
                         <div class="input-form col-span-6">
                             <x-base.form-label for="qty_jual">Qty</x-base.form-label>
-                            <x-base.form-input class="w-full" type="text" name="qty_jual"
-                                id="qty_jual" placeholder="Masukkan jumlah beli"
+                            <x-base.form-input class="w-full" type="text" name="qty_jual" id="qty_jual"
+                                placeholder="Masukkan jumlah beli"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                         </div>
                         <div class="input-form col-span-6">
@@ -182,11 +197,39 @@
                                 <th class="py-2 px-4 border-b text-left w-1/4">Qty</th>
                                 <th class="py-2 px-4 border-b text-left w-1/4">Subtotal</th>
                                 <th class="py-2 px-4 border-b text-left w-1/4">Action</th>
-                                <!-- Tambahkan header lainnya sesuai kebutuhan -->
                             </tr>
                         </thead>
                         <tbody id="transDetail">
-
+                            @if (isset($data['detail']))
+                                @foreach ($data['detail'] as $item)
+                                    <?php $profit = 0; ?>
+                                    <?php $profit += intVal(($item['price_sell'] - $item['price']) * $item['qty']); ?>
+                                    <tr class="row-data">
+                                        <td class="py-2 px-4 produk_id" hidden>{{ $item['product_id'] }}<input
+                                                type="hidden" name="produk_id[]" id="produk_id[]"
+                                                value="{{ $item['product_id'] }}" />
+                                        </td>
+                                        <td class="py-2 px-4 harga_jual" hidden><input type="hidden" name="harga_jual[]"
+                                                id="harga_jual[]" value="{{ $item['price_sell'] }}" /></td>
+                                        <td class="py-2 px-4 profit_peritem" hidden><input type="hidden"
+                                                name="profit_peritem[]" id="profit_peritem[]"
+                                                class="column_profit_peritem" value="{{ $profit }}" /></td>
+                                        <td class="py-2 px-4 harga_awal" hidden><input type="hidden" name="harga_awal[]"
+                                                id="harga_awal[]" value="{{ $item['price_sell'] }}" /></td>
+                                        <td class="py-2 px-4 w-1/4">{{ $item['product']['product'] }}</td>
+                                        <td class="py-2 px-4 jumlah_qty w-1/4">{{ $item['qty'] }}<input type="hidden"
+                                                name="jumlah_qty[]" id="jumlah_qty[]" value="{{ $item['qty'] }}" />
+                                        </td>
+                                        <td class="py-2 px-4 subtotal w-1/4">{{ $item['subtotal'] }}<input type="hidden"
+                                                class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]"
+                                                value="{{ $item['subtotal'] }}" /></td>
+                                        <td class="py-2 px-4 w-1/4">
+                                            <button onclick="hapusRow(this)" class="flex items-center text-danger">
+                                                Hapus</button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @endif
                         </tbody>
                         <tfoot>
                             <tr class="bg-dark text-white">
@@ -217,6 +260,8 @@
                         </tfoot>
                     </table>
 
+                    <div class="mode"></div>
+
                     <div class="mt-5 text-right">
                         <x-base.button class="mr-1 w-24" type="button" variant="outline-secondary">
                             <a href="{{ route('selling.index') }}" variant="outline-secondary">
@@ -226,9 +271,14 @@
                         <x-base.button class="w-24 lala" type="submit" variant="primary">
                             Save
                         </x-base.button>
+                        @if ($type != 'create')
+                            <x-base.button class="w-24" type="submit" onclick="closingSelling()" variant="success">
+                                Konfirmasi
+                            </x-base.button>
+                        @endif
                     </div>
                 </div>
-                <!-- END: Form Layout -->
+                <!-- END: Form Layout -->                
             </form>
         </div>
     </div>
@@ -288,6 +338,11 @@
                     return false;
                 }
 
+                if (parseInt(qty) > parseInt(produk[2])) {
+                    alert("Stok tidak cukup!");
+                    return false;
+                }
+
                 var products = `
                     <tr class="row-data">
                         <td class="py-2 px-4 produk_id" hidden>${produk[0]}<input type="hidden" name="produk_id[]" id="produk_id[]" value="${produk[0]}" /></td>
@@ -343,6 +398,10 @@
 
                 $('.grand_total').text(totalSubtotal);
                 $('#grand_total').val(totalSubtotal);
+            }
+
+            function closingSelling() {
+                $('.mode').html('<input type="hidden" name="mode" id="mode" value="confirm"/>');
             }
         </script>
     @endpush

@@ -89,20 +89,16 @@
                     @foreach ($data as $item)
                         <x-base.table.tr class="intro-x">
                             <x-base.table.td
-                                class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 {{ $loop->iteration }}
                             </x-base.table.td>
                             <x-base.table.td
-                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                <a class="whitespace-nowrap font-medium">
-                                    {{ $item['date'] }}
-                                </a>
+                                class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                {{ date('d-m-Y', strtotime($item['date'])) }}
                             </x-base.table.td>
                             <x-base.table.td
-                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                <a class="whitespace-nowrap font-medium">
-                                    {{ $item['customer']['name'] }}
-                                </a>
+                                class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                {{ $item['customer']['name'] }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
@@ -110,27 +106,34 @@
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['purchasing_method'] }}
+                                {{ $item['purchasing_method'] == 'kontan' ? 'Kontan' : ($item['purchasing_method'] == 'titipan' ? 'Titipan' : 'Tempo') }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['payment_type'] }}
+                                {{ $item['payment_type'] == 'cash' ? 'Cash' : 'Transfer' }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['status'] }}
+                                {{ $item['status'] == 'in_progress' ? 'In Progress' : 'Completed' }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
                                 <div class="flex items-center justify-center">
-                                    <a class="mr-3 flex items-center" href="{{ route('selling.edit', $item->id) }}">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
-                                        Edit
-                                    </a>
-                                    <a class="flex items-center text-danger" data-tw-toggle="modal"
-                                        data-tw-target="#delete-confirmation-modal-{{ $item->id }}" href="#">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                    </a>
+                                    @if ($item['status'] == 'completed')
+                                        <a class="mr-3 flex items-center text-info" href="{{ route($route . '.show', $item->id) }}">
+                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Eye" />
+                                            Detail
+                                        </a>
+                                    @else
+                                        <a class="mr-3 flex items-center text-warning" href="{{ route('selling.edit', $item->id) }}">
+                                            <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
+                                            Edit
+                                        </a>
+                                        <a class="flex items-center text-danger" data-tw-toggle="modal"
+                                            data-tw-target="#delete-confirmation-modal-{{ $item->id }}" href="#">
+                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                        </a>
+                                    @endif
                                     <x-base.dialog id="delete-confirmation-modal-{{ $item->id }}">
                                         <x-base.dialog.panel>
                                             <div class="p-5 text-center">
@@ -156,12 +159,11 @@
                                             </div>
                                         </x-base.dialog.panel>
                                     </x-base.dialog>
-
                                 </div>
                             </x-base.table.td>
                         </x-base.table.tr>
                     @endforeach
-                    
+
                 </x-base.table.tbody>
                 @if ($data->isEmpty())
                     <x-base.table.tbody>

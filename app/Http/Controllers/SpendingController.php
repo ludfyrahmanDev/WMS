@@ -12,7 +12,14 @@ class SpendingController extends Controller
 {
     public function index(Request $request)
     {
-        $data = Spending::with('spendingCategory', 'user')
+        $data = Spending::filterResource($request, [
+            'date',
+            'spendingCategory.spending_category',
+            'mutation',
+            'payment_method',
+            'who_update',
+        ], [])
+        ->with('spendingCategory')
         ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
         ->paginate($request->get('per_page', 10));
         
@@ -24,14 +31,18 @@ class SpendingController extends Controller
 
     public function create()
     {
-        $kategori = DB::table('spending_category')->get();
+        $spending = new Spending;
+
+        $kategori = $spending->getSpendingCategory();
         $enum = PaymentMethod::asOptions();
 
         $data = (object)[
-            'description' => '',
-            'spending_category_id' => '',
-            'payment_method' => '',
-            'nominal' => ''
+            'date' => null,
+            'mutation' => null,
+            'description' => null,
+            'spending_category_id' => null,
+            'payment_method' => null,
+            'nominal' => null
         ];
 
         $title = 'Data Pengeluaran';
@@ -47,8 +58,11 @@ class SpendingController extends Controller
 
         try {
             $spending = new Spending();
+            $spending->date = $request->tanggal;
+            $spending->mutation = $request->mutasi;
             $spending->spending_category_id = $request->spending_category;
-            $spending->created_by = $user['id'];
+            $spending->who_create = $user['name'];
+            $spending->who_update = $user['name'];
             $spending->description = $request->description;
             $spending->payment_method = $request->payment_method;
             $spending->nominal = $request->nominal;
@@ -62,7 +76,7 @@ class SpendingController extends Controller
 
     public function edit(Spending $spending)
     {
-        $kategori = DB::table('spending_category')->get();
+        $kategori = $spending->getSpendingCategory();
         $enum = PaymentMethod::asOptions();
 
         $data = $spending;
@@ -78,8 +92,10 @@ class SpendingController extends Controller
         $user = auth()->user();
 
         try {
+            $spending->date = $request->tanggal;
+            $spending->mutation = $request->mutasi;
             $spending->spending_category_id = $request->spending_category;
-            $spending->created_by = $user['id'];;
+            $spending->who_update = $user['name'];
             $spending->description = $request->description;
             $spending->payment_method = $request->payment_method;
             $spending->nominal = $request->nominal;

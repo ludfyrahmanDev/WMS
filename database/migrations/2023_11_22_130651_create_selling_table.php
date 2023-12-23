@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('selling', function (Blueprint $table) {
             $table->id();
-            $table->datetime('date');
+            $table->date('date');
             $table->unsignedBigInteger('customer_id');
             $table->foreign('customer_id')->references('id')->on('customer');
             $table->unsignedBigInteger('vehicle_id');
@@ -28,10 +28,9 @@ return new class extends Migration
             $table->text('notes');
             $table->enum('status', ['in_progress', 'completed']);
             $table->enum('payment_type', ['cash', 'transfer']);
-            $table->unsignedBigInteger('created_by');
-            $table->foreign('created_by')->references('id')->on('users');
-            $table->unsignedBigInteger('updated_by');
-            $table->foreign('updated_by')->references('id')->on('users');
+            $table->string('created_by');
+            $table->string('updated_by');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

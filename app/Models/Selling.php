@@ -8,6 +8,7 @@ use App\Models\Traits\Filterable;
 use App\Models\Driver;
 use App\Models\Customer;
 use App\Models\SellingDetail;
+use Illuminate\Support\Facades\DB;
 
 class Selling extends Model
 {
@@ -46,7 +47,23 @@ class Selling extends Model
 
     public function getProduct()
     {
-        return Product::select('id', 'product')->get();
+        return DB::table('stock AS s')
+            ->select('p.id', 'p.product', DB::raw('SUM(s.last_stock) AS last_stock'))
+            ->leftJoin('product AS p', 's.product_id', '=', 'p.id')
+            ->where('s.is_active', 1)
+            ->groupBy('p.id', 'p.product') 
+            ->get();
+    }
+
+
+    public function getCustomer()
+    {
+        return Customer::select('id', 'name')->get();
+    }
+
+    public function getDriver()
+    {
+        return Driver::select('id', 'name')->get();
     }
 
     public function selling_detail()

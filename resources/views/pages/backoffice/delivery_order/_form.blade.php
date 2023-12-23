@@ -8,6 +8,15 @@
     <div class="intro-y mt-8 flex items-center">
         <h2 class="mr-auto text-lg font-medium">Form Layout</h2>
     </div>
+    @if (session('success'))
+        <x-base.alert class="mb-2 mt-5 flex items-center" variant="outline-success">
+            <x-base.lucide class="mr-2 h-6 w-6" icon="AlertOctagon" />
+            {{ session('success') }}
+            <x-base.alert.dismiss-button class="btn-close" type="button" aria-label="Close">
+                <x-base.lucide class="h-4 w-4" icon="X" />
+            </x-base.alert.dismiss-button>
+        </x-base.alert>
+    @endif
     @if (session('failed'))
         <x-base.alert class="mb-2 flex items-center" variant="outline-danger">
             <x-base.lucide class="mr-2 h-6 w-6" icon="AlertOctagon" />
@@ -258,7 +267,7 @@
                 var qty = $('#qty').val();
                 var subtotal = $('#subtotal').val();
 
-                if (produk.length == 0 || qty == "" || subtotal == "") {
+                if (produk.length == 1 || qty == "" || subtotal == "") {
                     alert('Harap mengisi form produk, qty, subtotal');
                     return false;
                 }

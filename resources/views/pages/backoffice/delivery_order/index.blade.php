@@ -6,6 +6,15 @@
 
 @section('subcontent')
     <h2 class="intro-y mt-10 text-lg font-medium">{{ $title }}</h2>
+    @if (session('success'))
+        <x-base.alert class="mb-2 mt-5 flex items-center" variant="outline-success">
+            <x-base.lucide class="mr-2 h-6 w-6" icon="AlertOctagon" />
+            {{ session('success') }}
+            <x-base.alert.dismiss-button class="btn-close" type="button" aria-label="Close">
+                <x-base.lucide class="h-4 w-4" icon="X" />
+            </x-base.alert.dismiss-button>
+        </x-base.alert>
+    @endif
     <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
             <a href="{{ route($route . '.create') }}">
@@ -160,7 +169,8 @@
                                     <x-base.dialog id="status-confirmation-modal-{{ $item->id }}">
                                         <x-base.dialog.panel>
                                             <div class="p-5 text-center">
-                                                <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger" icon="XCircle" />
+                                                <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger"
+                                                    icon="XCircle" />
                                                 <div class="mt-5 text-3xl">Are you sure?</div>
                                                 <div class="mt-2 text-slate-500">
                                                     Do you really want to update these records? <br />

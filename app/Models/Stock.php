@@ -19,4 +19,9 @@ class Stock extends Model
         'stock_in_use',
         'last_stock'
     ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }

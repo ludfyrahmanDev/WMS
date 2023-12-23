@@ -1,13 +1,13 @@
 @extends('../../../layouts/' . $layout)
 
 @section('subhead')
-    <title>CRUD Data List - Midone - Tailwind HTML Admin Template</title>
+    <title>{{ $title }}</title>
 @endsection
 
 @section('subcontent')
     <h2 class="intro-y mt-10 text-lg font-medium">{{ $title }}</h2>
     @if (session('success'))
-        <x-base.alert class="mb-2 flex items-center" variant="outline-success">
+        <x-base.alert class="mb-2 mt-5 flex items-center" variant="outline-success">
             <x-base.lucide class="mr-2 h-6 w-6" icon="AlertOctagon" />
             {{ session('success') }}
             <x-base.alert.dismiss-button class="btn-close" type="button" aria-label="Close">
@@ -43,11 +43,13 @@
                 </x-base.menu.items>
             </x-base.menu>
             <div class="mx-auto hidden text-slate-500 md:block">
-                Showing 1 to 10 of 150 entries
+                Showing 1 to {{ $data->total() < 10 ? $data->total() : 10 }} of {{ $data->total() }} entries
             </div>
             <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto md:ml-0">
+                {{-- make live search --}}
                 <div class="relative w-56 text-slate-500">
-                    <x-base.form-input class="!box w-56 pr-10" type="text" placeholder="Search..." />
+                    <x-base.form-input class="!box w-56 pr-10" type="text" id="search"
+                        value="{{ request()->get('search') }}" placeholder="Search..." />
                     <x-base.lucide class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4" icon="Search" />
                 </div>
             </div>
@@ -57,14 +59,17 @@
             <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
                 <x-base.table.thead>
                     <x-base.table.tr>
-                        <x-base.table.th class="whitespace-nowrap border-b-0">
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             No
                         </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0">
-                            Kategori pengeluaran
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                            Tanggal
                         </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0">
-                            Tipe pengeluaran
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                            Nama Driver
+                        </x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                            Kendaraan
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             ACTIONS
@@ -75,27 +80,28 @@
                     @foreach ($data as $item)
                         <x-base.table.tr class="intro-x">
                             <x-base.table.td
-                                class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $loop->iteration }}
+                                class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                {{ ($data->currentpage() - 1) * $data->perpage() + $loop->index + 1 }}
                             </x-base.table.td>
                             <x-base.table.td
-                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <a class="whitespace-nowrap font-medium" href="">
-                                    {{ $item['spending_category'] }}
+                                    {{ $item['date'] }}
                                 </a>
                             </x-base.table.td>
                             <x-base.table.td
-                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                <a class="whitespace-nowrap font-medium" href="">
-                                    {{ $item['spending_types'] }}
-                                </a>
+                                class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                {{ $item['driver']['name'] }}
+                            </x-base.table.td>
+                            <x-base.table.td
+                                class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                {{ $item['vehicle']['name'] }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
                                 <div class="flex items-center justify-center">
-                                    <a class="mr-3 flex items-center"
-                                        href="{{ route('spendingCategory.edit', $item->id) }}">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
+                                    <a class="mr-3 flex items-center" href="{{ route($route . '.edit', $item->id) }}">
+                                        <x-base.lucide class="mr-1 h-4 w-4" icon="Edit" />
                                         Edit
                                     </a>
                                     <a class="flex items-center text-danger" data-tw-toggle="modal"
@@ -117,8 +123,8 @@
                                                     variant="outline-secondary">
                                                     Cancel
                                                 </x-base.button>
-                                                <form action="{{ route('spendingCategory.destroy', $item->id) }}"
-                                                    method="post" class="w-24">
+                                                <form action="{{ route($route . '.destroy', $item->id) }}" method="post"
+                                                    class="w-24">
                                                     @method('delete')
                                                     @csrf
                                                     <x-base.button class="w-24" type="submit" variant="danger">
@@ -133,12 +139,13 @@
                         </x-base.table.tr>
                     @endforeach
                 </x-base.table.tbody>
+                {{-- make if empty data --}}
                 @if ($data->isEmpty())
                     <x-base.table.tbody>
                         <x-base.table.tr>
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600"
-                                colspan="8">
+                                colspan="7">
                                 <div class="flex justify-center items-center">
                                     <x-base.lucide class="h-16 w-16 text-slate-500" icon="Inbox" />
                                     <div class="ml-2 text-slate-500">
