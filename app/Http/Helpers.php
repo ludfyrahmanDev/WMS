@@ -51,3 +51,9 @@ if(!function_exists('linkPagination')){
         return $url;
     }
 }
+if(!function_exists('toThousand')){
+    function toThousand($amount, $prefix = 'Rp. ')
+    {
+        return $prefix .number_format($amount, 0, ',', ',');
+    }
+}

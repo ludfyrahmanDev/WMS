@@ -4,51 +4,36 @@
     // Chart
     if ($("#report-line-chart").length) {
         let ctx = $("#report-line-chart")[0].getContext("2d");
+        // get data from html
         let myChart = new Chart(ctx, {
             type: "line",
             data: {
-                labels: [
-                    "Jan",
-                    "Feb",
-                    "Mar",
-                    "Apr",
-                    "May",
-                    "Jun",
-                    "Jul",
-                    "Aug",
-                    "Sep",
-                    "Oct",
-                    "Nov",
-                    "Dec",
-                ],
+                labels: label,
                 datasets: [
                     {
-                        label: "# of Votes",
-                        data: [
-                            0, 200, 250, 200, 700, 550, 650, 1050, 950, 1100,
-                            900, 1200,
-                        ],
+                        label: nameChart,
+                        data: value,
                         borderWidth: 2,
                         borderColor: getColor("primary", 0.8),
                         backgroundColor: "transparent",
                         pointBorderColor: "transparent",
                         tension: 0.4,
                     },
-                    {
-                        label: "# of Votes",
-                        data: [
-                            0, 300, 400, 560, 320, 600, 720, 850, 690, 805,
-                            1200, 1010,
-                        ],
-                        borderWidth: 2,
-                        borderDash: [2, 2],
-                        borderColor: $("html").hasClass("dark")
-                            ? getColor("slate.400", 0.6)
-                            : getColor("slate.400"),
-                        backgroundColor: "transparent",
-                        pointBorderColor: "transparent",
-                        tension: 0.4,
-                    },
+                    // {
+                    //     label: "# of Votes",
+                    //     data: [
+                    //         0, 300, 400, 560, 320, 600, 720, 850, 690, 805,
+                    //         1200, 1010,
+                    //     ],
+                    //     borderWidth: 2,
+                    //     borderDash: [2, 2],
+                    //     borderColor: $("html").hasClass("dark")
+                    //         ? getColor("slate.400", 0.6)
+                    //         : getColor("slate.400"),
+                    //     backgroundColor: "transparent",
+                    //     pointBorderColor: "transparent",
+                    //     tension: 0.4,
+                    // },
                 ],
             },
             options: {
@@ -78,7 +63,14 @@
                             },
                             color: getColor("slate.500", 0.8),
                             callback: function (value, index, values) {
-                                return "$" + value;
+                                // change if thousand to K or M
+                                if (value >= 1000 && value < 1000000) {
+                                    value = value / 1000 + "K";
+                                } else if (value >= 1000000) {
+                                    value = value / 1000000 + "JT";
+                                }
+                                
+                                return value;
                             },
                         },
                         grid: {

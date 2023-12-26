@@ -18,6 +18,7 @@ use App\Http\Controllers\ColorSchemeController;
 use App\Http\Controllers\DeliveryOrderController;
 use App\Http\Controllers\VehicleServiceController;
 use App\Http\Controllers\SpendingCategoryController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +40,8 @@ Route::controller(AuthController::class)->middleware('loggedin')->group(function
 });
 
 Route::middleware('auth')->group(function () {
+
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     // auth section
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('profile', [UserController::class, 'profile'])->name('profile');
@@ -67,7 +70,6 @@ Route::middleware('auth')->group(function () {
     Route::get('product/{product}', [ProductController::class, 'getDataProduct'])->name('product.get');
     Route::get('stock', [StockController::class, 'index'])->name('stockIndex');
     Route::controller(PageController::class)->group(function () {
-        Route::get('/', 'dashboardOverview1')->name('dashboard');
         // template begin here
         Route::get('/sd', 'dashboardOverview1')->name('dashboard-overview-1');
         Route::get('dashboard-overview-2-page', 'dashboardOverview2')->name('dashboard-overview-2');
