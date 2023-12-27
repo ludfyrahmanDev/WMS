@@ -4,11 +4,12 @@ namespace App\Models;
 
 use App\Models\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Stock extends Model
 {
-    use HasFactory, Filterable;
+    use HasFactory, Filterable, SoftDeletes;
 
     protected $table = 'stock';
 
@@ -19,6 +20,8 @@ class Stock extends Model
         'stock_in_use',
         'last_stock'
     ];
+
+    protected $dates = ['deleted_at'];
 
     public function product()
     {

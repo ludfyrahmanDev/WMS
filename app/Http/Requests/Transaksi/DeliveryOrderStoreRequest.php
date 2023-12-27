@@ -21,7 +21,7 @@ class DeliveryOrderStoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        if ($this->input('mode') === 'confirm') {
+        if ($this->input('mode') === 'konfirmasi lunas') {
             return [];
         }
 

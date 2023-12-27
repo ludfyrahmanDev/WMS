@@ -17,8 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('delivery_order_id');
             $table->foreign('delivery_order_id')->references('id')->on('delivery_order');
 
-            $table->unsignedBigInteger('product_id');
-            $table->foreign('product_id')->references('id')->on('product');
+            $table->unsignedBigInteger('stock_id');
+            $table->foreign('stock_id')->references('id')->on('stock');
 
             $table->integer('purchase_amount');
             $table->integer('subtotal');

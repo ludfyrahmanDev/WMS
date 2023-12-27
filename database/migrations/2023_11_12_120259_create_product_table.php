@@ -16,8 +16,6 @@ return new class extends Migration
             $table->unsignedBigInteger('product_category_id');
             $table->foreign('product_category_id')->references('id')->on('table_product_category');
             $table->string('product');
-            $table->integer('price')->nullable();
-            $table->integer('price_sell')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
