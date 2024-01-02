@@ -182,7 +182,7 @@ class SideMenu
                         'params' => [
                             'layout' => 'side-menu'
                         ],
-                        'route_name' => 'vehicle_service.index',
+                        'route_name' => 'delivery_order.index',
                     ],
                 ]
             ],
