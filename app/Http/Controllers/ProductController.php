@@ -28,7 +28,7 @@ class ProductController extends Controller
 
     public function create()
     {
-        $kategori = DB::table('table_product_category')->get();
+        $kategori = DB::table('product_category')->get();
 
         $data = (object)[
             'product_category_id' => '',

@@ -6,7 +6,7 @@
 
 @section('subcontent')
     <div class="intro-y mt-8 flex items-center">
-        <h2 class="mr-auto text-lg font-medium">Form Layout</h2>
+        <h2 class="mr-auto text-lg font-medium">{{$title}}</h2>
     </div>
     <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12 lg:col-span-6">

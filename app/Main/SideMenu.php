@@ -86,11 +86,20 @@ class SideMenu
                     ]
                 ]
             ],
-            'menu-layout' => [
+            'product' => [
                 'icon' => 'box',
                 'title' => 'Produk',
                 'sub_menu' => [
-                    'users-layout-1' => [
+
+                    'product-layout-1' => [
+                        'icon' => 'box',
+                        'route_name' => 'category.index',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Kategori Produk'
+                    ],
+                    'product-layout-2' => [
                         'icon' => 'box',
                         'route_name' => 'product.index',
                         'params' => [
@@ -98,7 +107,7 @@ class SideMenu
                         ],
                         'title' => 'Produk'
                     ],
-                    'simple-menu' => [
+                    'product-layout-3' => [
                         'icon' => 'box',
                         'route_name' => 'stockIndex',
                         'params' => [
