@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Http\Requests\Master\ProductStoreRequest;
 use Illuminate\Support\Facades\DB;
+use App\Models\ProductCategory;
 
 class ProductController extends Controller
 {
@@ -17,10 +18,9 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $data = Product::with('productCategory')
+        $data = Product::with('category')
         ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
         ->paginate($request->get('per_page', 10));
-
         $title = 'Data Produk';
         $route = 'product';
         return view('pages.backoffice.product.index', compact('data', 'title','route'));
@@ -28,7 +28,7 @@ class ProductController extends Controller
 
     public function create()
     {
-        $kategori = DB::table('product_category')->get();
+        $kategori = ProductCategory::get();
 
         $data = (object)[
             'product_category_id' => '',

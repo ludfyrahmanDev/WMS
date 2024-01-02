@@ -10,44 +10,6 @@ class SideMenu
     public static function menu(): array
     {
         return [
-            // 'dashboard' => [
-            //     'icon' => 'home',
-            //     'title' => 'Dashboard',
-            //     'sub_menu' => [
-            //         'dashboard-overview-1' => [
-            //             'icon' => 'activity',
-            //             'route_name' => 'dashboard-overview-1',
-            //             'params' => [
-            //                 'layout' => 'side-menu',
-            //             ],
-            //             'title' => 'Overview 1'
-            //         ],
-            //         'dashboard-overview-2' => [
-            //             'icon' => 'activity',
-            //             'route_name' => 'dashboard-overview-2',
-            //             'params' => [
-            //                 'layout' => 'side-menu',
-            //             ],
-            //             'title' => 'Overview 2'
-            //         ],
-            //         'dashboard-overview-3' => [
-            //             'icon' => 'activity',
-            //             'route_name' => 'dashboard-overview-3',
-            //             'params' => [
-            //                 'layout' => 'side-menu',
-            //             ],
-            //             'title' => 'Overview 3'
-            //         ],
-            //         'dashboard-overview-4' => [
-            //             'icon' => 'activity',
-            //             'route_name' => 'dashboard-overview-4',
-            //             'params' => [
-            //                 'layout' => 'side-menu',
-            //             ],
-            //             'title' => 'Overview 4'
-            //         ]
-            //     ]
-            // ],
             'dashboard' => [
                 'icon' => 'home',
                 'route_name' => 'dashboard',
@@ -61,7 +23,7 @@ class SideMenu
                 'title' => 'Users',
                 'sub_menu' => [
                     'users-layout-1' => [
-                        'icon' => 'activity',
+                        'icon' => 'users',
                         'route_name' => 'users.index',
                         'params' => [
                             'layout' => 'side-menu'
@@ -77,7 +39,7 @@ class SideMenu
                         'title' => 'Jabatan'
                     ],
                     'users-layout-3' => [
-                        'icon' => 'activity',
+                        'icon' => 'car',
                         'route_name' => 'driver.index',
                         'params' => [
                             'layout' => 'side-menu'
@@ -92,7 +54,7 @@ class SideMenu
                 'sub_menu' => [
 
                     'product-layout-1' => [
-                        'icon' => 'box',
+                        'icon' => 'folder',
                         'route_name' => 'category.index',
                         'params' => [
                             'layout' => 'side-menu'
@@ -108,7 +70,7 @@ class SideMenu
                         'title' => 'Produk'
                     ],
                     'product-layout-3' => [
-                        'icon' => 'box',
+                        'icon' => 'list',
                         'route_name' => 'stockIndex',
                         'params' => [
                             'layout' => 'side-menu'
@@ -118,11 +80,11 @@ class SideMenu
                 ]
             ],
             'master' => [
-                'icon' => 'users',
+                'icon' => 'book',
                 'title' => 'Master Data',
                 'sub_menu' => [
                     'users-layout-1' => [
-                        'icon' => 'activity',
+                        'icon' => 'car',
                         'route_name' => 'vehicle.index',
                         'params' => [
                             'layout' => 'side-menu'
@@ -130,7 +92,7 @@ class SideMenu
                         'title' => 'Kendaraan'
                     ],
                     'users-layout-2' => [
-                        'icon' => 'activity',
+                        'icon' => 'truck',
                         'route_name' => 'supplier.index',
                         'params' => [
                             'layout' => 'side-menu'
@@ -138,7 +100,7 @@ class SideMenu
                         'title' => 'Supplier'
                     ],
                     'users-layout-3' => [
-                        'icon' => 'activity',
+                        'icon' => 'user',
                         'route_name' => 'customer.index',
                         'params' => [
                             'layout' => 'side-menu'
@@ -146,7 +108,7 @@ class SideMenu
                         'title' => 'Customer'
                     ],
                     'users-layout-4' => [
-                        'icon' => 'activity',
+                        'icon' => 'folders',
                         'route_name' => 'spendingCategory.index',
                         'params' => [
                             'layout' => 'side-menu'
@@ -160,26 +122,16 @@ class SideMenu
                 'icon' => 'shopping-bag',
                 'title' => 'Transaksi',
                 'sub_menu' => [
-                    // 'categories' => [
-                    //     'icon' => 'activity',
-                    //     'route_name' => 'categories',
-                    //     'params' => [
-                    //         'layout' => 'side-menu'
-                    //     ],
-                    //     'title' => 'Kategori Pengeluaran'
-                    // ],
                     'spending' => [
-                        'icon' => 'activity',
+                        'icon' => 'layout-list',
                         'route_name' => 'spending.index',
                         'params' => [
                             'layout' => 'side-menu'
                         ],
                         'title' => 'Pengeluaran'
                     ],
-
-
                     'purchases' => [
-                        'icon' => 'activity',
+                        'icon' => 'shopping-bag',
                         'title' => 'Pembelian',
                         'params' => [
                             'layout' => 'side-menu'
@@ -187,25 +139,46 @@ class SideMenu
                         'route_name' => 'delivery_order.index',
                     ],
                     'sellings' => [
-                        'icon' => 'activity',
+                        'icon' => 'shopping-cart',
                         'title' => 'Penjualan',
                         'params' => [
                             'layout' => 'side-menu'
                         ],
                         'route_name' => 'selling.index',
                     ],
-                    // 'trans_etc' => [
-                    //     'icon' => 'activity',
-                    //     'title' => 'Transaksi Lain Lain',
-                    //     'params' => [
-                    //         'layout' => 'side-menu'
-                    //     ],
-                    //     'route_name' => 'transaction-list',
-                    // ],
-
                     'vehicle_service' => [
-                        'icon' => 'activity',
+                        'icon' => 'bus',
                         'title' => 'Servis Kendaraan',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'route_name' => 'vehicle_service.index',
+                    ],
+                ]
+            ],
+            'report' => [
+                'icon' => 'file',
+                'title' => 'Laporan',
+                'sub_menu' => [
+                    'spending' => [
+                        'icon' => 'file-bar-chart',
+                        'route_name' => 'spending.index',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Laporan Pengeluaran'
+                    ],
+                    'sellings' => [
+                        'icon' => 'file-line-chart',
+                        'title' => 'Laporan Penjualan',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'route_name' => 'selling.index',
+                    ],
+                    'vehicle_service' => [
+                        'icon' => 'file-box',
+                        'title' => 'Laporan Pembelian',
                         'params' => [
                             'layout' => 'side-menu'
                         ],
