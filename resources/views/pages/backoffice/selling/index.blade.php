@@ -47,7 +47,7 @@
             </div>
             <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto md:ml-0">
                 <div class="relative w-56 text-slate-500">
-                    <x-base.form-input class="!box w-56 pr-10" type="text" placeholder="Search..." />
+                    <x-base.form-input class="!box w-56 pr-10" type="text" placeholder="Search..." id="search" value="{{ request()->get('search') }}"/>
                     <x-base.lucide class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4" icon="Search" />
                 </div>
             </div>

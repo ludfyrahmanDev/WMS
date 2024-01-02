@@ -61,10 +61,7 @@
                             No
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">
-                            Kategori pengeluaran
-                        </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0">
-                            Tipe pengeluaran
+                            Kategori Produk
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             ACTIONS
@@ -81,20 +78,14 @@
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <a class="whitespace-nowrap font-medium" href="">
-                                    {{ $item['spending_category'] }}
-                                </a>
-                            </x-base.table.td>
-                            <x-base.table.td
-                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                <a class="whitespace-nowrap font-medium" href="">
-                                    {{ $item['spending_types'] }}
+                                    {{ $item->name }}
                                 </a>
                             </x-base.table.td>
                             <x-base.table.td
                                 class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
                                 <div class="flex items-center justify-center">
                                     <a class="mr-3 flex items-center"
-                                        href="{{ route('spendingCategory.edit', $item->id) }}">
+                                        href="{{ route('category.edit', $item->id) }}">
                                         <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
                                         Edit
                                     </a>
@@ -117,7 +108,7 @@
                                                     variant="outline-secondary">
                                                     Cancel
                                                 </x-base.button>
-                                                <form action="{{ route('spendingCategory.destroy', $item->id) }}"
+                                                <form action="{{ route('category.destroy', $item->id) }}"
                                                     method="post" class="w-24">
                                                     @method('delete')
                                                     @csrf
