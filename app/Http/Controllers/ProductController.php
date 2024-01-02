@@ -66,14 +66,14 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        $kategori = DB::table('product_category')->get();
+        $kategori = ProductCategory::get();
 
         $data = $product;
         $title = 'Data Produk';
         $route = route('product.update', $product);
         $type = 'edit';
 
-        return view('pages.backoffice.spending._form', compact('kategori', 'data', 'title', 'route', 'type'));
+        return view('pages.backoffice.product._form', compact('kategori', 'data', 'title', 'route', 'type'));
     }
 
     public function update(ProductStoreRequest $request, Product $product)
