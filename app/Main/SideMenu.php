@@ -124,7 +124,7 @@ class SideMenu
                 'sub_menu' => [
                     'spending' => [
                         'icon' => 'layout-list',
-                        'route_name' => 'spending.index',
+                        'route_name' => 'spending.create',
                         'params' => [
                             'layout' => 'side-menu'
                         ],
@@ -136,7 +136,7 @@ class SideMenu
                         'params' => [
                             'layout' => 'side-menu'
                         ],
-                        'route_name' => 'delivery_order.index',
+                        'route_name' => 'delivery_order.create',
                     ],
                     'sellings' => [
                         'icon' => 'shopping-cart',
@@ -144,7 +144,7 @@ class SideMenu
                         'params' => [
                             'layout' => 'side-menu'
                         ],
-                        'route_name' => 'selling.index',
+                        'route_name' => 'selling.create',
                     ],
                     'vehicle_service' => [
                         'icon' => 'bus',
@@ -152,7 +152,7 @@ class SideMenu
                         'params' => [
                             'layout' => 'side-menu'
                         ],
-                        'route_name' => 'vehicle_service.index',
+                        'route_name' => 'vehicle_service.create',
                     ],
                 ]
             ],
