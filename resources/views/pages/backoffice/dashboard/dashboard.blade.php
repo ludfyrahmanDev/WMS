@@ -314,6 +314,19 @@
                                 </div>
                             </div>
                         @endforeach
+                        @empty($sellings->count())
+                            <div class="intro-x">
+                                <div class="box zoom-in mb-3 flex items-center px-5 py-3">
+                                    <div class="ml-4 mr-auto">
+                                        <div class="font-medium uppercase">Data Transaksi Tidak ada</div>
+                                        <div class="mt-0.5 text-xs text-slate-500">
+                                            Transaksi tidak ada karena tidak ada penjualan produk
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        @endempty
                         <a
                             class="intro-x block w-full rounded-md border border-dotted border-slate-400 py-3 text-center text-slate-500 dark:border-darkmode-300"
                             href="{{route('selling.index')}}"
