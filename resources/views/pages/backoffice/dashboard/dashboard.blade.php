@@ -34,7 +34,7 @@
                                             class="h-[28px] w-[28px] text-primary"
                                             icon="ShoppingCart"
                                         />
-                                        <div class="ml-auto">
+                                        <div class="ml-auto hidden">
                                             <x-base.tippy
                                                 class="flex cursor-pointer items-center rounded-full bg-success py-[3px] pl-2 pr-1 text-xs font-medium text-white"
                                                 as="div"
@@ -64,7 +64,7 @@
                                             class="h-[28px] w-[28px] text-pending"
                                             icon="CreditCard"
                                         />
-                                        <div class="ml-auto">
+                                        <div class="ml-auto hidden">
                                             <x-base.tippy
                                                 class="flex cursor-pointer items-center rounded-full bg-danger py-[3px] pl-2 pr-1 text-xs font-medium text-white"
                                                 as="div"
@@ -94,7 +94,7 @@
                                             class="h-[28px] w-[28px] text-warning"
                                             icon="Monitor"
                                         />
-                                        <div class="ml-auto">
+                                        <div class="ml-auto hidden">
                                             <x-base.tippy
                                                 class="flex cursor-pointer items-center rounded-full bg-success py-[3px] pl-2 pr-1 text-xs font-medium text-white"
                                                 as="div"
@@ -126,7 +126,7 @@
                                             class="h-[28px] w-[28px] text-success"
                                             icon="shopping-bag"
                                         />
-                                        <div class="ml-auto">
+                                        <div class="ml-auto hidden">
                                             <x-base.tippy
                                                 class="flex cursor-pointer items-center rounded-full bg-success py-[3px] pl-2 pr-1 text-xs font-medium text-white"
                                                 as="div"
@@ -153,14 +153,13 @@
                 <!-- BEGIN: Sales Report -->
                 <div class="col-span-12 mt-8 lg:col-span-6">
                     <div class="intro-y block h-10 items-center sm:flex">
-                        <h2 class="mr-5 truncate text-lg font-medium">Sales Report</h2>
+                        <h2 class="mr-5 truncate text-lg font-medium">Laporan Penjualan</h2>
                         <div class="relative mt-3 text-slate-500 sm:ml-auto sm:mt-0">
                             <x-base.lucide
                                 class="absolute inset-y-0 left-0 z-10 my-auto ml-3 h-4 w-4"
                                 icon="Calendar"
                             />
                             <x-base.litepicker
-                                onchange="console.log(this)"
                                 class="datepicker !box pl-10 sm:w-56"
                                 type="text"
                             />
@@ -314,6 +313,19 @@
                                 </div>
                             </div>
                         @endforeach
+                        @empty($sellings->count())
+                            <div class="intro-x">
+                                <div class="box zoom-in mb-3 flex items-center px-5 py-3">
+                                    <div class="ml-4 mr-auto">
+                                        <div class="font-medium uppercase">Data Transaksi Tidak ada</div>
+                                        <div class="mt-0.5 text-xs text-slate-500">
+                                            Transaksi tidak ada karena tidak ada penjualan produk
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        @endempty
                         <a
                             class="intro-x block w-full rounded-md border border-dotted border-slate-400 py-3 text-center text-slate-500 dark:border-darkmode-300"
                             href="{{route('selling.index')}}"
