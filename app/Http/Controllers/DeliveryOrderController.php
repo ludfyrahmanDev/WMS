@@ -81,22 +81,22 @@ class DeliveryOrderController extends Controller
             $totalDataProduk = COUNT($request->produk_id);
 
             for ($i = 0; $i < $totalDataProduk; $i++) {
-                $delivery_order_detail = new DeliveryOrderDetail();
-                $delivery_order_detail->delivery_order_id = $delivery_order->id;
-                $delivery_order_detail->product_id = $request->produk_id[$i];
-                $delivery_order_detail->purchase_amount = $request->jumlah_qty[$i];
-                $delivery_order_detail->subtotal = $request->subtotal_produk[$i];
-                $delivery_order_detail->save();
-
                 $stock = new Stock();
-                $stock->delivery_order_id = $delivery_order->id;
                 $stock->product_id = $request->produk_id[$i];
                 $stock->purchase_date = $request->tanggal_pembelian;
                 $stock->is_active = 0;
+                $stock->price_kg = $request->hargaKG[$i];
                 $stock->first_stock = $request->jumlah_qty[$i];
                 $stock->stock_in_use = 0;
                 $stock->last_stock   = $request->jumlah_qty[$i];
                 $stock->save();
+
+                $delivery_order_detail = new DeliveryOrderDetail();
+                $delivery_order_detail->delivery_order_id = $delivery_order->id;
+                $delivery_order_detail->stock_id = $stock->id;
+                $delivery_order_detail->purchase_amount = $request->jumlah_qty[$i];
+                $delivery_order_detail->subtotal = $request->subtotal_produk[$i];
+                $delivery_order_detail->save();
             }
 
             return redirect(route('delivery_order.index'))->with('success', 'Berhasil menambah data!');
@@ -110,9 +110,14 @@ class DeliveryOrderController extends Controller
     public function destroy(DeliveryOrder $delivery_order)
     {
         try {
-            $delivery_order->stock()->delete();
-            $delivery_order->delivery_order_detail()->delete();
+            $deliveryOrderDetails  = $delivery_order->delivery_order_detail;
+
+            foreach($deliveryOrderDetails as $detail) {
+                $detail->stock()->delete();
+            }
+
             $delivery_order->delete();
+
             return  redirect('delivery_order')->with('success', 'Berhasil menghapus data!');
         } catch (\Throwable $th) {
             return back()->with('failed', 'Gagal menghapus data!');
@@ -123,7 +128,8 @@ class DeliveryOrderController extends Controller
     {
         $deliveryOrder = new DeliveryOrder;
 
-        $delivery_order->load('delivery_order_detail.product');
+        $delivery_order->load('delivery_order_detail.stock');
+        $delivery_order->load('delivery_order_detail.stock.product');
 
         $data['supplier'] = $deliveryOrder->getSupplier();
         $data['driver'] = $deliveryOrder->getDriver();
@@ -143,7 +149,7 @@ class DeliveryOrderController extends Controller
     {
         $user = auth()->user();
         try {
-            if ($request->mode == 'confirm') {
+            if ($request->mode == 'konfirmasi lunas') {
                 $delivery_order->status = 'Completed';
                 $delivery_order->who_update = $user['name'];
                 $delivery_order->save();
@@ -172,22 +178,23 @@ class DeliveryOrderController extends Controller
             $delivery_order->save();
 
             //delete Delivery Order Detail dan Stock By ID DO
-            $delivery_order->delivery_order_detail()->delete();
-            $delivery_order->stock()->delete();
+            $deliveryOrderDetails  = $delivery_order->delivery_order_detail;
+
+            foreach($deliveryOrderDetails as $detail) {
+                $detail->delete();
+
+                $detail->stock()->delete();
+
+            }
+
+            // $delivery_order->delivery_order_detail()->delete();
+            // $delivery_order->stock()->delete();
 
             //insert Table Delivery Order Detail
             $totalDataProduk = COUNT($request->produk_id);
 
             for ($i = 0; $i < $totalDataProduk; $i++) {
-                $delivery_order_detail = new DeliveryOrderDetail();
-                $delivery_order_detail->delivery_order_id = $delivery_order->id;
-                $delivery_order_detail->product_id = $request->produk_id[$i];
-                $delivery_order_detail->purchase_amount = $request->jumlah_qty[$i];
-                $delivery_order_detail->subtotal = $request->subtotal_produk[$i];
-                $delivery_order_detail->save();
-
                 $stock = new Stock();
-                $stock->delivery_order_id = $delivery_order->id;
                 $stock->product_id = $request->produk_id[$i];
                 $stock->purchase_date = $request->tanggal_pembelian;
 
@@ -197,10 +204,18 @@ class DeliveryOrderController extends Controller
                     $stock->is_active = 0;
                 }
 
+                $stock->price_kg = $request->hargaKG[$i];
                 $stock->first_stock = $request->jumlah_qty[$i];
                 $stock->stock_in_use = 0;
                 $stock->last_stock   = $request->jumlah_qty[$i];
                 $stock->save();
+
+                $delivery_order_detail = new DeliveryOrderDetail();
+                $delivery_order_detail->delivery_order_id = $delivery_order->id;
+                $delivery_order_detail->stock_id = $stock->id;
+                $delivery_order_detail->purchase_amount = $request->jumlah_qty[$i];
+                $delivery_order_detail->subtotal = $request->subtotal_produk[$i];
+                $delivery_order_detail->save();
             }
 
             if ($request->mode != null) {
@@ -223,7 +238,8 @@ class DeliveryOrderController extends Controller
     {
         $deliveryOrder = new DeliveryOrder;
 
-        $delivery_order->load('delivery_order_detail.product');
+        $delivery_order->load('delivery_order_detail.stock');
+        $delivery_order->load('delivery_order_detail.stock.product');
 
         $data['supplier'] = $deliveryOrder->getSupplier();
         $data['driver'] = $deliveryOrder->getDriver();

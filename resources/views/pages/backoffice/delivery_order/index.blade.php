@@ -186,7 +186,7 @@
                                                     class="w-24">
                                                     @method('PUT')
                                                     @csrf
-                                                    <input type="hidden" name="mode" id="mode" value="confirm">
+                                                    <input type="hidden" name="mode" id="mode" value="konfirmasi lunas">
                                                     <x-base.button class="w-24" type="submit" variant="danger">
                                                         Konfirmasi
                                                     </x-base.button>

@@ -17,13 +17,13 @@ class DeliveryOrderDetail extends Model
 
     protected $fillable = [
         'delivery_order_id',
-        'product_id',
+        'stock_id',
         'purchase_amount',
         'subtotal'
     ];
 
-    public function product()
+    public function stock()
     {
-        return $this->belongsTo(Product::class)->select('id', 'product');
+        return $this->belongsTo(Stock::class);
     }
 }

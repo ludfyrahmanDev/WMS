@@ -67,6 +67,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('delivery_order', DeliveryOrderController::class);
     Route::resource('vehicle_service', VehicleServiceController::class);
     Route::resource('selling', SellingController::class);
+    Route::get('/getHargaStock', [SellingController::class, 'getHargaStock']);
     // end transaction
     Route::get('product/{product}', [ProductController::class, 'getDataProduct'])->name('product.get');
     Route::get('stock', [StockController::class, 'index'])->name('stockIndex');

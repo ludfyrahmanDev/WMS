@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('selling_id');
             $table->foreign('selling_id')->references('id')->on('selling');
-            $table->unsignedBigInteger('product_id');
-            $table->foreign('product_id')->references('id')->on('product');
-            $table->integer('price');
+            $table->unsignedBigInteger('stock_id');
+            $table->foreign('stock_id')->references('id')->on('stock');
+            $table->integer('price_kg');
             $table->integer('price_sell');
             $table->integer('qty');
             $table->integer('subtotal');

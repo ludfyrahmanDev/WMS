@@ -59,7 +59,8 @@
                         </div>
                         <div class="input-form col-span-4">
                             <x-base.form-label for="crud-form-1">Pengemudi</x-base.form-label>
-                            <x-base.tom-select disabled name="driver" class="w-full" data-placeholder="Pilih driver" id="driver">
+                            <x-base.tom-select disabled name="driver" class="w-full" data-placeholder="Pilih driver"
+                                id="driver">
                                 <option value="">Pilih Pengemudi</option>
                                 @foreach ($data['driver'] as $row)
                                     <option value="{{ $row->id }}"
@@ -144,11 +145,17 @@
                     <br>
                     <hr style="border: 1px solid black;">
                     <br>
+                    @error('angsuran')
+                        <div class="pristine-error text-danger mt-2">
+                            {{ $message }}
+                        </div>
+                    @enderror
                     <table class="min-w-full bg-white border-gray-300" id="transDetail">
                         <thead>
                             <tr class="bg-dark text-white">
                                 <th class="py-2 px-4 border-b text-left w-1/4">Produk</th>
                                 <th class="py-2 px-4 border-b text-left w-1/4">Qty</th>
+                                <th class="py-2 px-4 border-b text-left w-1/4">Harga Jual</th>
                                 <th class="py-2 px-4 border-b text-left w-1/4">Subtotal</th>
                             </tr>
                         </thead>
@@ -158,40 +165,63 @@
                                     <?php $profit = 0; ?>
                                     <?php $profit += intVal(($item['price_sell'] - $item['price']) * $item['qty']); ?>
                                     <tr class="row-data">
-                                        <td class="py-2 px-4 w-1/4">{{ $item['product']['product'] }}</td>
-                                        <td class="py-2 px-4 jumlah_qty w-1/4">{{ $item['qty'] }}<input type="hidden"
-                                                name="jumlah_qty[]" id="jumlah_qty[]" value="{{ $item['qty'] }}" />
-                                        </td>
+                                        <td class="py-2 px-4 produk_id" hidden>{{ $item['id'] }}<input type="hidden"
+                                                name="produk_id[]" id="produk_id[]" value="{{ $item['id'] }}" /></td>
+                                        <td class="py-2 px-4 profit_peritem" hidden><input type="hidden"
+                                                name="profit_peritem[]" id="profit_peritem[]"
+                                                class="column_profit_peritem" value="{{ $item['labaPerItem'] }}" /></td>
+                                        <td class="py-2 px-4 w-1/4">{{ $item['product'] }}</td>
+                                        <td class="py-2 px-4 jumlah_qty w-1/4">{{ $item['total_qty'] }}<input
+                                                type="hidden" name="jumlah_qty[]" id="jumlah_qty[]"
+                                                value="{{ $item['total_qty'] }}" /></td>
+                                        <td class="py-2 px-4 harga_jual">{{ $item['price_sell'] }}<input type="hidden"
+                                                name="harga_jual[]" id="harga_jual[]"
+                                                value="{{ $item['price_sell'] }}" /></td>
                                         <td class="py-2 px-4 subtotal w-1/4">{{ $item['subtotal'] }}<input type="hidden"
                                                 class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]"
-                                                value="{{ $item['subtotal'] }}" />
-                                        </td>
+                                                value="{{ $item['subtotal'] }}" /></td>
                                     </tr>
                                 @endforeach
                             @endif
                         </tbody>
                         <tfoot>
                             <tr class="bg-dark text-white">
-                                <th class="py-2 px-4 border-b text-center" colspan="2">Laba Bersih</th>
+                                <th class="py-2 px-4 border-b text-center" colspan="3">Laba Bersih</th>
                                 <th class="py-2 px-4 border-b text-center laba_bersih">
                                     {{ $data['header']->net_profit ?? 0 }}</th>
                             </tr>
                             <tr class="bg-dark text-white">
-                                <th class="py-2 px-4 border-b text-center" colspan="2">Grand Total</th>
+                                <th class="py-2 px-4 border-b text-center" colspan="3">Grand Total</th>
                                 <th class="py-2 px-4 border-b text-center grand_total">
                                     {{ $data['header']->grand_total ?? 0 }}</th>
                             </tr>
-                            <tr class="bg-dark ">
-                                <th class="py-2 px-4 border-b text-center text-white" colspan="2">Total Bayar</th>
-                                <th class="py-2 px-4 border-b text-center">
-                                    <x-base.form-input class="w-3/5 text-center" id="total_bayar" type="text"
-                                        name="total_bayar" value="{{ $data['header']->total_payment ?? 0 }}"
-                                        placeholder="Input Total Bayar" required
-                                        onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
-                                </th>
-                            </tr>
+                            @if ($data['header']->status == 'On Progress')
+                                <tr class="bg-dark text-white">
+                                    <th class="py-2 px-4 border-b text-center text-white" colspan="3">Total Bayar</th>
+                                    <th class="py-2 px-4 border-b text-center">
+                                        {{ $data['header']->total_payment ?? 0 }}
+                                    </th>
+                                </tr>
+                                <tr class="bg-dark ">
+                                    <th class="py-2 px-4 border-b text-center text-white" colspan="3">Angsuran</th>
+                                    <th class="py-2 px-4 border-b text-center">
+                                        <x-base.form-input class="w-3/5 text-center" id="angsuran" type="text"
+                                            name="angsuran" value="" placeholder="Input Angsuran" required
+                                            onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                                    </th>
+                                </tr>
+                            @else
+                                <tr class="bg-dark text-white">
+                                    <th class="py-2 px-4 border-b text-center text-white" colspan="3">Total Bayar</th>
+                                    <th class="py-2 px-4 border-b text-center">
+                                        {{ $data['header']->total_payment ?? 0 }}
+                                    </th>
+                                </tr>
+                            @endif
+
                         </tfoot>
                     </table>
+                    <input type="hidden" name="mode" id="mode" value="angsuran" />
 
                     <div class="mt-5 text-right">
                         <x-base.button class="mr-1 w-24" type="button" variant="outline-secondary">
@@ -199,12 +229,14 @@
                                 Cancel
                             </a>
                         </x-base.button>
+                        <x-base.button class="w-24" type="submit" variant="primary">
+                            Save
+                        </x-base.button>
                     </div>
                 </div>
-                <!-- END: Form Layout -->                
+                <!-- END: Form Layout -->
             </form>
         </div>
     </div>
 
-    
 @endsection

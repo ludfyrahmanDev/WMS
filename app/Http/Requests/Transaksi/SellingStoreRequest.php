@@ -8,8 +8,14 @@ class SellingStoreRequest extends FormRequest
 {
     public function rules(): array
     {
-        if ($this->input('mode') === 'confirm') {
+        if ($this->input('mode') === 'Konfirmasi Lunas') {
             return [];
+        }
+        
+        if ($this->input('mode') === 'angsuran') {
+            return [
+                'angsuran' => ['required']
+            ];
         }
 
         return [
@@ -34,7 +40,8 @@ class SellingStoreRequest extends FormRequest
             'uang_saku.required' => 'Uang Saku tidak boleh kosong!',
             'tipe_pembelian.required' => 'Tipe Pembelian tidak boleh kosong!',
             'tipe_pembayaran.required' => 'Tipe Pembayaran tidak boleh kosong!',
-            'total_bayar.required' => 'Total Bayar tidak boleh kosong!'
+            'total_bayar.required' => 'Total Bayar tidak boleh kosong!',
+            'required.required' => 'Angsuran tidak boleh kosong!'
         ];
     }
 }

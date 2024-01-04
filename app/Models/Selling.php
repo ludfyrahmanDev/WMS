@@ -70,4 +70,14 @@ class Selling extends Model
     {
         return $this->hasMany(SellingDetail::class);
     }
+
+    public function getProductSummary()
+    {
+        return $this->selling_detail()
+        ->join('stock', 'stock.id', '=', 'selling_detail.stock_id')
+        ->join('product', 'product.id', '=', 'stock.product_id')
+        ->select('product.id', 'product.product', 'selling_detail.price_sell', DB::raw('SUM((selling_detail.price_sell - selling_detail.price_kg) * qty) AS labaPerItem'), DB::raw('SUM(selling_detail.qty) as total_qty'), 'selling_detail.subtotal')
+        ->groupBy('product.id', 'product.product', 'selling_detail.price_sell', 'selling_detail.subtotal')
+        ->get();
+    }
 }

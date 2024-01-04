@@ -44,8 +44,7 @@
                             <x-base.form-label for="crud-form-1">Tanggal Pengambilan</x-base.form-label>
                             <x-base.form-input class="w-full" id="tanggal_pengambilan" type="date"
                                 name="tanggal_pengambilan" value="{{ $data['header']->pick_up_date ?? date('Y-m-d') }}"
-                                placeholder="Pilih Tanggal Pengambilan" required disabled
-                                 />
+                                placeholder="Pilih Tanggal Pengambilan" required disabled />
                             @error('tanggal_pengambilan')
                                 <div class="pristine-error text-danger mt-2">
                                     {{ $message }}
@@ -144,6 +143,7 @@
                             <tr class="bg-dark text-white">
                                 <th class="py-2 px-4 border-b text-left w-1/4">Produk</th>
                                 <th class="py-2 px-4 border-b text-left w-1/4">Qty</th>
+                                <th class="py-2 px-4 border-b text-left w-1/4">Harga/Kg</th>
                                 <th class="py-2 px-4 border-b text-left w-1/4">Subtotal</th>
                                 <!-- Tambahkan header lainnya sesuai kebutuhan -->
                             </tr>
@@ -152,13 +152,16 @@
                             @if (isset($data['detail']))
                                 @foreach ($data['detail'] as $item)
                                     <tr class="row-data">
-                                        <td class="py-2 px-4 produk_id" hidden>{{ $item['product_id'] }}<input
+                                        <td class="py-2 px-4 produk_id" hidden>{{ $item['stock']['product_id'] }}<input
                                                 type="hidden" name="produk_id[]" id="produk_id[]"
-                                                value="{{ $item['product_id'] }}" /></td>
-                                        <td class="py-2 px-4 w-1/4">{{ $item['product']['product'] }}</td>
+                                                value="{{ $item['stock']['product_id'] }}" /></td>
+                                        <td class="py-2 px-4 w-1/4">{{ $item['stock']['product']['product'] }}</td>
                                         <td class="py-2 px-4 jumlah_qty w-1/4">{{ $item['purchase_amount'] }}<input
                                                 type="hidden" name="jumlah_qty[]" id="jumlah_qty[]"
                                                 value="{{ $item['purchase_amount'] }}" /></td>
+                                        <td class="py-2 px-4 hargaKG w-1/4">{{ $item['stock']['price_kg'] }}<input
+                                                type="hidden" class="column_hargaKG" name="hargaKG[]" id="hargaKG[]"
+                                                value="{{ $item['stock']['price_kg'] }}" /></td>
                                         <td class="py-2 px-4 subtotal w-1/4">{{ $item['subtotal'] }}<input type="hidden"
                                                 class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]"
                                                 value="{{ $item['subtotal'] }}" /></td>
@@ -168,17 +171,14 @@
                         </tbody>
                         <tfoot>
                             <tr class="bg-dark text-white">
-                                <th class="py-2 px-4 border-b text-center" colspan="2">Grand Total</th>
+                                <th class="py-2 px-4 border-b text-center" colspan="3">Grand Total</th>
                                 <th class="py-2 px-4 border-b text-center grand_total">
                                     {{ $data['header']->grand_total ?? 0 }}</th>
-                                <th class="py-2 px-4 border-b text-center" hidden><x-base.form-input
-                                        class="w-3/5 text-center" id="grand_total" type="text" name="grand_total"
-                                        value="{{ $data['header']->grand_total ?? 0 }}" /></th>
                             </tr>
                             <tr class="bg-dark ">
-                                <th class="py-2 px-4 border-b text-center text-white" colspan="2">Total Bayar</th>
+                                <th class="py-2 px-4 border-b text-center text-white" colspan="3">Total Bayar</th>
                                 <th class="py-2 px-4 border-b text-center text-white">
-                                        {{ $data['header']->total_payment ?? 0 }}
+                                    {{ $data['header']->total_payment ?? 0 }}
                                 </th>
                             </tr>
                         </tfoot>

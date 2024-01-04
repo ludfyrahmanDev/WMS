@@ -14,14 +14,15 @@ return new class extends Migration
         Schema::create('stock', function (Blueprint $table) {
             $table->id();
 
-            $table->unsignedBigInteger('delivery_order_id');
-            $table->foreign('delivery_order_id')->references('id')->on('delivery_order');
+            // $table->unsignedBigInteger('delivery_order_id');
+            // $table->foreign('delivery_order_id')->references('id')->on('delivery_order');
 
             $table->unsignedBigInteger('product_id');
             $table->foreign('product_id')->references('id')->on('product');
 
             $table->date('purchase_date');
             $table->integer('is_active');
+            $table->integer('price_kg');
             $table->integer('first_stock');
             $table->integer('stock_in_use');
             $table->integer('last_stock');

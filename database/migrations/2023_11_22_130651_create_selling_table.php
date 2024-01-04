@@ -25,8 +25,8 @@ return new class extends Migration
             $table->integer('grand_total');
             $table->integer('total_payment');
             $table->enum('purchasing_method', ['tempo', 'titipan', 'kontan']);
-            $table->text('notes');
-            $table->enum('status', ['in_progress', 'completed']);
+            $table->text('notes')->nullable();
+            $table->enum('status', ['In Progress', 'On Progress', 'Completed']);
             $table->enum('payment_type', ['cash', 'transfer']);
             $table->string('created_by');
             $table->string('updated_by');

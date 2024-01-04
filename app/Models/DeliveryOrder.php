@@ -65,10 +65,5 @@ class DeliveryOrder extends Model
         return $this->hasMany(DeliveryOrderDetail::class);
     }
 
-    public function stock()
-    {
-        return $this->hasMany(Stock::class);
-    }
-
     
 }
