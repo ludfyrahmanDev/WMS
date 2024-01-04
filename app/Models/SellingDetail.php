@@ -24,8 +24,8 @@ class SellingDetail extends Model
         'subtotal'
     ];
 
-    public function product()
+    public function stock()
     {
-        return $this->belongsTo(Product::class)->select('id', 'product');
+        return $this->belongsTo(Stock::class);
     }
 }

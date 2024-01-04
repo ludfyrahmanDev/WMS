@@ -256,7 +256,7 @@
                                 Cancel
                             </a>
                         </x-base.button>
-                        <x-base.button class="w-24" onclick="saveDeliveryOrder()" type="submit" variant="primary">
+                        <x-base.button class="w-24" type="submit" variant="primary">
                             Save
                         </x-base.button>
                         @if ($type != 'create')

@@ -9,19 +9,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Stock extends Model
 {
-    use HasFactory, Filterable, SoftDeletes;
+    use HasFactory, Filterable;
+    // , SoftDeletes
 
     protected $table = 'stock';
 
     protected $fillable = [
         'product_id',
         'purchase_date',
+        'price_kg',
         'first_stock',
         'stock_in_use',
         'last_stock'
     ];
 
-    protected $dates = ['deleted_at'];
+    // protected $dates = ['deleted_at'];
 
     public function product()
     {
