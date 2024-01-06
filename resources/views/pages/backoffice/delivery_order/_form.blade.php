@@ -9,7 +9,7 @@ die(); ?> --}}
 
 @section('subcontent')
     <div class="intro-y mt-8 flex items-center">
-        <h2 class="mr-auto text-lg font-medium">Form Layout</h2>
+        <h2 class="mr-auto text-lg font-medium">{{$title}}</h2>
     </div>
     @if (session('success'))
         <x-base.alert class="mb-2 mt-5 flex items-center" variant="outline-success">

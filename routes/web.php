@@ -19,6 +19,7 @@ use App\Http\Controllers\DeliveryOrderController;
 use App\Http\Controllers\VehicleServiceController;
 use App\Http\Controllers\SpendingCategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProductCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,7 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('spendingCategory', SpendingCategoryController::class);
     Route::resource('spending', SpendingController::class);
     Route::resource('product', ProductController::class);
-    Route::get('product/{product}', [ProductController::class, 'getDataProduct'])->name('product.get');
+    Route::resource('category', ProductCategoryController::class);
     // end master data section
     // transaction
     Route::resource('delivery_order', DeliveryOrderController::class);

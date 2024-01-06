@@ -1,3 +1,6 @@
+<div>
+    <!-- Act only according to that maxim whereby you can, at the same time, will that it should become a universal law. - Immanuel Kant -->
+</div>
 @extends('../../../layouts/' . $layout)
 
 @section('subhead')
@@ -29,45 +32,18 @@
                 <!-- BEGIN: Form Layout -->
                 <div class="intro-y box p-5">
                     <div class="input-form">
-                        <x-base.form-label for="crud-form-1">Nama</x-base.form-label>
-                        <x-base.form-input class="w-full" id="crud-form-1" type="text" name="name"
-                            value="{{ $data->name ?? old('name') }}" placeholder="Input Nama" required />
+                        <x-base.form-label for="name">Kategori Produk</x-base.form-label>
+                        <x-base.form-input class="w-full" id="name" type="text" name="name"
+                            value="{{ old('name')  ?? $data->name  }}" placeholder="Masukkan kategori Produk..." />
                         @error('name')
                             <div class="pristine-error text-danger mt-2">
                                 {{ $message }}
                             </div>
                         @enderror
                     </div>
-                    <div class="mt-3 input-form">
-                        <x-base.form-label for="crud-form-1">Alamat</x-base.form-label>
-
-                        <x-base.form-textarea class="form-control" id="validation-form-6" name="address"
-                            placeholder="Input Alamat" 
-                            value="{{ $data->address ?? old('address') }}"></x-base.form-textarea>
-                        @error('address')
-                            <div class="pristine-error text-danger mt-2">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                    <div class="mt-3 input-form">
-                        <x-base.form-label for="crud-form-1">No Telp</x-base.form-label>
-                        <x-base.form-input class="w-full" id="crud-form-1" type="text"
-                            required value="{{ $data->phone ?? old('phone') }}" name="phone"
-                            placeholder="Input No Telp" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
-                        @error('phone')
-                            <div class="pristine-error text-danger mt-2">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-
                     <div class="mt-5 text-right">
-
                         <x-base.button class="mr-1 w-24" type="button" variant="outline-secondary">
-                            <a href="{{ route('driver.index') }}" variant="outline-secondary">
-                                Cancel
-                            </a>
+                            Cancel
                         </x-base.button>
                         <x-base.button class="w-24" type="submit" variant="primary">
                             Save

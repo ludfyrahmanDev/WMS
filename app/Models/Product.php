@@ -21,8 +21,8 @@ class Product extends Model
         'price_sell'
     ];
 
-    public function productCategory()
+    public function category()
     {
-        return $this->belongsTo(ProductCategory::class, 'product_category_id', 'id');
+        return $this->belongsTo(ProductCategory::class, 'product_category_id');
     }
 }
