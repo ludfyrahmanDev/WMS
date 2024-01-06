@@ -12,8 +12,9 @@ class Authenticate
 {
     /**
      * Redirect user if they are not authenticated.
+     * excel download can be accessed without authentication
      */
-    public function handle(Request $request, Closure $next): Response|JsonResponse|RedirectResponse
+    public function handle(Request $request, Closure $next)
     {
         if (!is_null(request()->user())) {
             return $next($request);

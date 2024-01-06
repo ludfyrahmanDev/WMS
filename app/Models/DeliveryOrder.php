@@ -50,6 +50,11 @@ class DeliveryOrder extends Model
         return Vehicle::all();
     }
 
+    public function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
+    }
+
     public function getProduct()
     {
         return Product::select('id', 'product')->get();
@@ -58,6 +63,10 @@ class DeliveryOrder extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
+    }
+    public function driver()
+    {
+        return $this->belongsTo(Driver::class, 'driver_id', 'id');
     }
 
     public function delivery_order_detail()

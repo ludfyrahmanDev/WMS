@@ -65,6 +65,7 @@ Route::middleware('auth')->group(function () {
     // end master data section
     // transaction
     Route::resource('delivery_order', DeliveryOrderController::class);
+    Route::get('delivery_order_export', [DeliveryOrderController::class, 'export'])->name('delivery_order.export');
     Route::resource('vehicle_service', VehicleServiceController::class);
     Route::resource('selling', SellingController::class);
     Route::get('/getHargaStock', [SellingController::class, 'getHargaStock']);
