@@ -30,6 +30,7 @@ return new class extends Migration
             $table->integer('grand_total');
             $table->integer('total_payment');
             $table->string('status');
+            $table->string('notes')->nullable();
             $table->string('who_create');
             $table->string('who_update');
             $table->softDeletes();

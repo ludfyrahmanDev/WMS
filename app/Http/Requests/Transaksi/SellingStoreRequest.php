@@ -41,7 +41,7 @@ class SellingStoreRequest extends FormRequest
             'tipe_pembelian.required' => 'Tipe Pembelian tidak boleh kosong!',
             'tipe_pembayaran.required' => 'Tipe Pembayaran tidak boleh kosong!',
             'total_bayar.required' => 'Total Bayar tidak boleh kosong!',
-            'required.required' => 'Angsuran tidak boleh kosong!'
+            'angsuran.required' => 'Angsuran tidak boleh kosong!'
         ];
     }
 }
