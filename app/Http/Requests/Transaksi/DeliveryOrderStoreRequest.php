@@ -25,6 +25,12 @@ class DeliveryOrderStoreRequest extends FormRequest
             return [];
         }
 
+        if ($this->input('mode') === 'angsuran') {
+            return [
+                'angsuran' => ['required']
+            ];
+        }
+
         return [
             'tanggal_pembelian' => ['required'],
             'tanggal_pengambilan' => ['required'],
@@ -48,6 +54,7 @@ class DeliveryOrderStoreRequest extends FormRequest
             'produk_id.required' => 'Tabel Produk wajib ada data minimal 1!',
             'total_bayar.required' => 'Total Bayar tidak boleh kosong!',
             'tipe_pembelian.required' => 'Tipe Pembelian tidak boleh kosong!',
+            'angsuran.required' => 'Angsuran tidak boleh kosong!'
         ];
     }
     

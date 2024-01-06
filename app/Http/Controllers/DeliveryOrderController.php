@@ -39,6 +39,7 @@ class DeliveryOrderController extends Controller
             'vehicle_id' => null,
             'transaction_type' => null,
             'grand_total' => null,
+            'notes' => null,
             'total_payment' => null
         ];
 
@@ -75,6 +76,7 @@ class DeliveryOrderController extends Controller
             $delivery_order->who_create = $user['name'];
             $delivery_order->who_update = $user['name'];
             $delivery_order->transaction_type = $request->tipe_pembelian;
+            $delivery_order->notes = $request->catatan;
             $delivery_order->save();
 
             //insert Table Delivery Order Detail
@@ -112,7 +114,7 @@ class DeliveryOrderController extends Controller
         try {
             $deliveryOrderDetails  = $delivery_order->delivery_order_detail;
 
-            foreach($deliveryOrderDetails as $detail) {
+            foreach ($deliveryOrderDetails as $detail) {
                 $detail->stock()->delete();
             }
 
@@ -156,6 +158,14 @@ class DeliveryOrderController extends Controller
 
                 return redirect(route('delivery_order.index'))->with('success', 'Berhasil update data!');
                 return false;
+            } else if ($request->mode == 'angsuran') {
+                $delivery_order->total_payment = intval($delivery_order->total_payment) + intval($request->angsuran);
+                $delivery_order->who_update = $user['name'];
+                $delivery_order->notes = $request->catatan;
+                $delivery_order->save();
+
+                return redirect(route('delivery_order.index'))->with('success', 'Berhasil update data!');
+                return false;
             }
 
             // update Table Delivery order 
@@ -175,16 +185,16 @@ class DeliveryOrderController extends Controller
 
             $delivery_order->who_update = $user['name'];
             $delivery_order->transaction_type = $request->tipe_pembelian;
+            $delivery_order->notes = $request->catatan;
             $delivery_order->save();
 
             //delete Delivery Order Detail dan Stock By ID DO
             $deliveryOrderDetails  = $delivery_order->delivery_order_detail;
 
-            foreach($deliveryOrderDetails as $detail) {
+            foreach ($deliveryOrderDetails as $detail) {
                 $detail->delete();
 
                 $detail->stock()->delete();
-
             }
 
             // $delivery_order->delivery_order_detail()->delete();
@@ -224,8 +234,11 @@ class DeliveryOrderController extends Controller
                 return redirect(route('delivery_order.edit', $delivery_order->id))->with('success', 'Berhasil mengubah data!');
             }
         } catch (\Throwable $th) {
-            // var_dump($th->getMessage());
-            // die;
+            var_dump($th->getMessage());
+            die;
+            if ($request->mode == 'angsuran') {
+                return back()->with('failed', 'Gagal mengubah data!');
+            }
             if ($request->mode != null) {
                 return back()->with('failed', 'Gagal konfirmasi data!');
             } else {

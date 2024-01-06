@@ -161,8 +161,10 @@ class SellingController extends Controller
 
                 return redirect(route('selling.index'))->with('success', 'Berhasil update data!');
                 return false;
-            } else if ($request->mode == 'angsuran'){
+            } else if ($request->mode == 'angsuran') {
                 $selling->total_payment = intval($selling->total_payment) + intval($request->angsuran);
+                $selling->updated_by = $user['name'];
+                $selling->notes = $request->catatan;
                 $selling->save();
 
                 return redirect(route('selling.index'))->with('success', 'Berhasil update data!');
@@ -179,7 +181,6 @@ class SellingController extends Controller
             $selling->purchasing_method     = $request->tipe_pembelian;
             $selling->payment_type          = $request->tipe_pembayaran;
             $selling->notes                 = $request->catatan;
-            $selling->status                = $request->catatan;
             $selling->grand_total           = $request->grand_total;
             $selling->total_payment         = $request->total_bayar;
             $selling->net_profit            = $request->laba_bersih;

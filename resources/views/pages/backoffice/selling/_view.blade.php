@@ -136,10 +136,17 @@
                             @enderror
                         </div>
                         <div class="input-form col-span-8">
-                            <x-base.form-label for="catatan">Catatan</x-base.form-label>
-                            <x-base.form-textarea disabled class="form-control" id="catatan" name="catatan"
-                                placeholder="Masukkan catatan (Optional)..."
-                                value="{{ $data['header']->notes ?? old('catatan') }}"></x-base.form-textarea>
+                            @if ($data['header']->status != 'On Progress')
+                                <x-base.form-label for="catatan">Catatan</x-base.form-label>
+                                <x-base.form-textarea disabled class="form-control" id="catatan" name="catatan"
+                                    placeholder="Masukkan catatan (Optional)..."
+                                    value="{{ $data['header']->notes ?? old('catatan') }}"></x-base.form-textarea>
+                            @else
+                                <x-base.form-label for="catatan">Catatan</x-base.form-label>
+                                <x-base.form-textarea class="form-control" id="catatan" name="catatan"
+                                    placeholder="Masukkan catatan (Optional)..."
+                                    value="{{ $data['header']->notes ?? old('catatan') }}"></x-base.form-textarea>
+                            @endif
                         </div>
                     </div>
                     <br>
@@ -221,6 +228,7 @@
 
                         </tfoot>
                     </table>
+
                     <input type="hidden" name="mode" id="mode" value="angsuran" />
 
                     <div class="mt-5 text-right">
@@ -229,9 +237,11 @@
                                 Cancel
                             </a>
                         </x-base.button>
-                        <x-base.button class="w-24" type="submit" variant="primary">
-                            Save
-                        </x-base.button>
+                        @if ($data['header']->status == 'On Progress')
+                            <x-base.button class="w-24" type="submit" variant="primary">
+                                Save
+                            </x-base.button>
+                        @endif
                     </div>
                 </div>
                 <!-- END: Form Layout -->

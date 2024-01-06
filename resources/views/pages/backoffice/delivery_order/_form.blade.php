@@ -4,7 +4,8 @@
     <title>{{ $title }}</title>
 @endsection
 
-{{-- <?php echo($data['detail']); die; ?> --}}
+{{-- <?php echo $data['detail'];
+die(); ?> --}}
 
 @section('subcontent')
     <div class="intro-y mt-8 flex items-center">
@@ -136,6 +137,14 @@
                             @enderror
                         </div>
                     </div>
+                    <div class="mt-2 grid grid-cols-12 gap-2">
+                        <div class="input-form col-span-12">
+                            <x-base.form-label for="catatan">Catatan</x-base.form-label>
+                            <x-base.form-textarea class="form-control" id="catatan" name="catatan"
+                                placeholder="Masukkan catatan (Optional)..."
+                                value="{{ $data['header']->notes ?? old('catatan') }}"></x-base.form-textarea>
+                        </div>
+                    </div>
                     <br>
                     <hr style="border: 1px solid black;">
 
@@ -152,8 +161,8 @@
                         </div>
                         <div class="input-form col-span-3">
                             <x-base.form-label for="crud-form-1">Qty</x-base.form-label>
-                            <x-base.form-input class="w-full" id="crud-form-1" type="text" name="qty" id="qty"
-                                value="" placeholder="Input Qty Produk"
+                            <x-base.form-input class="w-full" id="crud-form-1" type="text" name="qty"
+                                id="qty" value="" placeholder="Input Qty Produk"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                         </div>
                         <div class="input-form col-span-3">
@@ -213,8 +222,8 @@
                                         <td class="py-2 px-4 jumlah_qty w-1/4">{{ $item['purchase_amount'] }}<input
                                                 type="hidden" name="jumlah_qty[]" id="jumlah_qty[]"
                                                 value="{{ $item['purchase_amount'] }}" /></td>
-                                        <td class="py-2 px-4 hargaKG w-1/4">{{ $item['stock']['price_kg'] }}<input type="hidden"
-                                                class="column_hargaKG" name="hargaKG[]" id="hargaKG[]"
+                                        <td class="py-2 px-4 hargaKG w-1/4">{{ $item['stock']['price_kg'] }}<input
+                                                type="hidden" class="column_hargaKG" name="hargaKG[]" id="hargaKG[]"
                                                 value="{{ $item['stock']['price_kg'] }}" /></td>
                                         <td class="py-2 px-4 subtotal w-1/4">{{ $item['subtotal'] }}<input type="hidden"
                                                 class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]"

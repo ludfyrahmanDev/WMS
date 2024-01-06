@@ -125,6 +125,23 @@
                             @enderror
                         </div>
                     </div>
+                    <div class="mt-2 grid grid-cols-12 gap-2">
+                        @if ($data['header']->status != 'On Progress')
+                            <div class="input-form col-span-12">
+                                <x-base.form-label for="catatan">Catatan</x-base.form-label>
+                                <x-base.form-textarea class="form-control" id="catatan" name="catatan"
+                                    placeholder="Masukkan catatan (Optional)..."
+                                    value="{{ $data['header']->notes ?? old('catatan') }}" disabled></x-base.form-textarea>
+                            </div>
+                        @else
+                            <div class="input-form col-span-12">
+                                <x-base.form-label for="catatan">Catatan</x-base.form-label>
+                                <x-base.form-textarea class="form-control" id="catatan" name="catatan"
+                                    placeholder="Masukkan catatan (Optional)..."
+                                    value="{{ $data['header']->notes ?? old('catatan') }}"></x-base.form-textarea>
+                            </div>
+                        @endif
+                    </div>
                     <br>
                     <hr style="border: 1px solid black;">
                     <br>
@@ -175,16 +192,33 @@
                                 <th class="py-2 px-4 border-b text-center grand_total">
                                     {{ $data['header']->grand_total ?? 0 }}</th>
                             </tr>
-                            <tr class="bg-dark ">
-                                <th class="py-2 px-4 border-b text-center text-white" colspan="3">Total Bayar</th>
-                                <th class="py-2 px-4 border-b text-center text-white">
-                                    {{ $data['header']->total_payment ?? 0 }}
-                                </th>
-                            </tr>
+                            @if ($data['header']->status == 'On Progress')
+                                <tr class="bg-dark ">
+                                    <th class="py-2 px-4 border-b text-center text-white" colspan="3">Total Bayar</th>
+                                    <th class="py-2 px-4 border-b text-center text-white">
+                                        {{ $data['header']->total_payment ?? 0 }}
+                                    </th>
+                                </tr>
+                                <tr class="bg-dark ">
+                                    <th class="py-2 px-4 border-b text-center text-white" colspan="3">Angsuran</th>
+                                    <th class="py-2 px-4 border-b text-center">
+                                        <x-base.form-input class="w-3/5 text-center" id="angsuran" type="text"
+                                            name="angsuran" value="" placeholder="Input Angsuran" required
+                                            onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                                    </th>
+                                </tr>
+                            @else
+                                <tr class="bg-dark ">
+                                    <th class="py-2 px-4 border-b text-center text-white" colspan="3">Total Bayar</th>
+                                    <th class="py-2 px-4 border-b text-center text-white">
+                                        {{ $data['header']->total_payment ?? 0 }}
+                                    </th>
+                                </tr>
+                            @endif
                         </tfoot>
                     </table>
 
-                    <div class="mode"></div>
+                    <input type="hidden" name="mode" id="mode" value="angsuran" />
 
                     <div class="mt-5 text-right">
                         <x-base.button class="mr-1 w-24" type="button" variant="outline-secondary">
@@ -192,6 +226,11 @@
                                 Cancel
                             </a>
                         </x-base.button>
+                        @if ($data['header']->status == 'On Progress')
+                            <x-base.button class="w-24" type="submit" variant="primary">
+                                Save
+                            </x-base.button>
+                        @endif
                     </div>
                 </div>
                 <!-- END: Form Layout -->
