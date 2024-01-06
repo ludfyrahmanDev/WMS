@@ -163,11 +163,13 @@ die(); ?> --}}
                             <x-base.form-label for="crud-form-1">Qty</x-base.form-label>
                             <x-base.form-input class="w-full" id="crud-form-1" type="text" name="qty"
                                 id="qty" value="" placeholder="Input Qty Produk"
+                                onkeyup="changeSubtotal()"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                         </div>
                         <div class="input-form col-span-3">
                             <x-base.form-label for="crud-form-1">Harga/Kg</x-base.form-label>
                             <x-base.form-input class="w-full" id="crud-form-1" type="text" name="harga_kg"
+                                onkeyup="changeSubtotal()"
                                 id="harga_kg" value="" placeholder="Input Harga/Kg"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                         </div>
@@ -222,10 +224,10 @@ die(); ?> --}}
                                         <td class="py-2 px-4 jumlah_qty w-1/4">{{ $item['purchase_amount'] }}<input
                                                 type="hidden" name="jumlah_qty[]" id="jumlah_qty[]"
                                                 value="{{ $item['purchase_amount'] }}" /></td>
-                                        <td class="py-2 px-4 hargaKG w-1/4">{{ $item['stock']['price_kg'] }}<input
+                                        <td class="py-2 px-4 hargaKG w-1/4">{{ toThousand($item['stock']['price_kg']) }}<input
                                                 type="hidden" class="column_hargaKG" name="hargaKG[]" id="hargaKG[]"
                                                 value="{{ $item['stock']['price_kg'] }}" /></td>
-                                        <td class="py-2 px-4 subtotal w-1/4">{{ $item['subtotal'] }}<input type="hidden"
+                                        <td class="py-2 px-4 subtotal w-1/4">{{ toThousand($item['subtotal']) }}<input type="hidden"
                                                 class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]"
                                                 value="{{ $item['subtotal'] }}" /></td>
                                         <td class="py-2 px-4 w-1/4">
@@ -240,7 +242,7 @@ die(); ?> --}}
                             <tr class="bg-dark text-white">
                                 <th class="py-2 px-4 border-b text-center" colspan="4">Grand Total</th>
                                 <th class="py-2 px-4 border-b text-center grand_total">
-                                    {{ $data['header']->grand_total ?? 0 }}</th>
+                                    {{ toThousand($data['header']->grand_total ?? 0) }}</th>
                                 <th class="py-2 px-4 border-b text-center" hidden><x-base.form-input
                                         class="w-3/3 text-center" id="grand_total" type="text" name="grand_total"
                                         value="{{ $data['header']->grand_total ?? 0 }}" /></th>
@@ -283,12 +285,17 @@ die(); ?> --}}
 
     @push('scripts')
         <script>
+            function changeSubtotal(){
+                var qty = $('#qty').val();
+                var hargaKG = $('#harga_kg').val();
+                var sub = qty * hargaKG;
+                $('#subtotal').val(sub);
+            }
             function tambahProduk() {
                 var produk = $('#produk').val().split('_');
                 var qty = $('#qty').val();
                 var subtotal = $('#subtotal').val();
                 var hargaKG = $('#harga_kg').val();
-
                 if (produk.length == 1 || qty == "" || subtotal == "" || hargaKG == "") {
                     alert('Harap mengisi form produk, qty, harga/Kg, subtotal');
                     return false;

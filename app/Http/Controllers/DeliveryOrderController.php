@@ -7,7 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\DeliveryOrder;
 use App\Models\DeliveryOrderDetail;
 use App\Http\Requests\Transaksi\DeliveryOrderStoreRequest;
-
+use App\Exports\DeliveryOrderExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 class DeliveryOrderController extends Controller
 {
     public function index(Request $request)
@@ -25,8 +28,9 @@ class DeliveryOrderController extends Controller
 
         $title = 'Data Pembelian';
         $route = 'delivery_order';
+        $request = $request->toArray();
 
-        return view('pages.backoffice.delivery_order.index', compact('data', 'title', 'route'));
+        return view('pages.backoffice.delivery_order.index', compact('data', 'title', 'route', 'request'));
     }
 
     public function create()
@@ -266,5 +270,12 @@ class DeliveryOrderController extends Controller
         $type = 'view';
 
         return view('pages.backoffice.delivery_order._view', compact('data', 'title', 'route', 'type'));
+    }
+
+    public function export(Request $request)
+    {
+        $name = 'Data Pembelian ';
+        $fileName = $name . '.xlsx';
+        return Excel::download(new DeliveryOrderExport($request), $fileName);
     }
 }

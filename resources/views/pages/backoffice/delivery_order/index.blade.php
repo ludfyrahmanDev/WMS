@@ -22,6 +22,11 @@
                     Add Data
                 </x-base.button>
             </a>
+            <a href="{{ route($route . '.export', $request) }}" target="_blank">
+                <x-base.button class="mr-2 shadow-md" variant="success">
+                    Laporan {{$title}}
+                </x-base.button>
+            </a>
             <x-base.menu class="hidden">
                 <x-base.menu.button class="!box px-2" as="x-base.button">
                     <span class="flex h-5 w-5 items-center justify-center">

@@ -50,8 +50,8 @@ class ProductController extends Controller
             $product = new Product();
             $product->product_category_id = $request->product_category;
             $product->product = $request->product;
-            $product->price = $request->price;
-            $product->price_sell = $request->price_sell;
+            // $product->price = $request->price;
+            // $product->price_sell = $request->price_sell;
             $product->save();
 
             if ($product) {
@@ -60,7 +60,7 @@ class ProductController extends Controller
                 return back()->with('failed', 'Gagal menambah data!');
             }
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menambah data!');
+            return back()->with('failed', 'Gagal menambah data! '.$th->getMessage());
         }
     }
 
