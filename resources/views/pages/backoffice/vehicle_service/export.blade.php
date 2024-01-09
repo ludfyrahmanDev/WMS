@@ -37,13 +37,16 @@
         </thead>
         <tbody>
             @foreach ($data as $item)
-                <tr>
-                    <td>{{ $item->date }}</td>  
-                    <td>{{ $item->vehicleServiceDetail->spending_category->spending_category ?? '-' }}</td>
-                    <td>{{ $item->vehicleServiceDetail->description ?? '-' }}</td>
-                    <td>{{ $item->vehicle->license_plate ?? '-' }}</td>
-                    <td>{{ toThousand($item->vehicleServiceDetail->amount_of_expenditure ?? '0') }}</td>
-                </tr>
+                
+                @foreach ($item->vehicleServiceDetail as $childItem)
+                    <tr>
+                        <td>{{ $item->date }}</td>  
+                        <td>{{ $childItem->spendingCategory->spending_category ?? '-' }}</td>
+                        <td>{{ $childItem->description ?? '-' }}</td>
+                        <td>{{ $item->vehicle->license_plate ?? '-' }}</td>
+                        <td>{{ toThousand($childItem->amount_of_expenditure ?? '0') }}</td>
+                    </tr>
+                @endforeach
             @endforeach
         </tbody>
     </table>
