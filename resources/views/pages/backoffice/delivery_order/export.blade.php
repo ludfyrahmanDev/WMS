@@ -21,6 +21,7 @@
     }
 </style>
 <body>
+    <h1>{{$title}}</h1>
     <table border="1">
         <thead>
             <tr>

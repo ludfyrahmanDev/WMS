@@ -278,4 +278,21 @@ class DeliveryOrderController extends Controller
         $fileName = $name . '.xlsx';
         return Excel::download(new DeliveryOrderExport($request), $fileName);
     }
+    public function exportPdf(Request $request){
+        $data = DeliveryOrder::filterResource($request, [
+            'purchase_date',
+            'pick_up_date',
+            'supplier.name',
+            'transaction_type',
+            'status'
+        ], [])
+            ->with(['supplier', 'vehicle', 'delivery_order_detail'])
+            ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'))
+            ->get();
+        $title = 'Data Pembelian';
+        $pdf = \PDF::loadView('pages.backoffice.delivery_order.export', compact('data', 'title'))->setPaper('a4', 'landscape');;
+        $name = 'Laporan Pembelian';
+        // show preview pdf
+        return $pdf->download("$name.pdf");
+    }
 }

@@ -22,37 +22,40 @@
                     Add Data
                 </x-base.button>
             </a>
-            <a href="{{ route($route . '.export', $request) }}" target="_blank">
-                <x-base.button class="mr-2 shadow-md" variant="success">
-                    Laporan {{$title}}
-                </x-base.button>
-            </a>
-            <x-base.menu class="hidden">
-                <x-base.menu.button class="!box px-2" as="x-base.button">
+            <x-base.menu>
+                <x-base.menu.button
+                    class="!box px-2"
+                    as="x-base.button"
+                >
                     <span class="flex h-5 w-5 items-center justify-center">
-                        <x-base.lucide class="h-4 w-4" icon="Plus" />
+                        <x-base.lucide
+                            class="h-4 w-4"
+                            icon="file"
+                        />
                     </span>
                 </x-base.menu.button>
                 <x-base.menu.items class="w-40">
-                    <x-base.menu.item>
-                        <x-base.lucide class="mr-2 h-4 w-4" icon="Printer" /> Print
+                    <x-base.menu.item href="{{ route($route . '.export', $request) }}" target="_blank">
+                        <x-base.lucide
+                            class="mr-2 h-4 w-4"
+                            icon="sheet"
+                        /> Export to Excel
                     </x-base.menu.item>
-                    <x-base.menu.item>
-                        <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to
-                        Excel
-                    </x-base.menu.item>
-                    <x-base.menu.item>
-                        <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to
-                        PDF
+                    <x-base.menu.item href="{{ route($route . '.export-pdf', $request) }}">
+                        <x-base.lucide
+                            class="mr-2 h-4 w-4"
+                            icon="FileText"
+                        /> Export to PDF
                     </x-base.menu.item>
                 </x-base.menu.items>
             </x-base.menu>
             <div class="mx-auto hidden text-slate-500 md:block">
                 Showing 1 to {{ $data->total() < 10 ? $data->total() : 10 }} of {{ $data->total() }} entries
             </div>
-            <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto md:ml-0">
+            <div class="mt-3 w-full sm:mt-0 flex sm:ml-auto sm:w-auto md:ml-0">
+                <x-base.litepicker class="mx-auto block w-56" />
                 {{-- make live search --}}
-                <div class="relative w-56 text-slate-500">
+                <div class="relative w-56 text-slate-500 ml-2">
                     <x-base.form-input class="!box w-56 pr-10" type="text" id="search"
                         value="{{ request()->get('search') }}" placeholder="Search..." />
                     <x-base.lucide class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4" icon="Search" />
