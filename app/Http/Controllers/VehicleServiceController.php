@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\VehicleService;
 use App\Models\SpendingCategory;
 use App\Models\VehicleServiceDetail;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\VehicleServiceExport;
 use App\Http\Requests\Transaksi\VehicleServiceStoreRequest;
 
 class VehicleServiceController extends Controller
@@ -25,8 +27,9 @@ class VehicleServiceController extends Controller
 
         $title = 'Data Servis Kendaraan';
         $route = 'vehicle_service';
+        $request = $request->toArray();
 
-        return view('pages.backoffice.vehicle_service.index', compact('data', 'title', 'route'));
+        return view('pages.backoffice.vehicle_service.index', compact('data', 'title', 'route', 'request'));
     }
 
     public function create()
@@ -147,5 +150,12 @@ class VehicleServiceController extends Controller
         } catch (\Throwable $th) {
             return back()->with('failed', 'Gagal mengubah data!');
         }
+    }
+
+    public function export(Request $request)
+    {
+        $name = 'Data Servis Kendaraan ';
+        $fileName = $name . '.xlsx';
+        return Excel::download(new VehicleServiceExport($request), $fileName);
     }
 }

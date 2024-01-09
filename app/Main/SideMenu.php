@@ -176,13 +176,21 @@ class SideMenu
                         ],
                         'route_name' => 'selling.index',
                     ],
-                    'vehicle_service' => [
+                    'delivery_order' => [
                         'icon' => 'file-box',
                         'title' => 'Laporan Pembelian',
                         'params' => [
                             'layout' => 'side-menu'
                         ],
                         'route_name' => 'delivery_order.index',
+                    ],
+                    'vehicle_service' => [
+                        'icon' => 'file-box',
+                        'title' => 'Laporan Servis Kendaraan',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'route_name' => 'vehicle_service.index',
                     ],
                 ]
             ],
