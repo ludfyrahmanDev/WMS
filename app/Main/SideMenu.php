@@ -113,7 +113,7 @@ class SideMenu
                         'params' => [
                             'layout' => 'side-menu'
                         ],
-                        'title' => 'Kategori Pengeluaran'
+                        'title' => 'Kategori Transaksi Lain Lain'
                     ]
                 ]
             ],
@@ -128,7 +128,7 @@ class SideMenu
                         'params' => [
                             'layout' => 'side-menu'
                         ],
-                        'title' => 'Pengeluaran'
+                        'title' => 'Lain Lain'
                     ],
                     'purchases' => [
                         'icon' => 'shopping-bag',

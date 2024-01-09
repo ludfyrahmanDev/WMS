@@ -59,10 +59,13 @@
                 </div>
             </div>
         </div>
-
-
         <!-- BEGIN: Data List -->
         <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
+            <h1 class="text-xl">
+                <label for="" class="text-primary">Total Penjualan | <span class="font-bold">{{toThousand($total ?? 0)}}</span> | </label>
+                <label for="" class="text-green-600">Total Terbayar | <span class="font-bold">{{toThousand($completed ?? 0)}}</span> | </label>
+                <label for="" class="text-danger">Total Piutang | <span class="font-bold">{{toThousand($inCompleted ?? 0)}}</span> | </label>
+            </h1>
             <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
                 <x-base.table.thead>
                     <x-base.table.tr>
@@ -83,6 +86,9 @@
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             Tipe Pembayaran
+                        </x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                            Jumlah Pembayaran
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             Status
@@ -118,6 +124,10 @@
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 {{ $item['payment_type'] == 'cash' ? 'Cash' : 'Transfer' }}
+                            </x-base.table.td>
+                            <x-base.table.td
+                                class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                {{ toThousand($item['grand_total']) }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">

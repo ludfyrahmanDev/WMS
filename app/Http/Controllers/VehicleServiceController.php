@@ -16,20 +16,25 @@ class VehicleServiceController extends Controller
 {
     public function index(Request $request)
     {
-        $data = VehicleService::filterResource($request, [
+        $all = VehicleService::filterResource($request, [
             'date',
             'driver.name',
             'vehicle.name'
         ], [])
-            ->with('driver', 'vehicle')
-            ->orderBy($request->get('sort_by', 'date'), $request->get('order', 'desc'))
-            ->paginate($request->get('per_page', 10));
-
+            ->with('driver', 'vehicle', 'vehicleServiceDetail')
+            ->orderBy($request->get('sort_by', 'date'), $request->get('order', 'desc'));
+        $total = 0;
+        foreach ($all->get() as $key => $value) {
+            foreach ($value->vehicleServiceDetail as $key => $value) {
+                $total += $value->amount_of_expenditure;
+            }
+        }
+        $data = $all->paginate($request->get('per_page', 10));
         $title = 'Data Servis Kendaraan';
         $route = 'vehicle_service';
         $request = $request->toArray();
 
-        return view('pages.backoffice.vehicle_service.index', compact('data', 'title', 'route', 'request'));
+        return view('pages.backoffice.vehicle_service.index', compact('data', 'title', 'route', 'request', 'total'));
     }
 
     public function create()

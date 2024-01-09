@@ -65,6 +65,11 @@
 
         <!-- BEGIN: Data List -->
         <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
+            <h1 class="text-xl">
+                <label for="" class="text-primary">Total Saldo | <span class="font-bold">{{toThousand($saldo ?? 0)}}</span> | </label>
+                <label for="" class="text-green-600">Total Uang Masuk | <span class="font-bold">{{toThousand($income ?? 0)}}</span> | </label>
+                <label for="" class="text-danger">Total Uang Keluar | <span class="font-bold">{{toThousand($outcome ?? 0)}}</span> | </label>
+            </h1>
             <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
                 <x-base.table.thead>
                     <x-base.table.tr>

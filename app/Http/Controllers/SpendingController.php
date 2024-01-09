@@ -15,7 +15,7 @@ class SpendingController extends Controller
 {
     public function index(Request $request)
     {
-        $data = Spending::filterResource($request, [
+        $all = Spending::filterResource($request, [
             'date',
             'spendingCategory.spending_category',
             'mutation',
@@ -23,14 +23,17 @@ class SpendingController extends Controller
             'who_update',
         ], [])
         ->with('spendingCategory')
-        ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
-        ->paginate($request->get('per_page', 10));
+        ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+        $income = $all->get()->where('mutation', 'Uang Masuk')->sum('nominal');
+        $outcome = $all->get()->where('mutation', 'Uang Keluar')->sum('nominal');
+        $saldo = $income - $outcome;
+        $data = $all->paginate($request->get('per_page', 10));
         
-        $title = 'Data Pengeluaran';
+        $title = 'Data Transaksi Lain Lain';
         $route = 'spending';
         $request = $request->toArray();
 
-        return view('pages.backoffice.spending.index', compact('data', 'title', 'route', 'request'));
+        return view('pages.backoffice.spending.index', compact('data', 'title', 'route', 'request', 'saldo', 'income', 'outcome'));
     }
 
     public function create()
@@ -49,7 +52,7 @@ class SpendingController extends Controller
             'nominal' => null
         ];
 
-        $title = 'Data Pengeluaran';
+        $title = 'Data Transaksi Lain Lain';
         $route = route('spending.store');
         $type = 'create';
 
@@ -84,7 +87,7 @@ class SpendingController extends Controller
         $enum = PaymentMethod::asOptions();
 
         $data = $spending;
-        $title = 'Data Pengeluaran';
+        $title = 'Data Transaksi Lain Lain';
         $route = route('spending.update', $spending);
         $type = 'edit';
 
@@ -124,7 +127,7 @@ class SpendingController extends Controller
 
     public function export(Request $request)
     {
-        $name = 'Data Pengeluaran';
+        $name = 'Data Transaksi Lain Lain';
         $fileName = $name . '.xlsx';
         return Excel::download(new SpendingExport($request), $fileName);
     }
@@ -147,9 +150,9 @@ class SpendingController extends Controller
         ->orderBy($request->get('sort_by', 'payment_method'), $request->get('order', 'asc'))
         ->get();    
 
-        $title = 'Data Pengeluaran';
+        $title = 'Data Transaksi Lain Lain';
         $pdf = \PDF::loadView('pages.backoffice.spending.export', compact('data', 'title'))->setPaper('a4', 'landscape');;
-        $name = 'Laporan Pengeluaran';
+        $name = 'Laporan Transaksi Lain Lain';
         // show preview pdf
         return $pdf->download("$name.pdf");
     }
