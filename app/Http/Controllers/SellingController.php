@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\SellingDetail;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaksi\SellingStoreRequest;
-
+use App\Exports\SellingExport;
+use Maatwebsite\Excel\Facades\Excel;
 class SellingController extends Controller
 {
     public function index(Request $request)
@@ -18,7 +19,7 @@ class SellingController extends Controller
             ->paginate($request->get('per_page', 10));
         $title = 'Data Penjualan';
         $route = 'selling';
-        return view('pages.backoffice.selling.index', compact('data', 'title', 'route'));
+        return view('pages.backoffice.selling.index', compact('data', 'title', 'route', 'request'));
     }
 
     public function create(Selling $selling)
@@ -322,5 +323,22 @@ class SellingController extends Controller
         };
 
         return response()->json($arr);
+    }
+
+    public function export(Request $request)
+    {
+        $name = 'Data Penjualan ';
+        $fileName = $name . '.xlsx';
+        return Excel::download(new SellingExport($request), $fileName);
+    }
+    public function exportPdf(Request $request){
+        $data = Selling::with(['customer', 'driver','selling_detail','selling_detail.stock','selling_detail.stock.product'])
+            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
+            ->get();
+        $title = 'Data Penjualan';
+        $pdf = \PDF::loadView('pages.backoffice.selling.export', compact('data', 'title'))->setPaper('a4', 'landscape');;
+        $name = 'Laporan Penjualan';
+        // show preview pdf
+        return $pdf->download("$name.pdf");
     }
 }

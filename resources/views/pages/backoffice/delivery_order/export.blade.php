@@ -12,7 +12,7 @@
         width: 100%;
         border-collapse: collapse;
     }
-    table thead th{
+    table thead tr th{
         background-color: #46ce5f;
         color: #000;
         padding: 5px;
@@ -39,8 +39,8 @@
                     <td>{{$item->who_create ?? '-'}}</td>
                     <td>{{$item->delivery_order_detail->sum('purchase_amount') ?? '-'}}</td>
                     <td>{{$item->delivery_order_detail->sum('last_stock') ?? '-'}}</td>
-                    <td>{{toThousand($item->delivery_order_detail->avg('price_kg') ?? '0')}}</td>
-                    <td>{{toThousand($item->grand_total)}}</td>
+                    <td data-format="#,##0.00">{{$item->delivery_order_detail->avg('price_kg') ?? '0'}}</td>
+                    <td data-format="#,##0.00">{{$item->grand_total}}</td>
                 </tr>
             @endforeach
         </tbody>

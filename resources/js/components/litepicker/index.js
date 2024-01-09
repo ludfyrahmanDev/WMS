@@ -34,6 +34,7 @@
                 ? " - " + dayjs().add(1, "month").format(options.format)
                 : "";
             $(this).val(date);
+            alert(date)
         }
 
         new Litepicker({

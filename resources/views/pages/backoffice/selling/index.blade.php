@@ -22,23 +22,30 @@
                     Buat transaksi baru
                 </x-base.button>
             </a>
-            <x-base.menu class="hidden">
-                <x-base.menu.button class="!box px-2" as="x-base.button">
+            <x-base.menu>
+                <x-base.menu.button
+                    class="!box px-2"
+                    as="x-base.button"
+                >
                     <span class="flex h-5 w-5 items-center justify-center">
-                        <x-base.lucide class="h-4 w-4" icon="Plus" />
+                        <x-base.lucide
+                            class="h-4 w-4"
+                            icon="file"
+                        />
                     </span>
                 </x-base.menu.button>
                 <x-base.menu.items class="w-40">
-                    <x-base.menu.item>
-                        <x-base.lucide class="mr-2 h-4 w-4" icon="Printer" /> Print
+                    <x-base.menu.item href="{{ route($route . '.export', $request) }}" target="_blank">
+                        <x-base.lucide
+                            class="mr-2 h-4 w-4"
+                            icon="sheet"
+                        /> Export to Excel
                     </x-base.menu.item>
-                    <x-base.menu.item>
-                        <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to
-                        Excel
-                    </x-base.menu.item>
-                    <x-base.menu.item>
-                        <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to
-                        PDF
+                    <x-base.menu.item href="{{ route($route . '.export-pdf', $request) }}">
+                        <x-base.lucide
+                            class="mr-2 h-4 w-4"
+                            icon="FileText"
+                        /> Export to PDF
                     </x-base.menu.item>
                 </x-base.menu.items>
             </x-base.menu>
