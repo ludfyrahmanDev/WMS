@@ -33,4 +33,12 @@ class Spending extends Model
     {
         return SpendingCategory::select('id', 'spending_category')->where('spending_types', '<>', 'kendaraan')->get();
     }
+
+    public static function whereIDSaldo()
+    {
+        $spendingCategory = new SpendingCategory();
+        $spendingCategoryID = $spendingCategory->getIDSaldo();
+
+        return self::where('spending_category_id', $spendingCategoryID)->first();
+    }
 }

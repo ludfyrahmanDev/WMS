@@ -17,4 +17,9 @@ class SpendingCategory extends Model
         'spending_category',
         'spending_types'
     ];
+
+    public function getIDSaldo()
+    {
+        return SpendingCategory::where('spending_category', 'saldo')->value('id');
+    }
 }
