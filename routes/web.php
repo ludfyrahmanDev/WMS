@@ -66,6 +66,7 @@ Route::middleware('auth')->group(function () {
     // transaction
     Route::resource('delivery_order', DeliveryOrderController::class);
     Route::get('delivery_order_export', [DeliveryOrderController::class, 'export'])->name('delivery_order.export');
+    Route::get('delivery_order_export_pdf', [DeliveryOrderController::class, 'exportPdf'])->name('delivery_order.export-pdf');
     Route::resource('vehicle_service', VehicleServiceController::class);
     Route::get('vehicle_service_export', [VehicleServiceController::class, 'export'])->name('vehicle_service.export');
     Route::resource('selling', SellingController::class);
