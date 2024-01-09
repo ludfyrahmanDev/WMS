@@ -70,6 +70,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('vehicle_service', VehicleServiceController::class);
     Route::get('vehicle_service_export', [VehicleServiceController::class, 'export'])->name('vehicle_service.export');
     Route::resource('selling', SellingController::class);
+    Route::get('selling_export', [SellingController::class, 'export'])->name('selling.export');
+    Route::get('selling_export_pdf', [SellingController::class, 'exportPdf'])->name('selling.export-pdf');
     Route::get('/getHargaStock', [SellingController::class, 'getHargaStock']);
     // end transaction
     Route::get('product/{product}', [ProductController::class, 'getDataProduct'])->name('product.get');

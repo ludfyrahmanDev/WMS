@@ -71,6 +71,16 @@ License: You must have a valid license purchased only from themeforest(the above
                 }
             });
         }
+        // get value from litepicker library
+        const filter = document.querySelector('#filter-date');
+        if (filter) {
+            filter.addEventListener('keyup', function (e) {
+                console.log(e.target.value)
+                if (e.key === 'Enter') {
+                    window.location.href = window.location.origin + window.location.pathname + '?search=' + e.target.value;
+                }
+            });
+        }
         // on change per page reload page append param ?per_page=10
         const perPage = document.querySelector('#per_page');
         if (perPage) {
