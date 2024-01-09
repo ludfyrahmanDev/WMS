@@ -10,7 +10,10 @@ use App\Exports\SpendingExport;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\Transaksi\SpendingStoreRequest;
-
+// import selling
+use App\Models\Selling;
+// import delivery order
+use App\Models\DeliveryOrder;
 class SpendingController extends Controller
 {
     public function index(Request $request)
@@ -26,14 +29,17 @@ class SpendingController extends Controller
         ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
         $income = $all->get()->where('mutation', 'Uang Masuk')->sum('nominal');
         $outcome = $all->get()->where('mutation', 'Uang Keluar')->sum('nominal');
-        $saldo = $income - $outcome;
+        $sellingCompleted = Selling::where('status', 'Completed')->sum('grand_total');
+        $sellingInCompleted = Selling::where('status', '!=','Canceled')->sum('grand_total');
+        $purchaseCompleted = DeliveryOrder::where('status', 'Completed')->sum('grand_total');
+        $purchaseInCompleted = DeliveryOrder::where('status', '!=','Completed')->sum('grand_total');
+        $saldo =( $income + $sellingCompleted) - ($outcome + $purchaseCompleted);
         $data = $all->paginate($request->get('per_page', 10));
-        
         $title = 'Data Transaksi Lain Lain';
         $route = 'spending';
         $request = $request->toArray();
 
-        return view('pages.backoffice.spending.index', compact('data', 'title', 'route', 'request', 'saldo', 'income', 'outcome'));
+        return view('pages.backoffice.spending.index', compact('data', 'title', 'route', 'request', 'saldo', 'income', 'outcome', 'sellingCompleted', 'sellingInCompleted', 'purchaseCompleted', 'purchaseInCompleted'));
     }
 
     public function create()
