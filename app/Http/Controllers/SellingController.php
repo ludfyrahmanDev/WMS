@@ -14,12 +14,15 @@ class SellingController extends Controller
 {
     public function index(Request $request)
     {
-        $data = Selling::with('customer', 'driver')
-            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
-            ->paginate($request->get('per_page', 10));
+        $all = Selling::with('customer', 'driver')
+            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+        $total = $all->get()->sum('grand_total');
+        $completed = $all->get()->where('status', 'Completed')->sum('grand_total');
+        $inCompleted = $all->get()->where('status', '!=','Completed')->sum('grand_total');
+        $data = $all->paginate($request->get('per_page', 10));
         $title = 'Data Penjualan';
         $route = 'selling';
-        return view('pages.backoffice.selling.index', compact('data', 'title', 'route', 'request'));
+        return view('pages.backoffice.selling.index', compact('data', 'title', 'route', 'request', 'total','completed','inCompleted'));
     }
 
     public function create(Selling $selling)

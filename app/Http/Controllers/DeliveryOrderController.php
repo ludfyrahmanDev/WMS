@@ -15,7 +15,7 @@ class DeliveryOrderController extends Controller
 {
     public function index(Request $request)
     {
-        $data = DeliveryOrder::filterResource($request, [
+        $all = DeliveryOrder::filterResource($request, [
             'purchase_date',
             'pick_up_date',
             'supplier.name',
@@ -23,14 +23,17 @@ class DeliveryOrderController extends Controller
             'status'
         ], [])
             ->with('supplier')
-            ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'))
-            ->paginate($request->get('per_page', 10));
+            ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'));
+        $total = $all->get()->sum('grand_total');
+        $completed = $all->get()->where('status', 'Completed')->sum('grand_total');
+        $inCompleted = $all->get()->where('status', '!=','Completed')->sum('grand_total');
+        $data = $all->paginate($request->get('per_page', 10));
 
         $title = 'Data Pembelian';
         $route = 'delivery_order';
         $request = $request->toArray();
 
-        return view('pages.backoffice.delivery_order.index', compact('data', 'title', 'route', 'request'));
+        return view('pages.backoffice.delivery_order.index', compact('data', 'title', 'route', 'request', 'completed', 'total', 'inCompleted'));
     }
 
     public function create()
