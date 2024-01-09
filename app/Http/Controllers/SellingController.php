@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Stock;
 use App\Models\Selling;
+use App\Models\Spending;
 use Illuminate\Http\Request;
 use App\Models\SellingDetail;
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Transaksi\SellingStoreRequest;
 use App\Exports\SellingExport;
+use App\Models\SpendingCategory;
+use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Requests\Transaksi\SellingStoreRequest;
+
 class SellingController extends Controller
 {
     public function index(Request $request)
@@ -171,6 +174,10 @@ class SellingController extends Controller
                 $selling->notes = $request->catatan;
                 $selling->save();
 
+                $spending = Spending::whereIDSaldo();
+                $spending->nominal += $request->angsuran;
+                $spending->save();
+
                 return redirect(route('selling.index'))->with('success', 'Berhasil update data!');
                 return false;
             }
@@ -191,6 +198,10 @@ class SellingController extends Controller
 
             if ($request->mode != null) {
                 $selling->status = 'On Progress';
+
+                $spending = Spending::whereIDSaldo();
+                $spending->nominal += $request->total_bayar;
+                $spending->save();
             } else {
                 $selling->status = 'In Progress';
             }
@@ -334,8 +345,9 @@ class SellingController extends Controller
         $fileName = $name . '.xlsx';
         return Excel::download(new SellingExport($request), $fileName);
     }
-    public function exportPdf(Request $request){
-        $data = Selling::with(['customer', 'driver','selling_detail','selling_detail.stock','selling_detail.stock.product'])
+    public function exportPdf(Request $request)
+    {
+        $data = Selling::with(['customer', 'driver', 'selling_detail', 'selling_detail.stock', 'selling_detail.stock.product'])
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
             ->get();
         $title = 'Data Penjualan';
