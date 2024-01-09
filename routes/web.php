@@ -60,6 +60,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('supplier', SupplierController::class);
     Route::resource('spendingCategory', SpendingCategoryController::class);
     Route::resource('spending', SpendingController::class);
+    Route::get('spending_export', [SpendingController::class, 'export'])->name('spending.export');
+    Route::get('spending_export_pdf', [spendingController::class, 'exportPdf'])->name('spending.export-pdf');
     Route::resource('product', ProductController::class);
     Route::resource('category', ProductCategoryController::class);
     // end master data section
@@ -76,6 +78,8 @@ Route::middleware('auth')->group(function () {
     // end transaction
     Route::get('product/{product}', [ProductController::class, 'getDataProduct'])->name('product.get');
     Route::get('stock', [StockController::class, 'index'])->name('stockIndex');
+    Route::get('stock_export', [StockController::class, 'export'])->name('stock.export');
+    Route::get('stock_pdf', [StockController::class, 'exportPdf'])->name('stock.export-pdf');
     Route::controller(PageController::class)->group(function () {
         // template begin here
         Route::get('/sd', 'dashboardOverview1')->name('dashboard-overview-1');

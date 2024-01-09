@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Spending;
+use Barryvdh\DomPDF\PDF;
 use App\Enums\PaymentMethod;
 use Illuminate\Http\Request;
+use App\Exports\SpendingExport;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\Transaksi\SpendingStoreRequest;
 
 class SpendingController extends Controller
@@ -25,8 +28,9 @@ class SpendingController extends Controller
         
         $title = 'Data Pengeluaran';
         $route = 'spending';
+        $request = $request->toArray();
 
-        return view('pages.backoffice.spending.index', compact('data', 'title', 'route'));
+        return view('pages.backoffice.spending.index', compact('data', 'title', 'route', 'request'));
     }
 
     public function create()
@@ -116,5 +120,37 @@ class SpendingController extends Controller
         } catch (\Throwable $th) {
             return back()->with('failed', 'Gagal menghapus data!');
         }
+    }
+
+    public function export(Request $request)
+    {
+        $name = 'Data Pengeluaran';
+        $fileName = $name . '.xlsx';
+        return Excel::download(new SpendingExport($request), $fileName);
+    }
+
+    public function exportPdf(Request $request){
+        $data = Spending::filterResource($request, [
+            'date',
+            'spendingCategory.spending_category',
+            'mutation',
+            'payment_method',
+            'who_update',
+        ], [])
+        ->with('spendingCategory')
+        ->whereHas('spendingCategory', function ($query) {
+            $query->where('spending_category', '<>', 'Kendaraan');
+        })
+        ->orderBy($request->get('sort_by', 'date'), $request->get('order', 'desc'))
+        ->orderBy($request->get('sort_by', 'spending_category_id'), $request->get('order', 'asc'))
+        ->orderBy($request->get('sort_by', 'mutation'), $request->get('order', 'asc'))
+        ->orderBy($request->get('sort_by', 'payment_method'), $request->get('order', 'asc'))
+        ->get();    
+
+        $title = 'Data Pengeluaran';
+        $pdf = \PDF::loadView('pages.backoffice.spending.export', compact('data', 'title'))->setPaper('a4', 'landscape');;
+        $name = 'Laporan Pengeluaran';
+        // show preview pdf
+        return $pdf->download("$name.pdf");
     }
 }
