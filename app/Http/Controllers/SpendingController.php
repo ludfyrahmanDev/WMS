@@ -14,6 +14,8 @@ use App\Http\Requests\Transaksi\SpendingStoreRequest;
 use App\Models\Selling;
 // import delivery order
 use App\Models\DeliveryOrder;
+// import vehicle service
+use App\Models\VehicleService;
 class SpendingController extends Controller
 {
     public function index(Request $request)
@@ -33,7 +35,14 @@ class SpendingController extends Controller
         $sellingInCompleted = Selling::where('status', '!=','Canceled')->sum('grand_total');
         $purchaseCompleted = DeliveryOrder::where('status', 'Completed')->sum('grand_total');
         $purchaseInCompleted = DeliveryOrder::where('status', '!=','Completed')->sum('grand_total');
-        $saldo =( $income + $sellingCompleted) - ($outcome + $purchaseCompleted);
+        $service = VehicleService::get();
+        $total = 0;
+        foreach ($service as $key => $value) {
+            foreach ($value->vehicleServiceDetail as $key => $value) {
+                $total += $value->amount_of_expenditure;
+            }
+        }
+        $saldo =( $income + $sellingCompleted) - ($outcome + $purchaseCompleted + $total);
         $data = $all->paginate($request->get('per_page', 10));
         $title = 'Data Transaksi Lain Lain';
         $route = 'spending';

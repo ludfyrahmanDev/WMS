@@ -159,7 +159,7 @@
                 </div>
                 <!-- END: Search -->
                 <!-- BEGIN: Notifications -->
-                <x-base.popover class="intro-x mr-4 sm:mr-6">
+                <x-base.popover class="intro-x mr-4 sm:mr-6 ">
                     <x-base.popover.button
                         class="relative block text-white/70 outline-none before:absolute before:top-[-2px] before:right-0 before:h-[8px] before:w-[8px] before:rounded-full before:bg-danger before:content-['']"
                     >
