@@ -421,6 +421,7 @@
                 $('#grand_total').val(totalSubtotal);
 
                 arrLaba = [];
+
             }
 
             function hapusRow(event) {

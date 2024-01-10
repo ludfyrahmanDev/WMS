@@ -16,6 +16,100 @@
         </x-base.alert>
     @endif
     <div class="mt-5 grid grid-cols-12 gap-6">
+        <div class="intro-y col-span-12 sm:col-span-6 xl:col-span-4">
+            <div @class([
+                'relative zoom-in',
+                'before:content-[\'\'] before:w-[90%] before:shadow-[0px_3px_20px_#0000000b] before:bg-slate-50 before:h-full before:mt-3 before:absolute before:rounded-md before:mx-auto before:inset-x-0 before:dark:bg-darkmode-400/70',
+            ])>
+                <div class="box p-5">
+                    <div class="flex">
+                        <x-base.lucide
+                            class="h-[28px] w-[28px] text-primary"
+                            icon="ShoppingCart"
+                        />
+                        <div class="ml-auto hidden">
+                            <x-base.tippy
+                                class="flex cursor-pointer items-center rounded-full bg-success py-[3px] pl-2 pr-1 text-xs font-medium text-white"
+                                as="div"
+                                content="33% Higher than last month"
+                            >
+                                33%
+                                <x-base.lucide
+                                    class="ml-0.5 h-4 w-4"
+                                    icon="ChevronUp"
+                                />
+                            </x-base.tippy>
+                        </div>
+                    </div>
+                    <div class="mt-6 text-3xl font-medium leading-8">{{toThousand($total ?? 0)}}</div>
+                    <div class="mt-1 text-base text-slate-500">Total Penjualan</div>
+                </div>
+            </div>
+        </div>
+        <div class="intro-y col-span-12 sm:col-span-6 xl:col-span-4">
+            <div @class([
+                'relative zoom-in',
+                'before:content-[\'\'] before:w-[90%] before:shadow-[0px_3px_20px_#0000000b] before:bg-slate-50 before:h-full before:mt-3 before:absolute before:rounded-md before:mx-auto before:inset-x-0 before:dark:bg-darkmode-400/70',
+            ])>
+                <div class="box p-5">
+                    <div class="flex">
+                        <x-base.lucide
+                            class="h-[28px] w-[28px] text-pending"
+                            icon="CreditCard"
+                        />
+                        <div class="ml-auto hidden">
+                            <x-base.tippy
+                                class="flex cursor-pointer items-center rounded-full bg-danger py-[3px] pl-2 pr-1 text-xs font-medium text-white"
+                                as="div"
+                                content="2% Lower than last month"
+                            >
+                                2%
+                                <x-base.lucide
+                                    class="ml-0.5 h-4 w-4"
+                                    icon="ChevronDown"
+                                />
+                            </x-base.tippy>
+                        </div>
+                    </div>
+                    <div class="mt-6 text-3xl font-medium leading-8">{{toThousand($completed ?? 0)}}</div>
+                    <div class="mt-1 text-base text-slate-500">Total Terbayar</div>
+                </div>
+            </div>
+        </div>
+        <div class="intro-y col-span-12 sm:col-span-6 xl:col-span-4">
+            <div @class([
+                'relative zoom-in',
+                'before:content-[\'\'] before:w-[90%] before:shadow-[0px_3px_20px_#0000000b] before:bg-slate-50 before:h-full before:mt-3 before:absolute before:rounded-md before:mx-auto before:inset-x-0 before:dark:bg-darkmode-400/70',
+            ])>
+                <div class="box p-5">
+                    <div class="flex">
+                        <x-base.lucide
+                            class="h-[28px] w-[28px] text-warning"
+                            icon="Coins"
+                        />
+                        <div class="ml-auto hidden">
+                            <x-base.tippy
+                                class="flex cursor-pointer items-center rounded-full bg-success py-[3px] pl-2 pr-1 text-xs font-medium text-white"
+                                as="div"
+                                content="12% Higher than last month"
+                            >
+                                12%
+                                <x-base.lucide
+                                    class="ml-0.5 h-4 w-4"
+                                    icon="ChevronUp"
+                                />
+                            </x-base.tippy>
+                        </div>
+                    </div>
+                    <div class="mt-6 text-3xl font-medium leading-8">{{toThousand($inCompleted ?? 0)}}</div>
+                    <div class="mt-1 text-base text-slate-500">
+                        Total Piutang
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
             <a href="{{ route($route . '.create') }}">
                 <x-base.button class="mr-2 shadow-md" variant="primary">
@@ -61,12 +155,7 @@
         </div>
         <!-- BEGIN: Data List -->
         <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
-            <h1 class="text-xl">
-                <label for="" class="text-primary">Total Penjualan | <span class="font-bold">{{toThousand($total ?? 0)}}</span> | </label>
-                <label for="" class="text-green-600">Total Terbayar | <span class="font-bold">{{toThousand($completed ?? 0)}}</span> | </label>
-                <label for="" class="text-danger">Total Piutang | <span class="font-bold">{{toThousand($inCompleted ?? 0)}}</span> | </label>
-            </h1>
-            <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
+            <x-base.table class="mt-2 border-separate border-spacing-y-[10px]">
                 <x-base.table.thead>
                     <x-base.table.tr>
                         <x-base.table.th class="whitespace-nowrap border-b-0">
@@ -153,6 +242,11 @@
                                             <x-base.lucide class="mr-1 h-4 w-4" icon="Eye" />
                                             Detail
                                         </a>
+                                        <a class="mr-3 flex items-center text-success"
+                                            href="{{ route($route . '.export-one', $item->id) }}">
+                                            <x-base.lucide class="mr-1 h-4 w-4" icon="file" />
+                                            Export
+                                        </a>
                                     @else
                                         <a class="mr-3 flex items-center text-warning"
                                             href="{{ route('selling.edit', $item->id) }}">
