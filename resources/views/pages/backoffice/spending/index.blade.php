@@ -152,6 +152,20 @@
                             </x-base.table.td>
                            
                         </x-base.table.tr>
+                        <x-base.table.tr>
+                            <x-base.table.td>
+                                <div class="whitespace-nowrap font-medium">
+                                    Service Kendaraan
+                                </div>
+                                <div class="mt-0.5 whitespace-nowrap text-sm text-slate-500">
+                                    data service kendaraan
+                                </div>
+                            </x-base.table.td>
+                            <x-base.table.td class="w-32 text-right text-danger">
+                                {{toThousand($total ?? 0)}}
+                            </x-base.table.td>
+                           
+                        </x-base.table.tr>
                         <x-base.table.tr class="text-xl text-primary font-bold">
                             <x-base.table.td>
                                 <h1>Total Saldo</h1>
