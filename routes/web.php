@@ -60,6 +60,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('supplier', SupplierController::class);
     Route::resource('spendingCategory', SpendingCategoryController::class);
     Route::resource('spending', SpendingController::class);
+    Route::get('saldo', [SpendingController::class, 'saldo'])->name('spending.saldo');
     Route::get('spending_export', [SpendingController::class, 'export'])->name('spending.export');
     Route::get('spending_export_pdf', [spendingController::class, 'exportPdf'])->name('spending.export-pdf');
     Route::resource('product', ProductController::class);

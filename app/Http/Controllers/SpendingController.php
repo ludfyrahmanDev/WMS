@@ -51,6 +51,33 @@ class SpendingController extends Controller
         return view('pages.backoffice.spending.index', compact('data', 'title', 'route', 'request', 'saldo', 'income', 'outcome', 'sellingCompleted', 'sellingInCompleted', 'purchaseCompleted', 'purchaseInCompleted','total'));
     }
 
+    public function saldo(Request $request){
+        $all = Spending::filterResource($request, [
+            'date',
+            'spendingCategory.spending_category',
+            'mutation',
+            'payment_method',
+            'who_update',
+        ], [])
+        ->with('spendingCategory')
+        ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+        $income = $all->get()->where('mutation', 'Uang Masuk')->sum('nominal');
+        $outcome = $all->get()->where('mutation', 'Uang Keluar')->sum('nominal');
+        $sellingCompleted = Selling::where('status', 'Completed')->sum('grand_total');
+        $sellingInCompleted = Selling::where('status', '!=','Canceled')->sum('grand_total');
+        $purchaseCompleted = DeliveryOrder::where('status', 'Completed')->sum('grand_total');
+        $purchaseInCompleted = DeliveryOrder::where('status', '!=','Completed')->sum('grand_total');
+        $service = VehicleService::get();
+        $total = 0;
+        foreach ($service as $key => $value) {
+            foreach ($value->vehicleServiceDetail as $key => $value) {
+                $total += $value->amount_of_expenditure;
+            }
+        }
+        $saldo =( $income + $sellingCompleted) - ($outcome + $purchaseCompleted + $total);
+        return $saldo;
+    }
+
     public function create()
     {
         $spending = new Spending;
