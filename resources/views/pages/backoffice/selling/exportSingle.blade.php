@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>laporan_penjualan</title>
+    <title>laporan_penjualan_{{ date('d-m-Y', strtotime($data[0]->date)) }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <style>
@@ -19,14 +19,20 @@
         .hr1 {
             border: 2px dashed black;
         }
+
+        @media print {
+            .bungkus {
+                page-break-before: auto; /* atau always, atau avoid */
+                page-break-after: auto; /* atau always, atau avoid */
+            }
+        }
     </style>
 </head>
 
 <body>
-    <div class="mt-4">
+    <div class="mt-4 bungkus">
         <div class="row">
-            @foreach ($data as $item)
-            <h3 class="text-center fw-bold">Laporan Penjualan {{ date('d-m-Y', strtotime($item->date)) }}</h3>
+            <h3 class="text-center fw-bold">Laporan Penjualan {{ date('d-m-Y', strtotime($data[0]->date)) }}</h3>
             <hr class="hr1 mt-2">
             <div class="d-flex align-content-between">
                 <div class="col-md-6">
@@ -34,42 +40,42 @@
                         <tr>
                             <td>Tanggal</td>
                             <td class="pl-4">:</td>
-                            <td class="pl-2">{{ date('d-m-Y', strtotime($item->date)) }}</td>
+                            <td class="pl-2">{{ date('d-m-Y', strtotime($data[0]->date)) }}</td>
                         </tr>
                         <tr>
                             <td>Customer</td>
                             <td class="pl-4">:</td>
-                            <td class="pl-2">{{ $item->customer->name ?? '-' }}</td>
+                            <td class="pl-2">{{ $data[0]->customer->name ?? '-' }}</td>
                         </tr>
                         <tr>
                             <td>Driver</td>
                             <td class="pl-4">:</td>
-                            <td class="pl-2">{{ $item->driver->name ?? '-' }}</td>
+                            <td class="pl-2">{{ $data[0]->driver->name ?? '-' }}</td>
                         </tr>
                         <tr>
                             <td>No. Pol</td>
                             <td class="pl-4">:</td>
-                            <td class="pl-2">{{ $item->vehicle->license_plate ?? '-' }}</td>
+                            <td class="pl-2">{{ $data[0]->vehicle->license_plate ?? '-' }}</td>
                         </tr>
                         <tr>
                             <td>Uang Saku Driver</td>
                             <td class="pl-4">:</td>
-                            <td class="pl-2">Rp. {{ number_format($item->drivers_pocket_money) }}</td>
+                            <td class="pl-2">Rp. {{ number_format($data[0]->drivers_pocket_money) }}</td>
                         </tr>
                         <tr>
                             <td>Metode Penjualan</td>
                             <td class="pl-4">:</td>
-                            <td class="pl-2">{{ ucfirst($item->purchasing_method) }}</td>
+                            <td class="pl-2">{{ ucfirst($data[0]->purchasing_method) }}</td>
                         </tr>
                         <tr>
                             <td>Metode Pembayaran</td>
                             <td class="pl-4">:</td>
-                            <td class="pl-2">{{ ucfirst($item->payment_type) }}</td>
+                            <td class="pl-2">{{ ucfirst($data[0]->payment_type) }}</td>
                         </tr>
                         <tr>
                             <td>Admin</td>
                             <td class="pl-4">:</td>
-                            <td class="pl-2">{{ ucfirst($item->created_by) }}</td>
+                            <td class="pl-2">{{ ucfirst($data[0]->created_by) }}</td>
                         </tr>
                     </table>
                 </div>
@@ -90,6 +96,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @foreach ($data as $item)
                             @foreach ($item->selling_detail as $key => $detail)
                                 <tr class="text-center">
                                     <td>{{ $key + 1 }}</td>
@@ -100,6 +107,7 @@
                                     <td class="text-right">Rp. {{ number_format($detail->subtotal) }}</td>
                                 </tr>
                             @endforeach
+                        @endforeach
                     </tbody>
                     <tfoot>
                         <tr>
@@ -120,8 +128,7 @@
         </div>
 
         <u><i>Catatan :</i></u>
-        <p>{{ $item->notes }}</p>
-        @endforeach
+        <p>{{ $data[0]->notes }}</p>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"

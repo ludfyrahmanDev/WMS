@@ -72,9 +72,11 @@ Route::middleware('auth')->group(function () {
     Route::get('delivery_order_export_pdf', [DeliveryOrderController::class, 'exportPdf'])->name('delivery_order.export-pdf');
     Route::resource('vehicle_service', VehicleServiceController::class);
     Route::get('vehicle_service_export', [VehicleServiceController::class, 'export'])->name('vehicle_service.export');
+    Route::get('vehicle_service_export_pdf', [VehicleServiceController::class, 'exportPdf'])->name('vehicle_service.export-pdf');
     Route::resource('selling', SellingController::class);
     Route::get('selling_export', [SellingController::class, 'export'])->name('selling.export');
     Route::get('selling_export_pdf', [SellingController::class, 'exportPdf'])->name('selling.export-pdf');
+    Route::get('selling_export_one/{id}', [SellingController::class, 'exportPdfSingle'])->name('selling.export-one');
     Route::get('/getHargaStock', [SellingController::class, 'getHargaStock']);
     // end transaction
     Route::get('product/{product}', [ProductController::class, 'getDataProduct'])->name('product.get');

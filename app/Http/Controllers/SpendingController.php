@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use PDF;
+use App\Models\Selling;
 use App\Models\Spending;
-use Barryvdh\DomPDF\PDF;
 use App\Enums\PaymentMethod;
 use Illuminate\Http\Request;
-use App\Exports\SpendingExport;
-use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Http\Requests\Transaksi\SpendingStoreRequest;
-// import selling
-use App\Models\Selling;
-// import delivery order
 use App\Models\DeliveryOrder;
-// import vehicle service
 use App\Models\VehicleService;
+use App\Exports\SpendingExport;
+// import selling
+use Illuminate\Support\Facades\DB;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+// import delivery order
+use Maatwebsite\Excel\Facades\Excel;
+// import vehicle service
+use App\Http\Requests\Transaksi\SpendingStoreRequest;
 class SpendingController extends Controller
 {
     public function index(Request $request)
@@ -193,9 +195,28 @@ class SpendingController extends Controller
         ->get();    
 
         $title = 'Data Transaksi Lain Lain';
-        $pdf = \PDF::loadView('pages.backoffice.spending.export', compact('data', 'title'))->setPaper('a4', 'landscape');;
-        $name = 'Laporan Transaksi Lain Lain';
-        // show preview pdf
-        return $pdf->download("$name.pdf");
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+
+        // Inisialisasi Dompdf dengan opsi yang telah disetel
+        $dompdf = new Dompdf($options);
+
+        $html = view('pages.backoffice.spending.export', compact('data', 'title'))->render();
+
+        // Load HTML ke Dompdf
+        $dompdf->loadHtml($html);
+
+        // Set paper size (jika diperlukan)
+        $dompdf->setPaper('a4', 'landscape');
+
+        // Render PDF (output ke browser atau simpan ke file)
+        $dompdf->render();
+
+        // Nama file untuk diunduh
+        $name = 'laporan_pengeluaran_' . date('d-m-Y', strtotime($data[0]->date));
+
+        // Unduh file PDF
+        return $dompdf->stream("$name.pdf");
     }
 }

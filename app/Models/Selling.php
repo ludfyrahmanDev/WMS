@@ -39,6 +39,11 @@ class Selling extends Model
     {
         return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
+    
+    public function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
+    }
 
     public function getVehicle()
     {
