@@ -19,11 +19,18 @@
         .hr1 {
             border: 2px dashed black;
         }
+
+        @media print {
+            .bungkus {
+                page-break-before: auto; /* atau always, atau avoid */
+                page-break-after: auto; /* atau always, atau avoid */
+            }
+        }
     </style>
 </head>
 
 <body>
-    <div class="mt-4">
+    <div class="mt-4 bungkus">
         <div class="row">
             <h3 class="text-center fw-bold">Laporan Penjualan {{ date('d-m-Y', strtotime($data[0]->date)) }}</h3>
             <hr class="hr1 mt-2">

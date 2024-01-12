@@ -355,6 +355,9 @@ class SellingController extends Controller
         $data = Selling::with(['customer', 'driver', 'selling_detail', 'selling_detail.stock', 'selling_detail.stock.product'])
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
             ->get();
+            $lastQuery = Selling::toSql();
+
+            echo json_encode($lastQuery); die;
         $title = 'Data Penjualan';
         $pdf = \PDF::loadView('pages.backoffice.selling.export', compact('data', 'title'))->setPaper('a4', 'landscape');;
         $name = 'Laporan Penjualan';
@@ -393,10 +396,5 @@ class SellingController extends Controller
 
         // Unduh file PDF
         return $dompdf->stream("$name.pdf");
-
-        // $pdf = \PDF::loadView('pages.backoffice.selling.exportSingle', compact('data', 'title'))->setPaper('a4', 'landscape');;
-        // $name = 'Laporan Penjualan';
-        // // show preview pdf
-        // return $pdf->download("$name.pdf");
     }
 }

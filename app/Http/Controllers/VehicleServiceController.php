@@ -7,10 +7,13 @@ use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use App\Models\VehicleService;
 use App\Models\SpendingCategory;
+use App\Models\Spending;
 use App\Models\VehicleServiceDetail;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\VehicleServiceExport;
 use App\Http\Requests\Transaksi\VehicleServiceStoreRequest;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class VehicleServiceController extends Controller
 {
@@ -162,5 +165,39 @@ class VehicleServiceController extends Controller
         $name = 'Data Servis Kendaraan ';
         $fileName = $name . '.xlsx';
         return Excel::download(new VehicleServiceExport($request), $fileName);
+    }
+
+    public function exportPdf(Request $request){ 
+        
+        $data = VehicleService::with(['driver', 'vehicle', 'vehicleServiceDetail', 'vehicleServiceDetail.spendingCategory'])
+            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
+            ->get();
+
+        // echo json_encode($data); die;
+
+        $title = 'Data Transaksi Lain Lain';
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+
+        // Inisialisasi Dompdf dengan opsi yang telah disetel
+        $dompdf = new Dompdf($options);
+
+        $html = view('pages.backoffice.vehicle_service.export', compact('data', 'title'))->render();
+
+        // Load HTML ke Dompdf
+        $dompdf->loadHtml($html);
+
+        // Set paper size (jika diperlukan)
+        $dompdf->setPaper('a4', 'landscape');
+
+        // Render PDF (output ke browser atau simpan ke file)
+        $dompdf->render();
+
+        // Nama file untuk diunduh
+        $name = 'laporan_servis_kendaraan_' . date('d-m-Y', strtotime($data[0]->date));
+
+        // Unduh file PDF
+        return $dompdf->stream("$name.pdf");
     }
 }
