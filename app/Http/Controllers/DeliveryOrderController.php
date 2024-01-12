@@ -11,6 +11,7 @@ use App\Exports\DeliveryOrderExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+
 class DeliveryOrderController extends Controller
 {
     public function index(Request $request)
@@ -26,7 +27,7 @@ class DeliveryOrderController extends Controller
             ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'));
         $total = $all->get()->sum('grand_total');
         $completed = $all->get()->where('status', 'Completed')->sum('grand_total');
-        $inCompleted = $all->get()->where('status', '!=','Completed')->sum('grand_total');
+        $inCompleted = $all->get()->where('status', '!=', 'Completed')->sum('grand_total');
         $data = $all->paginate($request->get('per_page', 10));
 
         $title = 'Data Pembelian';
@@ -70,6 +71,17 @@ class DeliveryOrderController extends Controller
         $user = auth()->user();
 
         try {
+            //cek saldo
+            if ($request->tipe_pembelian == 'Kontan') {
+                $saldo = new SpendingController();
+
+                $cekSaldo = $saldo->saldo($request);
+
+                if (intval($request->total_bayar) > intval($cekSaldo)) {
+                    return back()->with('failed', 'Gagal, saldo tidak cukup!');
+                }
+            }
+
             // insert Table Delivery order 
             $delivery_order = new DeliveryOrder();
             $delivery_order->purchase_date = $request->tanggal_pembelian;
@@ -173,6 +185,17 @@ class DeliveryOrderController extends Controller
 
                 return redirect(route('delivery_order.index'))->with('success', 'Berhasil update data!');
                 return false;
+            }
+
+            //cek saldo
+            if ($request->tipe_pembelian == 'Kontan') {
+                $saldo = new SpendingController();
+
+                $cekSaldo = $saldo->saldo($request);
+
+                if (intval($request->total_bayar) > intval($cekSaldo)) {
+                    return back()->with('failed', 'Gagal, saldo tidak cukup!');
+                }
             }
 
             // update Table Delivery order 
@@ -281,7 +304,8 @@ class DeliveryOrderController extends Controller
         $fileName = $name . '.xlsx';
         return Excel::download(new DeliveryOrderExport($request), $fileName);
     }
-    public function exportPdf(Request $request){
+    public function exportPdf(Request $request)
+    {
         $data = DeliveryOrder::filterResource($request, [
             'purchase_date',
             'pick_up_date',

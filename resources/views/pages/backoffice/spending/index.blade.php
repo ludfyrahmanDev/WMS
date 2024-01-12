@@ -72,7 +72,7 @@
                         <x-base.table.tr>
                             <x-base.table.td class="border-b dark:border-darkmode-400">
                                 <div class="whitespace-nowrap font-medium">
-                                    Penjualan Lunas
+                                    Pemasukan Penjualan
                                 </div>
                                 <div class="mt-0.5 whitespace-nowrap text-sm text-slate-500">
                                     data penjualan telah dibayar
@@ -100,7 +100,7 @@
                         <x-base.table.tr>
                             <x-base.table.td class="border-b dark:border-darkmode-400">
                                 <div class="whitespace-nowrap font-medium">
-                                    Pembelian Lunas
+                                    Pemasukan Pembelian
                                 </div>
                                 <div class="mt-0.5 whitespace-nowrap text-sm text-slate-500">
                                     data pembelian telah dibayar

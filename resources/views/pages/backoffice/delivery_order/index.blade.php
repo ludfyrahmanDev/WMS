@@ -16,6 +16,76 @@
         </x-base.alert>
     @endif
     <div class="mt-5 grid grid-cols-12 gap-6">
+        <div class="intro-y col-span-12 sm:col-span-6 xl:col-span-4">
+            <div @class([
+                'relative zoom-in',
+                'before:content-[\'\'] before:w-[90%] before:shadow-[0px_3px_20px_#0000000b] before:bg-slate-50 before:h-full before:mt-3 before:absolute before:rounded-md before:mx-auto before:inset-x-0 before:dark:bg-darkmode-400/70',
+            ])>
+                <div class="box p-5">
+                    <div class="flex">
+                        <x-base.lucide class="h-[28px] w-[28px] text-primary" icon="ShoppingCart" />
+                        <div class="ml-auto hidden">
+                            <x-base.tippy
+                                class="flex cursor-pointer items-center rounded-full bg-success py-[3px] pl-2 pr-1 text-xs font-medium text-white"
+                                as="div" content="33% Higher than last month">
+                                33%
+                                <x-base.lucide class="ml-0.5 h-4 w-4" icon="ChevronUp" />
+                            </x-base.tippy>
+                        </div>
+                    </div>
+                    <div class="mt-6 text-3xl font-medium leading-8">{{ toThousand($total ?? 0) }}</div>
+                    <div class="mt-1 text-base text-slate-500">Total Penjualan</div>
+                </div>
+            </div>
+        </div>
+        <div class="intro-y col-span-12 sm:col-span-6 xl:col-span-4">
+            <div @class([
+                'relative zoom-in',
+                'before:content-[\'\'] before:w-[90%] before:shadow-[0px_3px_20px_#0000000b] before:bg-slate-50 before:h-full before:mt-3 before:absolute before:rounded-md before:mx-auto before:inset-x-0 before:dark:bg-darkmode-400/70',
+            ])>
+                <div class="box p-5">
+                    <div class="flex">
+                        <x-base.lucide class="h-[28px] w-[28px] text-pending" icon="CreditCard" />
+                        <div class="ml-auto hidden">
+                            <x-base.tippy
+                                class="flex cursor-pointer items-center rounded-full bg-danger py-[3px] pl-2 pr-1 text-xs font-medium text-white"
+                                as="div" content="2% Lower than last month">
+                                2%
+                                <x-base.lucide class="ml-0.5 h-4 w-4" icon="ChevronDown" />
+                            </x-base.tippy>
+                        </div>
+                    </div>
+                    <div class="mt-6 text-3xl font-medium leading-8">{{ toThousand($completed ?? 0) }}</div>
+                    <div class="mt-1 text-base text-slate-500">Total Terbayar</div>
+                </div>
+            </div>
+        </div>
+        <div class="intro-y col-span-12 sm:col-span-6 xl:col-span-4">
+            <div @class([
+                'relative zoom-in',
+                'before:content-[\'\'] before:w-[90%] before:shadow-[0px_3px_20px_#0000000b] before:bg-slate-50 before:h-full before:mt-3 before:absolute before:rounded-md before:mx-auto before:inset-x-0 before:dark:bg-darkmode-400/70',
+            ])>
+                <div class="box p-5">
+                    <div class="flex">
+                        <x-base.lucide class="h-[28px] w-[28px] text-warning" icon="Coins" />
+                        <div class="ml-auto hidden">
+                            <x-base.tippy
+                                class="flex cursor-pointer items-center rounded-full bg-success py-[3px] pl-2 pr-1 text-xs font-medium text-white"
+                                as="div" content="12% Higher than last month">
+                                12%
+                                <x-base.lucide class="ml-0.5 h-4 w-4" icon="ChevronUp" />
+                            </x-base.tippy>
+                        </div>
+                    </div>
+                    <div class="mt-6 text-3xl font-medium leading-8">{{ toThousand($inCompleted ?? 0) }}</div>
+                    <div class="mt-1 text-base text-slate-500">
+                        Total Piutang
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
             <a href="{{ route($route . '.create') }}">
                 <x-base.button class="mr-2 shadow-md" variant="primary">
@@ -23,29 +93,17 @@
                 </x-base.button>
             </a>
             <x-base.menu>
-                <x-base.menu.button
-                    class="!box px-2"
-                    as="x-base.button"
-                >
+                <x-base.menu.button class="!box px-2" as="x-base.button">
                     <span class="flex h-5 w-5 items-center justify-center">
-                        <x-base.lucide
-                            class="h-4 w-4"
-                            icon="file"
-                        />
+                        <x-base.lucide class="h-4 w-4" icon="file" />
                     </span>
                 </x-base.menu.button>
                 <x-base.menu.items class="w-40">
                     <x-base.menu.item href="{{ route($route . '.export', $request) }}" target="_blank">
-                        <x-base.lucide
-                            class="mr-2 h-4 w-4"
-                            icon="sheet"
-                        /> Export to Excel
+                        <x-base.lucide class="mr-2 h-4 w-4" icon="sheet" /> Export to Excel
                     </x-base.menu.item>
                     <x-base.menu.item href="{{ route($route . '.export-pdf', $request) }}">
-                        <x-base.lucide
-                            class="mr-2 h-4 w-4"
-                            icon="FileText"
-                        /> Export to PDF
+                        <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to PDF
                     </x-base.menu.item>
                 </x-base.menu.items>
             </x-base.menu>
@@ -53,7 +111,7 @@
                 Showing 1 to {{ $data->total() < 10 ? $data->total() : 10 }} of {{ $data->total() }} entries
             </div>
             <div class="mt-3 w-full sm:mt-0 flex sm:ml-auto sm:w-auto md:ml-0">
-                <x-base.litepicker class="mx-auto block w-56" id='filter-date'/>
+                <x-base.litepicker class="mx-auto block w-56" id='filter-date' />
                 {{-- make live search --}}
                 <div class="relative w-56 text-slate-500 ml-2">
                     <x-base.form-input class="!box w-56 pr-10" type="text" id="search"
@@ -64,11 +122,14 @@
         </div>
         <!-- BEGIN: Data List -->
         <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
-            <h1 class="text-xl">
-                <label for="" class="text-primary">Total Pembelian | <span class="font-bold">{{toThousand($total ?? 0)}}</span> | </label>
-                <label for="" class="text-green-600">Total Terbayar | <span class="font-bold">{{toThousand($completed ?? 0)}}</span> | </label>
-                <label for="" class="text-danger">Total Hutang | <span class="font-bold">{{toThousand($inCompleted ?? 0)}}</span> | </label>
-            </h1>
+            {{-- <h1 class="text-xl">
+                <label for="" class="text-primary">Total Pembelian | <span
+                        class="font-bold">{{ toThousand($total ?? 0) }}</span> | </label>
+                <label for="" class="text-green-600">Total Terbayar | <span
+                        class="font-bold">{{ toThousand($completed ?? 0) }}</span> | </label>
+                <label for="" class="text-danger">Total Hutang | <span
+                        class="font-bold">{{ toThousand($inCompleted ?? 0) }}</span> | </label>
+            </h1> --}}
             <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
                 <x-base.table.thead>
                     <x-base.table.tr>
@@ -133,29 +194,34 @@
                                             <x-base.lucide class="mr-1 h-4 w-4" icon="CheckCircle" />
                                             Konfirmasi
                                         </a>
-                                        <a class="mr-3 flex items-center" href="{{ route($route . '.show', $item->id) }}">
+                                        <a class="mr-3 flex items-center"
+                                            href="{{ route($route . '.show', $item->id) }}">
                                             <x-base.lucide class="mr-1 h-4 w-4" icon="Eye" />
                                             Detail
                                         </a>
                                     @elseif ($item['status'] == 'Completed')
-                                        <a class="mr-3 flex items-center" href="{{ route($route . '.show', $item->id) }}">
+                                        <a class="mr-3 flex items-center"
+                                            href="{{ route($route . '.show', $item->id) }}">
                                             <x-base.lucide class="mr-1 h-4 w-4" icon="Eye" />
                                             Detail
                                         </a>
                                     @else
-                                        <a class="mr-3 flex items-center" href="{{ route($route . '.edit', $item->id) }}">
+                                        <a class="mr-3 flex items-center"
+                                            href="{{ route($route . '.edit', $item->id) }}">
                                             <x-base.lucide class="mr-1 h-4 w-4" icon="Edit" />
                                             Edit
                                         </a>
                                         <a class="flex items-center text-danger" data-tw-toggle="modal"
-                                            data-tw-target="#delete-confirmation-modal-{{ $item->id }}" href="#">
+                                            data-tw-target="#delete-confirmation-modal-{{ $item->id }}"
+                                            href="#">
                                             <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
                                         </a>
                                     @endif
                                     <x-base.dialog id="delete-confirmation-modal-{{ $item->id }}">
                                         <x-base.dialog.panel>
                                             <div class="p-5 text-center">
-                                                <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger" icon="XCircle" />
+                                                <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger"
+                                                    icon="XCircle" />
                                                 <div class="mt-5 text-3xl">Are you sure?</div>
                                                 <div class="mt-2 text-slate-500">
                                                     Do you really want to delete these records? <br />
@@ -199,7 +265,8 @@
                                                     class="w-24">
                                                     @method('PUT')
                                                     @csrf
-                                                    <input type="hidden" name="mode" id="mode" value="konfirmasi lunas">
+                                                    <input type="hidden" name="mode" id="mode"
+                                                        value="konfirmasi lunas">
                                                     <x-base.button class="w-24" type="submit" variant="danger">
                                                         Konfirmasi
                                                     </x-base.button>
