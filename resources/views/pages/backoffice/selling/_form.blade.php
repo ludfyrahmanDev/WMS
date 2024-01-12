@@ -359,6 +359,15 @@
                 var profit = $('#laba_bersih').val();
                 var subtotal = parseInt(harga_jual) * parseInt(qty);
 
+                document.getElementById('qty_jual').value = '';
+                document.getElementById('qty_jual').disabled = true;
+                $("#qty_jual").attr('disabled')
+                // $("#qty_jual").prop('disabled', true)
+                document.getElementById('modalDetailStockHarga').disabled = true;
+                document.getElementById('produk').value = '';
+                document.getElementById('produk').dispatchEvent(new Event('change'));
+                document.getElementById('harga_jual').value = '';
+
 
                 if (produk == "" || qty == "" || harga_jual == "") {
                     alert("Harap pilih produk, qty, harga terjual terlebih dahulu!");
@@ -421,6 +430,7 @@
                 $('#grand_total').val(totalSubtotal);
 
                 arrLaba = [];
+
             }
 
             function hapusRow(event) {

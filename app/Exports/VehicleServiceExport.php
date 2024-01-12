@@ -31,6 +31,7 @@ class VehicleServiceExport implements FromView, ShouldAutoSize
             'amount_of_expenditure'
         ], [])
             ->with(['vehicleServiceDetail', 'vehicleServiceDetail.spendingCategory', 'vehicle'])
+            ->whereDate('created_at', Carbon::today())
             ->orderBy($request->get('sort_by', 'date'), $request->get('order', 'desc'))
             ->get();
         // echo json_encode($data); die;

@@ -348,7 +348,7 @@
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tr>
                       <td>
-                        <p>{{$data['title']}}</p>
+                        <h2>{{$data['title']}}</h2>
                         <p>{!!$data['desc']!!}</p>
                         {{-- check link is not array --}}
 

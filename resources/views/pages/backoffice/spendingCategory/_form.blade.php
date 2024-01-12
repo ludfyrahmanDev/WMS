@@ -41,7 +41,7 @@
                             </div>
                         @enderror
                     </div>
-                    <div class="mt-3 input-form">
+                    {{-- <div class="mt-3 input-form">
                         <x-base.form-label for="spending_types">Tipe pengeluaran</x-base.form-label>
                         <x-base.form-input class="w-full" id="spending_types" type="text" name="spending_types"
                             value="{{ $data->spending_types ?? old('spending_types') }}" placeholder="Masukkan tipe pengeluaran..." />
@@ -50,6 +50,14 @@
                                 {{ $message }}
                             </div>
                         @enderror
+                    </div> --}}
+                    <div class="mt-3 input-form">
+                        <x-base.form-label for="spending_types">Tipe pengeluaran</x-base.form-label>
+                        <x-base.tom-select name="spending_types" id="spending_types" class="w-full" data-placeholder="Pilih Tipe Pengeluaran">
+                            <option value="">Pilih Tipe Pengeluaran</option>
+                            <option value="Kendaraan">Kendaraan</option>
+                            <option value="Lain-lain">Lain-lain</option>
+                        </x-base.tom-select>
                     </div>
 
                     <div class="mt-5 text-right">

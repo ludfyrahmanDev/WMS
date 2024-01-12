@@ -176,8 +176,8 @@ die(); ?> --}}
                         <div class="input-form col-span-3">
                             <x-base.form-label for="crud-form-1">Subtotal</x-base.form-label>
                             <x-base.form-input class="w-full" type="text" name="subtotal" id="subtotal"
-                                value="" placeholder="Input Subtotal Produk"
-                                onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                                value="" placeholder="0"
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57" disabled />
                         </div>
                     </div>
 

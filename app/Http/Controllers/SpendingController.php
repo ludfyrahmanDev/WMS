@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use PDF;
+use App\Models\Selling;
 use App\Models\Spending;
-use Barryvdh\DomPDF\PDF;
 use App\Enums\PaymentMethod;
 use Illuminate\Http\Request;
-use App\Exports\SpendingExport;
-use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Http\Requests\Transaksi\SpendingStoreRequest;
-// import selling
-use App\Models\Selling;
-// import delivery order
 use App\Models\DeliveryOrder;
-// import vehicle service
 use App\Models\VehicleService;
 use Carbon\Carbon;
+use App\Exports\SpendingExport;
+// import selling
+use Illuminate\Support\Facades\DB;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+// import delivery order
+use Maatwebsite\Excel\Facades\Excel;
+// import vehicle service
+use App\Http\Requests\Transaksi\SpendingStoreRequest;
 class SpendingController extends Controller
 {
     public function index(Request $request)
@@ -32,10 +34,10 @@ class SpendingController extends Controller
         ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
         $income = $all->get()->where('mutation', 'Uang Masuk')->sum('nominal');
         $outcome = $all->get()->where('mutation', 'Uang Keluar')->sum('nominal');
-        $sellingCompleted = Selling::where('status', 'Completed')->sum('grand_total');
-        $sellingInCompleted = Selling::where('status', '!=','Canceled')->sum('grand_total');
-        $purchaseCompleted = DeliveryOrder::where('status', 'Completed')->sum('grand_total');
-        $purchaseInCompleted = DeliveryOrder::where('status', '!=','Completed')->sum('grand_total');
+        $sellingCompleted = Selling::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
+        $sellingInCompleted = Selling::where('status', '!=','Completed')->sum(\DB::raw('(grand_total - total_payment)'));
+        $purchaseCompleted = DeliveryOrder::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
+        $purchaseInCompleted = DeliveryOrder::where('status', '!=','Completed')->sum((\DB::raw('(grand_total - total_payment)')));
         $service = VehicleService::get();
         $total = 0;
         foreach ($service as $key => $value) {
@@ -64,10 +66,10 @@ class SpendingController extends Controller
         ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
         $income = $all->get()->where('mutation', 'Uang Masuk')->sum('nominal');
         $outcome = $all->get()->where('mutation', 'Uang Keluar')->sum('nominal');
-        $sellingCompleted = Selling::where('status', 'Completed')->sum('grand_total');
-        $sellingInCompleted = Selling::where('status', '!=','Completed')->sum('grand_total');
-        $purchaseCompleted = DeliveryOrder::where('status', 'Completed')->sum('grand_total');
-        $purchaseInCompleted = DeliveryOrder::where('status', '!=','Completed')->sum('grand_total');
+        $sellingCompleted = Selling::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
+        $sellingInCompleted = Selling::where('status', '!=','Completed')->sum(\DB::raw('(grand_total - total_payment)'));
+        $purchaseCompleted = DeliveryOrder::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
+        $purchaseInCompleted = DeliveryOrder::where('status', '!=','Completed')->sum((\DB::raw('(grand_total - total_payment)')));
         $service = VehicleService::get();
         $total = 0;
         foreach ($service as $key => $value) {
@@ -173,7 +175,7 @@ class SpendingController extends Controller
         $name = 'Data Transaksi Lain Lain - ' . date('Y-m-d');
         $fileName = $name . '.xlsx';
         // save to storage
-        Excel::store(new SpendingExport($request), $fileName);
+        Excel::store(new SpendingExport($request), 'public/excel/'.$fileName);
         return Excel::download(new SpendingExport($request), $fileName);
     }
 
@@ -196,25 +198,76 @@ class SpendingController extends Controller
         ->get();
 
         $title = 'Data Transaksi Lain Lain';
-        $pdf = \PDF::loadView('pages.backoffice.spending.export', compact('data', 'title'))->setPaper('a4', 'landscape');;
-        $name = 'Laporan Transaksi Lain Lain';
-        // show preview pdf
-        return $pdf->download("$name.pdf");
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+
+        // Inisialisasi Dompdf dengan opsi yang telah disetel
+        $dompdf = new Dompdf($options);
+
+        $html = view('pages.backoffice.spending.export', compact('data', 'title'))->render();
+
+        // Load HTML ke Dompdf
+        $dompdf->loadHtml($html);
+
+        // Set paper size (jika diperlukan)
+        $dompdf->setPaper('a4', 'landscape');
+
+        // Render PDF (output ke browser atau simpan ke file)
+        $dompdf->render();
+
+        // Nama file untuk diunduh
+        $name = 'laporan_pengeluaran_' . date('d-m-Y', strtotime($data[0]->date));
+
+        // Unduh file PDF
+        return $dompdf->stream("$name.pdf");
     }
 
     // make function send email
-    public function sendEmail(Request $request){
+    public function sendEmail(){
+        $request = new Request();
         $name = 'Laporan Transaksi Lain Lain';
-        // show preview pdf
-        // $pdf->save(public_path('pdf/'.$name.'.pdf'));
+        $now = date('Y-m-d');
+        $spending = 'Data Transaksi Lain Lain - ' . $now . '.xlsx';
+        $selling = 'Data Penjualan - ' . $now . '.xlsx';
+        $purchase = 'Data Pembelian - ' . $now . '.xlsx';
+        $service = 'Data Servis Kendaraan - ' . $now . '.xlsx';
+        $this->export($request);
+        $sellingController = new SellingController();
+        $sellingController->export($request);
+        $deliveryOrderController = new DeliveryOrderController();
+        $deliveryOrderController->export($request);
+        $vehicleServiceController = new VehicleServiceController();
+        $vehicleServiceController->export($request);
+
+        $report = [
+                [
+                    'title' => 'Data Transaksi Lain Lain',
+                    'link' => asset('storage/excel/'.$spending)
+                ],
+                [
+                    'title' => 'Data Penjualan',
+                    'link' => asset('storage/excel/'.$selling)
+                ],
+                [
+                    'title' => 'Data Pembelian',
+                    'link' => asset('storage/excel/'.$purchase)
+                ],
+                [
+                    'title' => 'Data Servis Kendaraan',
+                    'link' => asset('storage/excel/'.$service)
+                ]
+            ];
         // send email
         $data = [
-            'title' => 'Laporan Transaksi Lain Lain',
-            'body' => 'Terlampir hasil laporan transaksi lain lain',
-            'desc' => 'Terlampir hasil laporan transaksi lain lain',
-            'email' => 'ludfyr@gmail.com',
-            'link' => public_path('pdf/'.$name.'.pdf')
+            'title' => 'Laporan Semua Transaksi Aplikasi WMS',
+            'body' => 'Terlampir hasil laporan WMS',
+            'desc' => 'Terlampir hasil laporan WMS',
+            'email' => 'cs@putrabumiberkah.com',
+            'link' => $report
         ];
-        \Mail::to('ludfyr@gmail.com')->send(new \App\Mail\WmsReportEmail($data));
+        // get env value 
+        $env = env('MAIL_REPORT');
+        \Mail::to($env)->send(new \App\Mail\WmsReportEmail($data));
     }
 }

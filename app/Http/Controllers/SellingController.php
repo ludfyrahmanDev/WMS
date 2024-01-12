@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Stock;
 use App\Models\Selling;
 use App\Models\Spending;
+use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
 use App\Models\SellingDetail;
 use App\Exports\SellingExport;
@@ -12,6 +13,9 @@ use App\Models\SpendingCategory;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\Transaksi\SellingStoreRequest;
+
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class SellingController extends Controller
 {
@@ -21,11 +25,11 @@ class SellingController extends Controller
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
         $total = $all->get()->sum('grand_total');
         $completed = $all->get()->where('status', 'Completed')->sum('grand_total');
-        $inCompleted = $all->get()->where('status', '!=','Completed')->sum('grand_total');
+        $inCompleted = $all->get()->where('status', '!=', 'Completed')->sum('grand_total');
         $data = $all->paginate($request->get('per_page', 10));
         $title = 'Data Penjualan';
         $route = 'selling';
-        return view('pages.backoffice.selling.index', compact('data', 'title', 'route', 'request', 'total','completed','inCompleted'));
+        return view('pages.backoffice.selling.index', compact('data', 'title', 'route', 'request', 'total', 'completed', 'inCompleted'));
     }
 
     public function create(Selling $selling)
@@ -341,19 +345,57 @@ class SellingController extends Controller
 
     public function export(Request $request)
     {
-        $name = 'Data Penjualan ';
+        $name = 'Data Penjualan - ' . date('Y-m-d');
         $fileName = $name . '.xlsx';
+        Excel::store(new SellingExport($request), 'public/excel/'.$fileName);
         return Excel::download(new SellingExport($request), $fileName);
     }
+
     public function exportPdf(Request $request)
     {
         $data = Selling::with(['customer', 'driver', 'selling_detail', 'selling_detail.stock', 'selling_detail.stock.product'])
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
             ->get();
+            $lastQuery = Selling::toSql();
+
+            echo json_encode($lastQuery); die;
         $title = 'Data Penjualan';
         $pdf = \PDF::loadView('pages.backoffice.selling.export', compact('data', 'title'))->setPaper('a4', 'landscape');;
         $name = 'Laporan Penjualan';
         // show preview pdf
         return $pdf->download("$name.pdf");
+    }
+
+    public function exportPdfSingle(Request $request)
+    {
+        $data = Selling::with(['customer', 'vehicle', 'driver', 'selling_detail', 'selling_detail.stock', 'selling_detail.stock.product'])
+            ->where('selling.id', $request->id)
+            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
+            ->get();
+        $title = 'Data Penjualan';
+
+        // Inisialisasi opsi Dompdf
+        $options = new Options();
+        $options->set('isRemoteEnabled', true);
+
+        // Inisialisasi Dompdf dengan opsi yang telah disetel
+        $dompdf = new Dompdf($options);
+        // Memuat tampilan HTML sebagai string
+        $html = view('pages.backoffice.selling.exportSingle', compact('data', 'title'))->render();
+
+        // Load HTML ke Dompdf
+        $dompdf->loadHtml($html);
+
+        // Set paper size (jika diperlukan)
+        $dompdf->setPaper('a4', 'landscape');
+
+        // Render PDF (output ke browser atau simpan ke file)
+        $dompdf->render();
+
+        // Nama file untuk diunduh
+        $name = 'laporan_penjualan_' . date('d-m-Y', strtotime($data[0]->date));
+
+        // Unduh file PDF
+        return $dompdf->stream("$name.pdf");
     }
 }
