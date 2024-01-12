@@ -63,6 +63,8 @@ Route::middleware('auth')->group(function () {
     Route::get('saldo', [SpendingController::class, 'saldo'])->name('spending.saldo');
     Route::get('spending_export', [SpendingController::class, 'export'])->name('spending.export');
     Route::get('spending_export_pdf', [spendingController::class, 'exportPdf'])->name('spending.export-pdf');
+    // make route report send email
+    Route::get('spending_send_email', [SpendingController::class, 'sendEmail'])->name('spending.send-email');
     Route::resource('product', ProductController::class);
     Route::resource('category', ProductCategoryController::class);
     // end master data section

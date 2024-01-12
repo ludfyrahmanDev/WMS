@@ -33,6 +33,7 @@ class DeliveryOrderExport implements FromView, ShouldAutoSize
             'status'
         ], [])
             ->with(['supplier', 'vehicle', 'delivery_order_detail'])
+            ->whereDate('created_at', Carbon::today())
             ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'))
             ->get();
         $title = 'Data Pembelian';

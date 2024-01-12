@@ -16,6 +16,7 @@ use App\Models\Selling;
 use App\Models\DeliveryOrder;
 // import vehicle service
 use App\Models\VehicleService;
+use Carbon\Carbon;
 class SpendingController extends Controller
 {
     public function index(Request $request)
@@ -169,8 +170,10 @@ class SpendingController extends Controller
 
     public function export(Request $request)
     {
-        $name = 'Data Transaksi Lain Lain';
+        $name = 'Data Transaksi Lain Lain - ' . date('Y-m-d');
         $fileName = $name . '.xlsx';
+        // save to storage
+        Excel::store(new SpendingExport($request), $fileName);
         return Excel::download(new SpendingExport($request), $fileName);
     }
 
@@ -190,12 +193,28 @@ class SpendingController extends Controller
         ->orderBy($request->get('sort_by', 'spending_category_id'), $request->get('order', 'asc'))
         ->orderBy($request->get('sort_by', 'mutation'), $request->get('order', 'asc'))
         ->orderBy($request->get('sort_by', 'payment_method'), $request->get('order', 'asc'))
-        ->get();    
+        ->get();
 
         $title = 'Data Transaksi Lain Lain';
         $pdf = \PDF::loadView('pages.backoffice.spending.export', compact('data', 'title'))->setPaper('a4', 'landscape');;
         $name = 'Laporan Transaksi Lain Lain';
         // show preview pdf
         return $pdf->download("$name.pdf");
+    }
+
+    // make function send email
+    public function sendEmail(Request $request){
+        $name = 'Laporan Transaksi Lain Lain';
+        // show preview pdf
+        // $pdf->save(public_path('pdf/'.$name.'.pdf'));
+        // send email
+        $data = [
+            'title' => 'Laporan Transaksi Lain Lain',
+            'body' => 'Terlampir hasil laporan transaksi lain lain',
+            'desc' => 'Terlampir hasil laporan transaksi lain lain',
+            'email' => 'ludfyr@gmail.com',
+            'link' => public_path('pdf/'.$name.'.pdf')
+        ];
+        \Mail::to('ludfyr@gmail.com')->send(new \App\Mail\WmsReportEmail($data));
     }
 }
