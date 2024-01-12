@@ -64,7 +64,7 @@ class SpendingController extends Controller
         $income = $all->get()->where('mutation', 'Uang Masuk')->sum('nominal');
         $outcome = $all->get()->where('mutation', 'Uang Keluar')->sum('nominal');
         $sellingCompleted = Selling::where('status', 'Completed')->sum('grand_total');
-        $sellingInCompleted = Selling::where('status', '!=','Canceled')->sum('grand_total');
+        $sellingInCompleted = Selling::where('status', '!=','Completed')->sum('grand_total');
         $purchaseCompleted = DeliveryOrder::where('status', 'Completed')->sum('grand_total');
         $purchaseInCompleted = DeliveryOrder::where('status', '!=','Completed')->sum('grand_total');
         $service = VehicleService::get();
