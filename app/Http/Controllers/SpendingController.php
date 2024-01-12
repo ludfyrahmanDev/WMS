@@ -33,10 +33,10 @@ class SpendingController extends Controller
         ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
         $income = $all->get()->where('mutation', 'Uang Masuk')->sum('nominal');
         $outcome = $all->get()->where('mutation', 'Uang Keluar')->sum('nominal');
-        $sellingCompleted = Selling::where('status', 'Completed')->sum('grand_total');
-        $sellingInCompleted = Selling::where('status', '!=','Canceled')->sum('grand_total');
-        $purchaseCompleted = DeliveryOrder::where('status', 'Completed')->sum('grand_total');
-        $purchaseInCompleted = DeliveryOrder::where('status', '!=','Completed')->sum('grand_total');
+        $sellingCompleted = Selling::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
+        $sellingInCompleted = Selling::where('status', '!=','Completed')->sum(\DB::raw('(grand_total - total_payment)'));
+        $purchaseCompleted = DeliveryOrder::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
+        $purchaseInCompleted = DeliveryOrder::where('status', '!=','Completed')->sum((\DB::raw('(grand_total - total_payment)')));
         $service = VehicleService::get();
         $total = 0;
         foreach ($service as $key => $value) {
@@ -65,10 +65,10 @@ class SpendingController extends Controller
         ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
         $income = $all->get()->where('mutation', 'Uang Masuk')->sum('nominal');
         $outcome = $all->get()->where('mutation', 'Uang Keluar')->sum('nominal');
-        $sellingCompleted = Selling::where('status', 'Completed')->sum('grand_total');
-        $sellingInCompleted = Selling::where('status', '!=','Completed')->sum('grand_total');
-        $purchaseCompleted = DeliveryOrder::where('status', 'Completed')->sum('grand_total');
-        $purchaseInCompleted = DeliveryOrder::where('status', '!=','Completed')->sum('grand_total');
+        $sellingCompleted = Selling::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
+        $sellingInCompleted = Selling::where('status', '!=','Completed')->sum(\DB::raw('(grand_total - total_payment)'));
+        $purchaseCompleted = DeliveryOrder::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
+        $purchaseInCompleted = DeliveryOrder::where('status', '!=','Completed')->sum((\DB::raw('(grand_total - total_payment)')));
         $service = VehicleService::get();
         $total = 0;
         foreach ($service as $key => $value) {
