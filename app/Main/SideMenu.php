@@ -194,6 +194,14 @@ class SideMenu
                     ],
                 ]
             ],
+            'Closing' => [
+                'icon' => 'x-octagon',
+                'route_name' => 'closing.index',
+                'params' => [
+                    'layout' => 'side-menu'
+                ],
+                'title' => 'Closing'
+            ],
         ];
     }
 }

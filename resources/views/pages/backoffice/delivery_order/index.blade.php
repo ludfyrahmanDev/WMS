@@ -34,7 +34,7 @@
                         </div>
                     </div>
                     <div class="mt-6 text-3xl font-medium leading-8">{{ toThousand($total ?? 0) }}</div>
-                    <div class="mt-1 text-base text-slate-500">Total Penjualan</div>
+                    <div class="mt-1 text-base text-slate-500">Total Pembelian</div>
                 </div>
             </div>
         </div>
@@ -79,7 +79,7 @@
                     </div>
                     <div class="mt-6 text-3xl font-medium leading-8">{{ toThousand($inCompleted ?? 0) }}</div>
                     <div class="mt-1 text-base text-slate-500">
-                        Total Piutang
+                        Total Hutang
                     </div>
                 </div>
             </div>
