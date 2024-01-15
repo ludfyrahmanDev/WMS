@@ -27,16 +27,30 @@
     <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
             @if (COUNT($cekDataDateNow) > 0)
-                <x-base.button data-tw-toggle="modal" data-tw-target="#modal-closing"
-                    variant="primary" disabled>
+                <x-base.button class="mr-2 shadow-md" data-tw-toggle="modal" data-tw-target="#modal-closing" variant="primary" disabled>
                     Closing
                 </x-base.button>
             @else
-                <x-base.button data-tw-toggle="modal" data-tw-target="#modal-closing"
-                    variant="primary">
+                <x-base.button class="mr-2 shadow-md" data-tw-toggle="modal" data-tw-target="#modal-closing" variant="primary">
                     Closing
                 </x-base.button>
             @endif
+
+            <x-base.menu>
+                <x-base.menu.button class="!box px-2" as="x-base.button">
+                    <span class="flex h-5 w-5 items-center justify-center">
+                        <x-base.lucide class="h-4 w-4" icon="file" />
+                    </span>
+                </x-base.menu.button>
+                <x-base.menu.items class="w-40">
+                    <x-base.menu.item href="{{ route('closing.export', $request) }}" target="_blank">
+                        <x-base.lucide class="mr-2 h-4 w-4" icon="sheet" /> Export to Excel
+                    </x-base.menu.item>
+                    <x-base.menu.item href="{{ route('closing.export-pdf', $request) }}">
+                        <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to PDF
+                    </x-base.menu.item>
+                </x-base.menu.items>
+            </x-base.menu>
 
             <div class="mx-auto hidden text-slate-500 md:block">
                 Showing 1 to {{ $data->total() < 10 ? $data->total() : 10 }} of {{ $data->total() }} entries

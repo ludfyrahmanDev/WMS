@@ -86,6 +86,8 @@ Route::middleware('auth')->group(function () {
     Route::get('stock_pdf', [StockController::class, 'exportPdf'])->name('stock.export-pdf');
     Route::resource('closing', ClosingController::class);
     Route::get('/getDetailClosingByID', [ClosingController::class, 'getDetailClosingByID']);
+    Route::get('closing_export', [ClosingController::class, 'export'])->name('closing.export');
+    Route::get('closing_export_pdf', [ClosingController::class, 'exportPdf'])->name('closing.export-pdf');
     Route::controller(PageController::class)->group(function () {
         // template begin here
         Route::get('/sd', 'dashboardOverview1')->name('dashboard-overview-1');
