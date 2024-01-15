@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClosingController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -85,6 +86,8 @@ Route::middleware('auth')->group(function () {
     Route::get('stock', [StockController::class, 'index'])->name('stockIndex');
     Route::get('stock_export', [StockController::class, 'export'])->name('stock.export');
     Route::get('stock_pdf', [StockController::class, 'exportPdf'])->name('stock.export-pdf');
+    Route::resource('closing', ClosingController::class);
+    Route::get('/getDetailClosingByID', [ClosingController::class, 'getDetailClosingByID']);
     Route::controller(PageController::class)->group(function () {
         // template begin here
         Route::get('/sd', 'dashboardOverview1')->name('dashboard-overview-1');
