@@ -32,9 +32,7 @@ class ProductController extends Controller
 
         $data = (object)[
             'product_category_id' => '',
-            'product' => '',
-            'price' => '',
-            'price_sell' => ''
+            'product' => ''
         ];
 
         $title = 'Data Produk';
@@ -81,8 +79,8 @@ class ProductController extends Controller
         try {
             $product->product_category_id = $request->product_category;
             $product->product = $request->product;
-            $product->price = $request->price;
-            $product->price_sell = $request->price_sell;
+            // $product->price = $request->price;
+            // $product->price_sell = $request->price_sell;
             $product->save();
 
             if ($product) {
