@@ -9,6 +9,7 @@ use App\Enums\PaymentMethod;
 use Illuminate\Http\Request;
 use App\Models\DeliveryOrder;
 use App\Models\VehicleService;
+use Carbon\Carbon;
 use App\Exports\SpendingExport;
 // import selling
 use Illuminate\Support\Facades\DB;
@@ -171,8 +172,10 @@ class SpendingController extends Controller
 
     public function export(Request $request)
     {
-        $name = 'Data Transaksi Lain Lain';
+        $name = 'Data Transaksi Lain Lain - ' . date('Y-m-d');
         $fileName = $name . '.xlsx';
+        // save to storage
+        Excel::store(new SpendingExport($request), 'public/excel/'.$fileName);
         return Excel::download(new SpendingExport($request), $fileName);
     }
 
@@ -192,7 +195,7 @@ class SpendingController extends Controller
         ->orderBy($request->get('sort_by', 'spending_category_id'), $request->get('order', 'asc'))
         ->orderBy($request->get('sort_by', 'mutation'), $request->get('order', 'asc'))
         ->orderBy($request->get('sort_by', 'payment_method'), $request->get('order', 'asc'))
-        ->get();    
+        ->get();
 
         $title = 'Data Transaksi Lain Lain';
 
@@ -218,5 +221,53 @@ class SpendingController extends Controller
 
         // Unduh file PDF
         return $dompdf->stream("$name.pdf");
+    }
+
+    // make function send email
+    public function sendEmail(){
+        $request = new Request();
+        $name = 'Laporan Transaksi Lain Lain';
+        $now = date('Y-m-d');
+        $spending = 'Data Transaksi Lain Lain - ' . $now . '.xlsx';
+        $selling = 'Data Penjualan - ' . $now . '.xlsx';
+        $purchase = 'Data Pembelian - ' . $now . '.xlsx';
+        $service = 'Data Servis Kendaraan - ' . $now . '.xlsx';
+        $this->export($request);
+        $sellingController = new SellingController();
+        $sellingController->export($request);
+        $deliveryOrderController = new DeliveryOrderController();
+        $deliveryOrderController->export($request);
+        $vehicleServiceController = new VehicleServiceController();
+        $vehicleServiceController->export($request);
+
+        $report = [
+                [
+                    'title' => 'Data Transaksi Lain Lain',
+                    'link' => asset('storage/excel/'.$spending)
+                ],
+                [
+                    'title' => 'Data Penjualan',
+                    'link' => asset('storage/excel/'.$selling)
+                ],
+                [
+                    'title' => 'Data Pembelian',
+                    'link' => asset('storage/excel/'.$purchase)
+                ],
+                [
+                    'title' => 'Data Servis Kendaraan',
+                    'link' => asset('storage/excel/'.$service)
+                ]
+            ];
+        // send email
+        $data = [
+            'title' => 'Laporan Semua Transaksi Aplikasi WMS',
+            'body' => 'Terlampir hasil laporan WMS',
+            'desc' => 'Terlampir hasil laporan WMS',
+            'email' => 'cs@putrabumiberkah.com',
+            'link' => $report
+        ];
+        // get env value 
+        $env = env('MAIL_REPORT');
+        \Mail::to($env)->send(new \App\Mail\WmsReportEmail($data));
     }
 }

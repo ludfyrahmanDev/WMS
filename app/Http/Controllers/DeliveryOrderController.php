@@ -300,8 +300,9 @@ class DeliveryOrderController extends Controller
 
     public function export(Request $request)
     {
-        $name = 'Data Pembelian ';
+        $name = 'Data Pembelian - ' . date('Y-m-d');
         $fileName = $name . '.xlsx';
+        Excel::store(new DeliveryOrderExport($request), 'public/excel/'.$fileName);
         return Excel::download(new DeliveryOrderExport($request), $fileName);
     }
     public function exportPdf(Request $request)

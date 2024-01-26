@@ -162,8 +162,9 @@ class VehicleServiceController extends Controller
 
     public function export(Request $request)
     {
-        $name = 'Data Servis Kendaraan ';
+        $name = 'Data Servis Kendaraan - ' . date('Y-m-d');
         $fileName = $name . '.xlsx';
+        Excel::store(new VehicleServiceExport($request), 'public/excel/'.$fileName);
         return Excel::download(new VehicleServiceExport($request), $fileName);
     }
 

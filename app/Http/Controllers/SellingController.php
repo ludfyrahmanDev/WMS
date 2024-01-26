@@ -345,8 +345,9 @@ class SellingController extends Controller
 
     public function export(Request $request)
     {
-        $name = 'Data Penjualan ';
+        $name = 'Data Penjualan - ' . date('Y-m-d');
         $fileName = $name . '.xlsx';
+        Excel::store(new SellingExport($request), 'public/excel/'.$fileName);
         return Excel::download(new SellingExport($request), $fileName);
     }
 

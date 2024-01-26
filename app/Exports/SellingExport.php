@@ -26,6 +26,7 @@ class SellingExport implements FromView, ShouldAutoSize
     {
         $request = $this->request;
         $data = Selling::with(['customer', 'driver','selling_detail','selling_detail.stock','selling_detail.stock.product'])
+        ->whereDate('created_at', Carbon::today())
         ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
         ->get();
         $title = 'Data Penjualan';

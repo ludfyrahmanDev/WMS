@@ -36,6 +36,8 @@ class SpendingExport implements FromView, ShouldAutoSize
         ->whereHas('spendingCategory', function ($query) {
             $query->where('spending_category', '<>', 'Kendaraan');
         })
+        // where by this day
+        ->whereDate('created_at', Carbon::today())
         ->orderBy($request->get('sort_by', 'date'), $request->get('order', 'desc'))
         ->orderBy($request->get('sort_by', 'spending_category_id'), $request->get('order', 'asc'))
         ->orderBy($request->get('sort_by', 'mutation'), $request->get('order', 'asc'))
