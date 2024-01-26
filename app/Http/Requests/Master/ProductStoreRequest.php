@@ -15,9 +15,9 @@ class ProductStoreRequest extends FormRequest
     {
         return [
             'product_category'  => ['required'],
-            'product'           => ['required'],
-            'price'             => ['required'],
-            'price_sell'        => ['required']
+            'product'           => ['required']
+            // 'price'             => ['required'],
+            // 'price_sell'        => ['required']
         ];
     }
 
@@ -25,9 +25,9 @@ class ProductStoreRequest extends FormRequest
     {
         return [
             'product_category.required' => 'Kategori produk tidak boleh kosong',
-            'product.required'          => 'Nama produk tidak boleh kosong',
-            'price'                     => 'Harga/KG tidak boleh kosong',
-            'price_sell'                => 'Harga jual tidak boleh kosong'
+            'product.required'          => 'Nama produk tidak boleh kosong'
+            // 'price'                     => 'Harga/KG tidak boleh kosong',
+            // 'price_sell'                => 'Harga jual tidak boleh kosong'
         ];
     }
 }
