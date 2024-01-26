@@ -59,21 +59,21 @@
             <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
                 <x-base.table.thead>
                     <x-base.table.tr>
-                        <x-base.table.th class="whitespace-nowrap border-b-0">
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             No
                         </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0">
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             Kategori Produk
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             Produk
                         </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                        {{-- <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             Harga/KG
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             Harga Jual
-                        </x-base.table.th>
+                        </x-base.table.th> --}}
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             ACTIONS
                         </x-base.table.th>
@@ -83,29 +83,29 @@
                     @foreach ($data as $item)
                         <x-base.table.tr class="intro-x">
                             <x-base.table.td
-                                class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 {{ $loop->iteration }}
                             </x-base.table.td>
                             <x-base.table.td
-                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <a class="whitespace-nowrap font-medium">
                                     {{ $item->category->name ?? '-' }}
                                 </a>
                             </x-base.table.td>
                             <x-base.table.td
-                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <a class="whitespace-nowrap font-medium">
                                     {{ $item['product'] }}
                                 </a>
                             </x-base.table.td>
-                            <x-base.table.td
+                            {{-- <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 {{ toThousand($item['price']) }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 {{ toThousand($item['price_sell']) }}
-                            </x-base.table.td>
+                            </x-base.table.td> --}}
                             <x-base.table.td
                                 class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
                                 <div class="flex items-center justify-center">

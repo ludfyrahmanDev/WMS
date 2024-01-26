@@ -31,7 +31,7 @@
                     <div class="input-form">
                         <x-base.form-label for="crud-form-1">Kategori Produk</x-base.form-label>
                         <x-base.tom-select name="product_category" class="w-full"
-                            data-placeholder="Pilih Kategori Pengeluaran" required> 
+                            data-placeholder="Pilih Kategori Produk" required> 
                             <option value="">Pilih Kategori Produk</option>
                             @foreach ($kategori as $item)
                                 <option value="{{ $item->id }}" {{$data->product_category_id == $item->id ? 'selected' : ''}}>{{ $item->name }}</option>
@@ -53,7 +53,7 @@
                             </div>
                         @enderror
                     </div>
-                    <div class="mt-3 input-form">
+                    {{-- <div class="mt-3 input-form">
                         <x-base.form-label for="crud-form-1">Harga/KG</x-base.form-label>
                         <x-base.form-input class="w-full" id="crud-form-1" type="text" name="price"
                             value="{{ $data->price ?? old('price') }}" placeholder="Masukkan harga/KG..." onkeypress="return event.charCode >= 48 && event.charCode <= 57"/>
@@ -72,7 +72,7 @@
                                 {{ $message }}
                             </div>
                         @enderror
-                    </div>
+                    </div> --}}
 
                     <div class="mt-5 text-right">
 
