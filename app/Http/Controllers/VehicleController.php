@@ -49,7 +49,7 @@ class VehicleController extends Controller
 
             return redirect('vehicle')->with('success', 'Berhasil menambah data!');
         } catch (\Throwable $th) {
-            return back()->withErrors($request->getValidator())->with('failed', 'Gagal menambah data!');
+            return back()->withErrors($request->getValidator())->with('failed', 'Gagal menambah data!'.$th->getMessage());
         }
     }
 
@@ -84,7 +84,7 @@ class VehicleController extends Controller
 
             return redirect('vehicle')->with('success', 'Berhasil menghapus data!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menghapus data!');
+            return back()->with('failed', 'Gagal menghapus data!'.$th->getMessage());
         }
     }
 }

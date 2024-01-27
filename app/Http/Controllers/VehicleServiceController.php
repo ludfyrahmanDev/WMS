@@ -95,7 +95,7 @@ class VehicleServiceController extends Controller
 
             return redirect(route('vehicle_service.index'))->with('success', 'Berhasil menambah data!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menambah data!');
+            return back()->with('failed', 'Gagal menambah data!'.$th->getMessage());
         }
     }
 
@@ -106,7 +106,7 @@ class VehicleServiceController extends Controller
             return redirect(route('vehicle_service.index'))->with('success', 'Berhasil menghapus data!');
         } catch (\Throwable $th) {
             dd($th->getMessage());
-            return back()->with('failed', 'Gagal menghapus data!');
+            return back()->with('failed', 'Gagal menghapus data!'.$th->getMessage());
         }
     }
 
@@ -156,7 +156,7 @@ class VehicleServiceController extends Controller
 
             return redirect(route('vehicle_service.index'))->with('success', 'Berhasil mengubah data!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal mengubah data!');
+            return back()->with('failed', 'Gagal mengubah data!'.$th->getMessage());
         }
     }
 

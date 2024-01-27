@@ -43,7 +43,9 @@
                     </div>
                     <div class="mt-5 text-right">
                         <x-base.button class="mr-1 w-24" type="button" variant="outline-secondary">
-                            Cancel
+                            <a href="{{ route('category.index') }}" variant="outline-secondary">
+                                Cancel
+                            </a>
                         </x-base.button>
                         <x-base.button class="w-24" type="submit" variant="primary">
                             Save

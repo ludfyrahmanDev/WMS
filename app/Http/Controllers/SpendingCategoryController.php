@@ -47,7 +47,7 @@ class SpendingCategoryController extends Controller
                 return back()->with('failed', 'Gagal menambah data!');
             }
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menambah data!');
+            return back()->with('failed', 'Gagal menambah data!'.$th->getMessage());
         }
     }
 
@@ -84,7 +84,7 @@ class SpendingCategoryController extends Controller
 
             return redirect('spendingCategory')->with('success', 'Berhasil menghapus data!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menghapus data!');
+            return back()->with('failed', 'Gagal menghapus data!'.$th->getMessage());
         }
     }
 }

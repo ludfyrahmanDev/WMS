@@ -74,7 +74,7 @@ class CustomerController extends Controller
                 return back()->with('failed', 'Gagal menambah data!');
             }
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menambah data!');
+            return back()->with('failed', 'Gagal menambah data!'.$th->getMessage());
         }
     }
 
@@ -132,7 +132,7 @@ class CustomerController extends Controller
             $customer->delete();
             return redirect('customer')->with('success', 'Berhasil menghapus data!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menghapus data!');
+            return back()->with('failed', 'Gagal menghapus data!'.$th->getMessage());
         }
     }
 }
