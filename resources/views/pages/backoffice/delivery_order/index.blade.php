@@ -222,10 +222,9 @@
                                             <div class="p-5 text-center">
                                                 <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger"
                                                     icon="XCircle" />
-                                                <div class="mt-5 text-3xl">Are you sure?</div>
+                                                <div class="mt-5 text-3xl">Apakah anda yakin?</div>
                                                 <div class="mt-2 text-slate-500">
-                                                    Do you really want to delete these records? <br />
-                                                    This process cannot be undone.
+                                                    Proses ini tidak dapat dibatalkan.
                                                 </div>
                                             </div>
                                             <div class="px-5 pb-8 text-center flex justify-center">
@@ -250,10 +249,9 @@
                                             <div class="p-5 text-center">
                                                 <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger"
                                                     icon="XCircle" />
-                                                <div class="mt-5 text-3xl">Are you sure?</div>
+                                                <div class="mt-5 text-3xl">Apakah anda yakin?</div>
                                                 <div class="mt-2 text-slate-500">
-                                                    Do you really want to update these records? <br />
-                                                    This process cannot be undone.
+                                                    Ingin konfirmasi data ini.
                                                 </div>
                                             </div>
                                             <div class="px-5 pb-8 text-center flex justify-center">

@@ -124,7 +124,7 @@ class DeliveryOrderController extends Controller
         } catch (\Throwable $th) {
             // var_dump($th->getMessage());
             // die;
-            return back()->with('failed', 'Gagal menambah data!');
+            return back()->with('failed', 'Gagal menambah data!'.$th->getMessage());
         }
     }
 
@@ -141,7 +141,7 @@ class DeliveryOrderController extends Controller
 
             return  redirect('delivery_order')->with('success', 'Berhasil menghapus data!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menghapus data!');
+            return back()->with('failed', 'Gagal menghapus data!'.$th->getMessage());
         }
     }
 
@@ -264,15 +264,13 @@ class DeliveryOrderController extends Controller
                 return redirect(route('delivery_order.edit', $delivery_order->id))->with('success', 'Berhasil mengubah data!');
             }
         } catch (\Throwable $th) {
-            var_dump($th->getMessage());
-            die;
             if ($request->mode == 'angsuran') {
-                return back()->with('failed', 'Gagal mengubah data!');
+                return back()->with('failed', 'Gagal mengubah data!'.$th->getMessage());
             }
             if ($request->mode != null) {
-                return back()->with('failed', 'Gagal konfirmasi data!');
+                return back()->with('failed', 'Gagal konfirmasi data!'.$th->getMessage());
             } else {
-                return back()->with('failed', 'Gagal mengubah data!');
+                return back()->with('failed', 'Gagal mengubah data!'.$th->getMessage());
             }
         }
     }

@@ -74,7 +74,7 @@ class ClosingController extends Controller
 
             return redirect(route('closing.index'))->with('success', 'Berhasil menyimpan data!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal, menyimpan data!');
+            return back()->with('failed', 'Gagal, menyimpan data!'.$th->getMessage());
         }
     }
 
@@ -89,10 +89,12 @@ class ClosingController extends Controller
 
     public function export(Request $request)
     {
-        $name = 'Data Rekap ';
+        $name = 'Data Rekap - ' . date('Y-m-d');
         $fileName = $name . '.xlsx';
+        Excel::store(new ClosingExport($request), 'public/excel/'.$fileName);
         return Excel::download(new ClosingExport($request), $fileName);
     }
+
     public function exportPdf(Request $request)
     {
         $data = Closing::filterResource($request, [

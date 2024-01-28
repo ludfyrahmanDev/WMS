@@ -76,9 +76,9 @@ class UserController extends Controller
             '';
             $user->active = 1;
             $user->save();
-            return redirect('user')->with('success', 'Berhasil menambah data!');
+            return redirect('users')->with('success', 'Berhasil menambah data!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menambah data!');
+            return back()->with('failed', 'Gagal menambah data! '.$th->getMessage());
         }
     }
 
@@ -147,7 +147,7 @@ class UserController extends Controller
             $user->delete();
             return redirect('users')->with('success', 'Berhasil menghapus data!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menghapus data!');
+            return back()->with('failed', 'Gagal menghapus data!'.$th->getMessage());
         }
     }
 
@@ -178,7 +178,7 @@ class UserController extends Controller
             User::where('id', $id)->update($user);
             return back()->with('success', 'Berhasil mengubah data!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal mengubah data!');
+            return back()->with('failed', 'Gagal mengubah data!'.$th->getMessage());
         }
     }
 }

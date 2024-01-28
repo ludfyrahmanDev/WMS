@@ -30,14 +30,14 @@ class SideMenu
                         ],
                         'title' => 'User'
                     ],
-                    'users-layout-2' => [
-                        'icon' => 'activity',
-                        'route_name' => 'role.index',
-                        'params' => [
-                            'layout' => 'side-menu'
-                        ],
-                        'title' => 'Jabatan'
-                    ],
+                    // 'users-layout-2' => [
+                    //     'icon' => 'activity',
+                    //     'route_name' => 'role.index',
+                    //     'params' => [
+                    //         'layout' => 'side-menu'
+                    //     ],
+                    //     'title' => 'Jabatan'
+                    // ],
                     'users-layout-3' => [
                         'icon' => 'car',
                         'route_name' => 'driver.index',

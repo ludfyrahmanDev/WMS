@@ -28,8 +28,8 @@
 <body>
     <h1>{{ $title }}</h1>
 
-    <div class="row">
-        @foreach ($data as $item)
+    @foreach ($data as $item)
+        <div class="row">
             <div class="col-md-6">
                 <table border="1">
                     <thead>
@@ -93,10 +93,9 @@
                     </tbody>
                 </table>
             </div>
-        </br>
-        @endforeach
-
-    </div>
+        </div>
+        <br/>
+    @endforeach
 </body>
 
 </html>

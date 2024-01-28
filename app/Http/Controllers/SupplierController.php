@@ -53,7 +53,7 @@ class SupplierController extends Controller
 
             return redirect('supplier')->with('success', 'Berhasil menambah data!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menambah data!');
+            return back()->with('failed', 'Gagal menambah data!'.$th->getMessage());
         }
     }
 
@@ -89,7 +89,7 @@ class SupplierController extends Controller
 
             return redirect('supplier')->with('success', 'Berhasil menghapus data!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menghapus data!');
+            return back()->with('failed', 'Gagal menghapus data!'.$th->getMessage());
         }
     }
 }

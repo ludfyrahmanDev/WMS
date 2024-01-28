@@ -128,10 +128,11 @@ class SellingController extends Controller
 
             return redirect(route('selling.index'))->with('success', 'Berhasil menambah data!');
         } catch (\Throwable $th) {
-            $errorMessage = $th->getMessage() . " at line " . $th->getLine();
-            // var_dump($errorMessage);
-            // die;
-            return back()->with('failed', $errorMessage);
+            // $errorMessage = $th->getMessage() . " at line " . $th->getLine();
+            // // var_dump($errorMessage);
+            // // die;
+            // return back()->with('failed', $errorMessage);
+            return back()->with('failed', 'Gagal menambah data!'.$th->getMessage());
         }
     }
 
@@ -273,10 +274,11 @@ class SellingController extends Controller
             }
             return redirect(route('selling.index'))->with('success', 'Berhasil menambah data!');
         } catch (\Throwable $th) {
-            $errorMessage = $th->getMessage() . " at line " . $th->getLine();
-            // var_dump($errorMessage);
-            // die;
-            return back()->with('failed', 'Gagal menyimpan data, karena : ' . $errorMessage);
+            // $errorMessage = $th->getMessage() . " at line " . $th->getLine();
+            // // var_dump($errorMessage);
+            // // die;
+            // return back()->with('failed', 'Gagal menyimpan data, karena : ' . $errorMessage);
+            return back()->with('failed', 'Gagal menyimpan data!'.$th->getMessage());
         }
     }
 
@@ -287,8 +289,9 @@ class SellingController extends Controller
             $selling->delete();
             return  redirect('selling')->with('success', 'Berhasil menghapus data!');
         } catch (\Throwable $th) {
-            $errorMessage = $th->getMessage() . " at line " . $th->getLine();
-            return back()->with('failed', 'Gagal menghapus data, karena : ' . $errorMessage);
+            // $errorMessage = $th->getMessage() . " at line " . $th->getLine();
+            // return back()->with('failed', 'Gagal menghapus data, karena : ' . $errorMessage);
+            return back()->with('failed', 'Gagal menghapus data!'.$th->getMessage());
         }
     }
 
@@ -356,9 +359,7 @@ class SellingController extends Controller
         $data = Selling::with(['customer', 'driver', 'selling_detail', 'selling_detail.stock', 'selling_detail.stock.product'])
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
             ->get();
-            $lastQuery = Selling::toSql();
 
-            echo json_encode($lastQuery); die;
         $title = 'Data Penjualan';
         $pdf = \PDF::loadView('pages.backoffice.selling.export', compact('data', 'title'))->setPaper('a4', 'landscape');;
         $name = 'Laporan Penjualan';

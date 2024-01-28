@@ -9,7 +9,7 @@
 
 @section('subcontent')
     <div class="intro-y mt-8 flex items-center">
-        <h2 class="mr-auto text-lg font-medium">{{$title}}</h2>
+        <h2 class="mr-auto text-lg font-medium">{{ $title }}</h2>
     </div>
     @if (session('failed'))
         <x-base.alert class="mb-2 flex items-center" variant="outline-danger">
@@ -34,7 +34,8 @@
                     <div class="input-form">
                         <x-base.form-label for="spending_category">Kategori pengeluaran</x-base.form-label>
                         <x-base.form-input class="w-full" id="spending_category" type="text" name="spending_category"
-                            value="{{ $data->spending_category ?? old('spending_category') }}" placeholder="Masukkan kategori pengeluaran..." />
+                            value="{{ $data->spending_category ?? old('spending_category') }}"
+                            placeholder="Masukkan kategori pengeluaran..." />
                         @error('spending_category')
                             <div class="pristine-error text-danger mt-2">
                                 {{ $message }}
@@ -53,16 +54,19 @@
                     </div> --}}
                     <div class="mt-3 input-form">
                         <x-base.form-label for="spending_types">Tipe pengeluaran</x-base.form-label>
-                        <x-base.tom-select name="spending_types" id="spending_types" class="w-full" data-placeholder="Pilih Tipe Pengeluaran">
+                        <x-base.tom-select name="spending_types" id="spending_types" class="w-full"
+                            data-placeholder="Pilih Tipe Pengeluaran">
                             <option value="">Pilih Tipe Pengeluaran</option>
-                            <option value="Kendaraan">Kendaraan</option>
-                            <option value="Lain-lain">Lain-lain</option>
+                            <option value="Kendaraan" {{$data->spending_types == 'Kendaraan' ? 'selected' : ''}}>Kendaraan</option>
+                            <option value="Lain-lain" {{$data->spending_types == 'Lain-lain' ? 'selected' : ''}}>Lain-lain</option>
                         </x-base.tom-select>
                     </div>
 
                     <div class="mt-5 text-right">
                         <x-base.button class="mr-1 w-24" type="button" variant="outline-secondary">
-                            Cancel
+                            <a href="{{ route('spendingCategory.index') }}" variant="outline-secondary">
+                                Cancel
+                            </a>
                         </x-base.button>
                         <x-base.button class="w-24" type="submit" variant="primary">
                             Save

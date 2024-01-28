@@ -100,7 +100,7 @@ class ProductController extends Controller
 
             return redirect('product')->with('success', 'Berhasil menghapus data!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menghapus data!');
+            return back()->with('failed', 'Gagal menghapus data!'.$th->getMessage());
         }
     }
 

@@ -23,25 +23,17 @@
             ])>
                 <div class="box p-5">
                     <div class="flex">
-                        <x-base.lucide
-                            class="h-[28px] w-[28px] text-primary"
-                            icon="ShoppingCart"
-                        />
+                        <x-base.lucide class="h-[28px] w-[28px] text-primary" icon="ShoppingCart" />
                         <div class="ml-auto hidden">
                             <x-base.tippy
                                 class="flex cursor-pointer items-center rounded-full bg-success py-[3px] pl-2 pr-1 text-xs font-medium text-white"
-                                as="div"
-                                content="33% Higher than last month"
-                            >
+                                as="div" content="33% Higher than last month">
                                 33%
-                                <x-base.lucide
-                                    class="ml-0.5 h-4 w-4"
-                                    icon="ChevronUp"
-                                />
+                                <x-base.lucide class="ml-0.5 h-4 w-4" icon="ChevronUp" />
                             </x-base.tippy>
                         </div>
                     </div>
-                    <div class="mt-6 text-3xl font-medium leading-8">{{toThousand($total ?? 0)}}</div>
+                    <div class="mt-6 text-3xl font-medium leading-8">{{ toThousand($total ?? 0) }}</div>
                     <div class="mt-1 text-base text-slate-500">Total Penjualan</div>
                 </div>
             </div>
@@ -53,25 +45,17 @@
             ])>
                 <div class="box p-5">
                     <div class="flex">
-                        <x-base.lucide
-                            class="h-[28px] w-[28px] text-pending"
-                            icon="CreditCard"
-                        />
+                        <x-base.lucide class="h-[28px] w-[28px] text-pending" icon="CreditCard" />
                         <div class="ml-auto hidden">
                             <x-base.tippy
                                 class="flex cursor-pointer items-center rounded-full bg-danger py-[3px] pl-2 pr-1 text-xs font-medium text-white"
-                                as="div"
-                                content="2% Lower than last month"
-                            >
+                                as="div" content="2% Lower than last month">
                                 2%
-                                <x-base.lucide
-                                    class="ml-0.5 h-4 w-4"
-                                    icon="ChevronDown"
-                                />
+                                <x-base.lucide class="ml-0.5 h-4 w-4" icon="ChevronDown" />
                             </x-base.tippy>
                         </div>
                     </div>
-                    <div class="mt-6 text-3xl font-medium leading-8">{{toThousand($completed ?? 0)}}</div>
+                    <div class="mt-6 text-3xl font-medium leading-8">{{ toThousand($completed ?? 0) }}</div>
                     <div class="mt-1 text-base text-slate-500">Total Terbayar</div>
                 </div>
             </div>
@@ -83,25 +67,17 @@
             ])>
                 <div class="box p-5">
                     <div class="flex">
-                        <x-base.lucide
-                            class="h-[28px] w-[28px] text-warning"
-                            icon="Coins"
-                        />
+                        <x-base.lucide class="h-[28px] w-[28px] text-warning" icon="Coins" />
                         <div class="ml-auto hidden">
                             <x-base.tippy
                                 class="flex cursor-pointer items-center rounded-full bg-success py-[3px] pl-2 pr-1 text-xs font-medium text-white"
-                                as="div"
-                                content="12% Higher than last month"
-                            >
+                                as="div" content="12% Higher than last month">
                                 12%
-                                <x-base.lucide
-                                    class="ml-0.5 h-4 w-4"
-                                    icon="ChevronUp"
-                                />
+                                <x-base.lucide class="ml-0.5 h-4 w-4" icon="ChevronUp" />
                             </x-base.tippy>
                         </div>
                     </div>
-                    <div class="mt-6 text-3xl font-medium leading-8">{{toThousand($inCompleted ?? 0)}}</div>
+                    <div class="mt-6 text-3xl font-medium leading-8">{{ toThousand($inCompleted ?? 0) }}</div>
                     <div class="mt-1 text-base text-slate-500">
                         Total Piutang
                     </div>
@@ -117,29 +93,17 @@
                 </x-base.button>
             </a>
             <x-base.menu>
-                <x-base.menu.button
-                    class="!box px-2"
-                    as="x-base.button"
-                >
+                <x-base.menu.button class="!box px-2" as="x-base.button">
                     <span class="flex h-5 w-5 items-center justify-center">
-                        <x-base.lucide
-                            class="h-4 w-4"
-                            icon="file"
-                        />
+                        <x-base.lucide class="h-4 w-4" icon="file" />
                     </span>
                 </x-base.menu.button>
                 <x-base.menu.items class="w-40">
                     <x-base.menu.item href="{{ route($route . '.export', $request) }}" target="_blank">
-                        <x-base.lucide
-                            class="mr-2 h-4 w-4"
-                            icon="sheet"
-                        /> Export to Excel
+                        <x-base.lucide class="mr-2 h-4 w-4" icon="sheet" /> Export to Excel
                     </x-base.menu.item>
                     <x-base.menu.item href="{{ route($route . '.export-pdf', $request) }}">
-                        <x-base.lucide
-                            class="mr-2 h-4 w-4"
-                            icon="FileText"
-                        /> Export to PDF
+                        <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to PDF
                     </x-base.menu.item>
                 </x-base.menu.items>
             </x-base.menu>
@@ -148,7 +112,8 @@
             </div>
             <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto md:ml-0">
                 <div class="relative w-56 text-slate-500">
-                    <x-base.form-input class="!box w-56 pr-10" type="text" placeholder="Search..." id="search" value="{{ request()->get('search') }}"/>
+                    <x-base.form-input class="!box w-56 pr-10" type="text" placeholder="Search..." id="search"
+                        value="{{ request()->get('search') }}" />
                     <x-base.lucide class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4" icon="Search" />
                 </div>
             </div>
@@ -246,7 +211,7 @@
                                             href="{{ route($route . '.export-one', $item->id) }}">
                                             <x-base.lucide class="mr-1 h-4 w-4" icon="file" />
                                             Export
-                                        </a>
+                                            </a>
                                     @else
                                         <a class="mr-3 flex items-center text-warning"
                                             href="{{ route('selling.edit', $item->id) }}">
@@ -254,14 +219,16 @@
                                             Edit
                                         </a>
                                         <a class="flex items-center text-danger" data-tw-toggle="modal"
-                                            data-tw-target="#delete-confirmation-modal-{{ $item->id }}" href="#">
+                                            data-tw-target="#delete-confirmation-modal-{{ $item->id }}"
+                                            href="#">
                                             <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
                                         </a>
                                     @endif
                                     <x-base.dialog id="delete-confirmation-modal-{{ $item->id }}">
                                         <x-base.dialog.panel>
                                             <div class="p-5 text-center">
-                                                <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger" icon="XCircle" />
+                                                <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger"
+                                                    icon="XCircle" />
                                                 <div class="mt-5 text-3xl">Apakah anda yakin?</div>
                                                 <div class="mt-2 text-slate-500">
                                                     Proses ini tidak dapat dibatalkan.
@@ -287,11 +254,11 @@
                                     <x-base.dialog id="status-confirmation-modal-{{ $item->id }}">
                                         <x-base.dialog.panel>
                                             <div class="p-5 text-center">
-                                                <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger" icon="XCircle" />
-                                                <div class="mt-5 text-3xl">Are you sure?</div>
+                                                <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger"
+                                                    icon="XCircle" />
+                                                <div class="mt-5 text-3xl">Apakah anda yakin?</div>
                                                 <div class="mt-2 text-slate-500">
-                                                    Do you really want to update these records? <br />
-                                                    This process cannot be undone.
+                                                    Ingin konfirmasi data ini.
                                                 </div>
                                             </div>
                                             <div class="px-5 pb-8 text-center flex justify-center">
