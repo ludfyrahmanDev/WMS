@@ -191,5 +191,17 @@
             </div>
         </x-base.dialog.panel>
     </x-base.dialog>
+    <button id="click">Click</button>
     <!-- END: Delete Confirmation Modal -->
+    @push('scripts')
+        <script>
+            (function () {
+            "use strict";
+                $('#click').click(function () {
+                    alert();
+                })
+                
+            })
+        </script>
+    @endpush
 @endsection

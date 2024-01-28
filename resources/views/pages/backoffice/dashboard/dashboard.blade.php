@@ -151,7 +151,7 @@
                 </div>
                 <!-- END: General Report -->
                 <!-- BEGIN: Sales Report -->
-                <div class="col-span-12 mt-8 lg:col-span-6">
+                <div class="col-span-12 mt-8 lg:col-span-12">
                     <div class="intro-y block h-10 items-center sm:flex">
                         <h2 class="mr-5 truncate text-lg font-medium">Laporan Penjualan</h2>
                         <div class="relative mt-3 text-slate-500 sm:ml-auto sm:mt-0">
@@ -219,7 +219,7 @@
                 <!-- END: Sales Report -->
                 <!-- BEGIN: Weekly Top Seller -->
                 
-                <div class="col-span-12 mt-8 sm:col-span-6 lg:col-span-3">
+                <div class="col-span-12 mt-8 sm:col-span-6 lg:col-span-3 hidden">
                     <div class="intro-y flex h-10 items-center">
                         <h2 class="mr-5 truncate text-lg font-medium">Weekly Top Seller</h2>
                         <a
@@ -252,7 +252,7 @@
                 </div>
                 <!-- END: Weekly Top Seller -->
                 <!-- BEGIN: Sales Report -->
-                <div class="col-span-12 mt-8 sm:col-span-6 lg:col-span-3">
+                <div class="col-span-12 mt-8 sm:col-span-6 lg:col-span-3 hidden">
                     <div class="intro-y flex h-10 items-center">
                         <h2 class="mr-5 truncate text-lg font-medium">Sales Report</h2>
                         <a
