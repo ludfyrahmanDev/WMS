@@ -7,16 +7,14 @@ use BenSampo\Enum\Enum;
 final class PaymentMethod extends Enum
 {
     const CASH      = 'CASH';
-    const QRIS      = 'QRIS';
-    const KWB       = 'KWB';
+    const TRANSFER      = 'TRANSFER';
+    // const KWB       = 'KWB';
 
     public static function getDescription($value): string
     {
         $result = '';
-        if ($value === self::QRIS) {
-            $result = 'QRIS';
-        } elseif ($value === self::KWB) {
-            $result = 'KWB';
+        if ($value === self::TRANSFER) {
+            $result = 'TRANSFER';
         } elseif ($value === self::CASH) {
             $result = 'CASH';
         }

@@ -19,9 +19,9 @@ class ClosingController extends Controller
             'main_balance',
             'receivables',
             'debt',
-            'bri_balance',
-            'business_balance',
-            'shop_debt',
+            // 'bri_balance',
+            // 'business_balance',
+            'shop_receivables',
             'shop_capital',
             'who_create'
         ], [])
@@ -51,13 +51,13 @@ class ClosingController extends Controller
             //get hutang
             $hutang = Closing::getHutang();
 
-            $closing->cust_has_not_paid = $totalCustHasNotPaid;
+            $closing->cust_has_not_paid = $totalCustHasNotPaid == null ? 0 : $totalCustHasNotPaid;
             $closing->main_balance = $totalSaldo;
-            $closing->receivables = $totalCustHasNotPaid;
-            $closing->debt = $hutang;
-            $closing->bri_balance = $request->saldo_bri;
-            $closing->business_balance = $request->saldo_bisnis;
-            $closing->shop_debt = $request->hutang_toko;
+            $closing->receivables = $totalCustHasNotPaid == null ? 0 : $totalCustHasNotPaid;
+            $closing->debt = $hutang == null ? 0 : $hutang;
+            // $closing->bri_balance = $request->saldo_bri;
+            // $closing->business_balance = $request->saldo_bisnis;
+            $closing->shop_receivables = $request->piutang_toko;
             $closing->shop_capital = $request->modal_toko;
             $closing->who_create = $user['name'];
             $closing->save();

@@ -86,18 +86,12 @@
                             Hutang
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            Saldo BRI
+                            Piutang Toko
                         </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0">
-                            Saldo Bisnis
-                        </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0">
-                            Hutang Toko
-                        </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0">
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             Modal Toko
                         </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0">
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             ACTIONS
                         </x-base.table.th>
                     </x-base.table.tr>
@@ -127,17 +121,17 @@
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 {{ $item['debt'] }}
                             </x-base.table.td>
-                            <x-base.table.td
+                            {{-- <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 {{ $item['bri_balance'] }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 {{ $item['business_balance'] }}
-                            </x-base.table.td>
+                            </x-base.table.td> --}}
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['shop_debt'] }}
+                                {{ $item['shop_receivables'] }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
@@ -223,23 +217,11 @@
                 </x-base.dialog.title>
                 <x-base.dialog.description class="grid grid-cols-12 gap-4 gap-y-3">
                     <div class="col-span-12 sm:col-span-6">
-                        <x-base.form-label for="modal-form-1">Saldo BRI</x-base.form-label>
-                        <x-base.form-input class="w-full" id="crud-form-1" type="text" name="saldo_bri"
-                            id="saldo_bri" value="" placeholder="Input Saldo BRI"
-                            onkeypress="return event.charCode >= 48 && event.charCode <= 57" required />
-                    </div>
-                    <div class="col-span-12 sm:col-span-6">
-                        <x-base.form-label for="modal-form-2">Saldo Bisnis</x-base.form-label>
-                        <x-base.form-input class="w-full" id="crud-form-1" type="text" name="saldo_bisnis"
-                            id="saldo_bisnis" value="" placeholder="Input Saldo Bisnis"
-                            onkeypress="return event.charCode >= 48 && event.charCode <= 57" required />
-                    </div>
-                    <div class="col-span-12 sm:col-span-6">
                         <x-base.form-label for="modal-form-3">
-                            Hutang Toko
+                            Piutang Toko
                         </x-base.form-label>
-                        <x-base.form-input class="w-full" id="crud-form-1" type="text" name="hutang_toko"
-                            id="hutang_toko" value="" placeholder="Input Hutang Toko"
+                        <x-base.form-input class="w-full" id="crud-form-1" type="text" name="piutang_toko"
+                            id="piutang_toko" value="" placeholder="Input Piutang Toko"
                             onkeypress="return event.charCode >= 48 && event.charCode <= 57" required />
                     </div>
                     <div class="col-span-12 sm:col-span-6">

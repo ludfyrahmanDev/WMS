@@ -24,7 +24,7 @@ class SupplierStoreRequest extends FormRequest
         return [
             'name' => ['required'],
             'address' => ['required'],
-            'phone' => ['max:13', 'required'],
+            // 'phone' => ['max:13', 'required'],
             'pic' => ['required']
         ];
     }
@@ -34,8 +34,8 @@ class SupplierStoreRequest extends FormRequest
         return [
             'name.required' => 'Nama tidak boleh kosong',
             'address.required' => 'Alamat tidak boleh kosong',
-            'phone.max' => 'No Telp maksimal 13 angka',
-            'phone.required' => 'No Telp tidak boleh kosong',
+            // 'phone.max' => 'No Telp maksimal 13 angka',
+            // 'phone.required' => 'No Telp tidak boleh kosong',
             'pic.required' => 'PIC tidak boleh kosong'
         ];
     }

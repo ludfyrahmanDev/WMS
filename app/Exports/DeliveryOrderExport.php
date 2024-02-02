@@ -32,10 +32,11 @@ class DeliveryOrderExport implements FromView, ShouldAutoSize
             'transaction_type',
             'status'
         ], [])
-            ->with(['supplier', 'vehicle', 'delivery_order_detail'])
-            ->whereDate('created_at', Carbon::today())
+            ->with(['supplier', 'driver', 'vehicle', 'delivery_order_detail', 'delivery_order_detail.stock', 'delivery_order_detail.stock.product'])
+            // ->whereDate('created_at', Carbon::today())
             ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'))
             ->get();
+            
         $title = 'Data Pembelian';
         return view('pages.backoffice.delivery_order.export', compact('data', 'title'));
     }

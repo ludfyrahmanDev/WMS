@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('spending', function (Blueprint $table) {
             $table->id();
             $table->date('date');
-            $table->string('description');
+            $table->string('description')->nullable();
             
             $table->unsignedBigInteger('spending_category_id');
             $table->foreign('spending_category_id')->references('id')->on('spending_category');

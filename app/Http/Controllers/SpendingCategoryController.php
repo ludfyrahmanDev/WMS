@@ -12,7 +12,7 @@ class SpendingCategoryController extends Controller
     {
         $data = SpendingCategory::filterResource($request, [
             'spending_category',
-            'spending_types'
+            // 'spending_types'
         ], [])
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
             ->paginate($request->get('per_page', 10));
@@ -26,7 +26,7 @@ class SpendingCategoryController extends Controller
         $title = 'Data Kategori Pengeluaran';
         $data = (object)[
             'spending_category' => '',
-            'spending_types' => ''
+            // 'spending_types' => ''
         ];
         $route = route('spendingCategory.store');
         $type = 'create';
@@ -38,7 +38,7 @@ class SpendingCategoryController extends Controller
         try {
             $spendingCategory = new SpendingCategory();
             $spendingCategory->spending_category = $request->spending_category;
-            $spendingCategory->spending_types = $request->spending_types;
+            // $spendingCategory->spending_types = $request->spending_types;
             $spendingCategory->save();
 
             if ($spendingCategory) {
@@ -64,7 +64,7 @@ class SpendingCategoryController extends Controller
     {
         try {
             $spendingCategory->spending_category = $request->spending_category;
-            $spendingCategory->spending_types = $request->spending_types;
+            // $spendingCategory->spending_types = $request->spending_types;
             $spendingCategory->save();
 
             if ($spendingCategory) {

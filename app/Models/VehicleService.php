@@ -33,10 +33,10 @@ class VehicleService extends Model
         return Vehicle::all();
     }
 
-    public function getSpendingCategory()
-    {
-        return SpendingCategory::select('id', 'spending_category')->where('spending_types', 'Kendaraan')->get();
-    }
+    // public function getSpendingCategory()
+    // {
+    //     return SpendingCategory::select('id', 'spending_category')->where('spending_types', 'Kendaraan')->get();
+    // }
 
     public function driver()
     {

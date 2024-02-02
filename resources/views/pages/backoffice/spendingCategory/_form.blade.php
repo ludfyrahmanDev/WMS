@@ -52,7 +52,7 @@
                             </div>
                         @enderror
                     </div> --}}
-                    <div class="mt-3 input-form">
+                    {{-- <div class="mt-3 input-form">
                         <x-base.form-label for="spending_types">Tipe pengeluaran</x-base.form-label>
                         <x-base.tom-select name="spending_types" id="spending_types" class="w-full"
                             data-placeholder="Pilih Tipe Pengeluaran">
@@ -60,7 +60,7 @@
                             <option value="Kendaraan" {{$data->spending_types == 'Kendaraan' ? 'selected' : ''}}>Kendaraan</option>
                             <option value="Lain-lain" {{$data->spending_types == 'Lain-lain' ? 'selected' : ''}}>Lain-lain</option>
                         </x-base.tom-select>
-                    </div>
+                    </div> --}}
 
                     <div class="mt-5 text-right">
                         <x-base.button class="mr-1 w-24" type="button" variant="outline-secondary">

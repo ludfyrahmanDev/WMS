@@ -69,10 +69,10 @@
                         @enderror
                     </div>
                     <div class="mt-3 input-form">
-                        <x-base.form-label for="crud-form-1">Deskripsi</x-base.form-label>
+                        <x-base.form-label for="crud-form-1">Deskripsi <sup>(optional)</sup></x-base.form-label>
                         <x-base.form-textarea class="form-control" id="validation-form-6" name="description"
                             placeholder="Input Deskripsi"
-                            value="{{ $data->description ?? old('description') }}" required></x-base.form-textarea>
+                            value="{{ $data->description ?? old('description') }}"></x-base.form-textarea>
                         @error('description')
                             <div class="pristine-error text-danger mt-2">
                                 {{ $message }}
