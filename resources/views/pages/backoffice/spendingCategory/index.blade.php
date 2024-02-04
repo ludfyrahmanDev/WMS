@@ -47,7 +47,8 @@
             </div>
             <div class="mt-3 w-full sm:mt-0 sm:ml-auto sm:w-auto md:ml-0">
                 <div class="relative w-56 text-slate-500">
-                    <x-base.form-input class="!box w-56 pr-10" type="text" placeholder="Search..." id="search" value="{{ request()->get('search') }}"/>
+                    <x-base.form-input class="!box w-56 pr-10" type="text" placeholder="Search..." id="search"
+                        value="{{ request()->get('search') }}" />
                     <x-base.lucide class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4" icon="Search" />
                 </div>
             </div>
@@ -63,9 +64,9 @@
                         <x-base.table.th class="whitespace-nowrap border-b-0">
                             Kategori pengeluaran
                         </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0">
+                        {{-- <x-base.table.th class="whitespace-nowrap border-b-0">
                             Tipe pengeluaran
-                        </x-base.table.th>
+                        </x-base.table.th> --}}
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             ACTIONS
                         </x-base.table.th>
@@ -84,12 +85,12 @@
                                     {{ $item['spending_category'] }}
                                 </a>
                             </x-base.table.td>
-                            <x-base.table.td
+                            {{-- <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <a class="whitespace-nowrap font-medium" href="">
                                     {{ $item['spending_types'] }}
                                 </a>
-                            </x-base.table.td>
+                            </x-base.table.td> --}}
                             <x-base.table.td
                                 class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
                                 <div class="flex items-center justify-center">

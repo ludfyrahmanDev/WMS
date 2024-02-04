@@ -101,6 +101,12 @@
                             </x-base.table.td>
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                <a class="whitespace-nowrap font-medium" href="">
+                                    {{ $item['address'] }}
+                                </a>
+                            </x-base.table.td>
+                            <x-base.table.td
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <a class="whitespace-nowrap font-medium" href="">Rp.
                                     {{ number_format($item['ongkosan']) }}
                                 </a>
@@ -109,12 +115,6 @@
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <a class="whitespace-nowrap font-medium" href="">Rp.
                                     {{ number_format($item['borongan']) }}
-                                </a>
-                            </x-base.table.td>
-                            <x-base.table.td
-                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                <a class="whitespace-nowrap font-medium" href="">
-                                    {{ $item['address'] }}
                                 </a>
                             </x-base.table.td>
                             <x-base.table.td

@@ -24,8 +24,10 @@ class SellingController extends Controller
         $all = Selling::with('customer', 'driver')
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
         $total = $all->get()->sum('grand_total');
-        $completed = $all->get()->where('status', 'Completed')->sum('grand_total');
-        $inCompleted = $all->get()->where('status', '!=', 'Completed')->sum('grand_total');
+        $completed = $all->get()->sum('total_payment');
+        $inCompleted = $all->get()->where('status', '!=', 'Completed')->sum(function ($item) {
+            return $item->grand_total - $item->total_payment;
+        });
         $data = $all->paginate($request->get('per_page', 10));
         $title = 'Data Penjualan';
         $route = 'selling';
@@ -132,7 +134,7 @@ class SellingController extends Controller
             // // var_dump($errorMessage);
             // // die;
             // return back()->with('failed', $errorMessage);
-            return back()->with('failed', 'Gagal menambah data!'.$th->getMessage());
+            return back()->with('failed', 'Gagal menambah data!' . $th->getMessage());
         }
     }
 
@@ -278,7 +280,7 @@ class SellingController extends Controller
             // // var_dump($errorMessage);
             // // die;
             // return back()->with('failed', 'Gagal menyimpan data, karena : ' . $errorMessage);
-            return back()->with('failed', 'Gagal menyimpan data!'.$th->getMessage());
+            return back()->with('failed', 'Gagal menyimpan data!' . $th->getMessage());
         }
     }
 
@@ -291,7 +293,7 @@ class SellingController extends Controller
         } catch (\Throwable $th) {
             // $errorMessage = $th->getMessage() . " at line " . $th->getLine();
             // return back()->with('failed', 'Gagal menghapus data, karena : ' . $errorMessage);
-            return back()->with('failed', 'Gagal menghapus data!'.$th->getMessage());
+            return back()->with('failed', 'Gagal menghapus data!' . $th->getMessage());
         }
     }
 
@@ -350,7 +352,7 @@ class SellingController extends Controller
     {
         $name = 'Data Penjualan - ' . date('Y-m-d');
         $fileName = $name . '.xlsx';
-        Excel::store(new SellingExport($request), 'public/excel/'.$fileName);
+        Excel::store(new SellingExport($request), 'public/excel/' . $fileName);
         return Excel::download(new SellingExport($request), $fileName);
     }
 

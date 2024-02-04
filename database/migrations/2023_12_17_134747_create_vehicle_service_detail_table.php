@@ -17,8 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('vehicle_service_id');
             $table->foreign('vehicle_service_id')->references('id')->on('vehicle_service');
 
-            $table->unsignedBigInteger('spending_category_id');
-            $table->foreign('spending_category_id')->references('id')->on('spending_category');
+            // $table->unsignedBigInteger('spending_category_id');
+            // $table->foreign('spending_category_id')->references('id')->on('spending_category');
 
             $table->integer('amount_of_expenditure');
             $table->string('description');

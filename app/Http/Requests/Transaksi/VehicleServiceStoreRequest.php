@@ -25,7 +25,7 @@ class VehicleServiceStoreRequest extends FormRequest
             'tanggal' => ['required'],
             'driver' => ['required'],
             'kendaraan' => ['required'],
-            'kategori_id' => ['required'],
+            'keterangan' => ['required'],
         ];
     }
 
@@ -35,7 +35,7 @@ class VehicleServiceStoreRequest extends FormRequest
             'tanggal.required' => 'Tanggal tidak boleh kosong!',
             'driver.required' => 'Driver tidak boleh kosong!',
             'kendaraan.required' => 'Kendaraan tidak boleh kosong!',
-            'kategori_id.required' => 'Tabel Pengeluaran wajib ada data minimal 1!'
+            'keterangan.required' => 'Tabel Pengeluaran wajib ada data minimal 1!'
         ];
     }
 }

@@ -6,7 +6,7 @@
 
 @section('subcontent')
     <div class="intro-y mt-8 flex items-center">
-        <h2 class="mr-auto text-lg font-medium">{{$title}}</h2>
+        <h2 class="mr-auto text-lg font-medium">{{ $title }}</h2>
     </div>
     @if (session('failed'))
         <x-base.alert class="mb-2 flex items-center" variant="outline-danger">
@@ -81,7 +81,7 @@
                     <hr style="border: 1px solid black;">
 
                     <div class="mt-3 grid grid-cols-12 gap-2">
-                        <div class="input-form col-span-4">
+                        {{-- <div class="input-form col-span-4">
                             <x-base.form-label for="crud-form-1">Kategori</x-base.form-label>
                             <x-base.tom-select name="kategori" id="kategori" class="w-full"
                                 data-placeholder="Pilih Kategori">
@@ -92,17 +92,17 @@
                                     </option>
                                 @endforeach
                             </x-base.tom-select>
+                        </div> --}}
+                        <div class="input-form col-span-6">
+                            <x-base.form-label for="crud-form-1">Keterangan</x-base.form-label>
+                            <x-base.form-textarea class="form-control" id="keterangan" name="keterangan"
+                                placeholder="Input Keterangan" value=""></x-base.form-textarea>
                         </div>
-                        <div class="input-form col-span-4">
+                        <div class="input-form col-span-6">
                             <x-base.form-label for="crud-form-1">Total Pengeluaran</x-base.form-label>
                             <x-base.form-input class="w-full" id="crud-form-1" type="text" name="total_pengeluaran"
                                 id="total_pengeluaran" value="" placeholder="Input Total Pengeluaran"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
-                        </div>
-                        <div class="input-form col-span-4">
-                            <x-base.form-label for="crud-form-1">Keterangan</x-base.form-label>
-                            <x-base.form-textarea class="form-control" id="keterangan" name="keterangan"
-                                placeholder="Input Keterangan" value=""></x-base.form-textarea>
                         </div>
                     </div>
 
@@ -117,7 +117,7 @@
                         </div>
                     </div>
                     <br>
-                    @error('kategori_id')
+                    @error('keterangan')
                         <div class="pristine-error text-danger mt-2">
                             {{ $message }}
                         </div>
@@ -125,9 +125,9 @@
                     <table class="min-w-full bg-white border-gray-300" id="table_pengeluaran">
                         <thead>
                             <tr class="bg-dark text-white">
-                                <th class="py-2 px-4 border-b text-left w-1/4">Kategori</th>
-                                <th class="py-2 px-4 border-b text-left w-1/4">Total Pengeluaran</th>
+                                {{-- <th class="py-2 px-4 border-b text-left w-1/4">Kategori</th> --}}
                                 <th class="py-2 px-4 border-b text-left w-1/4">Keterangan</th>
+                                <th class="py-2 px-4 border-b text-left w-1/4">Total Pengeluaran</th>
                                 <th class="py-2 px-4 border-b text-left w-1/4">Action</th>
                                 <!-- Tambahkan header lainnya sesuai kebutuhan -->
                             </tr>
@@ -136,18 +136,18 @@
                             @if (isset($data['detail']))
                                 @foreach ($data['detail'] as $item)
                                     <tr class="row-data">
-                                        <td class="py-2 px-4 kategori_id" hidden>{{ $item['spending_category_id'] }}<input
+                                        {{-- <td class="py-2 px-4 kategori_id" hidden>{{ $item['spending_category_id'] }}<input
                                                 type="hidden" name="kategori_id[]" id="kategori_id[]"
                                                 value="{{ $item['spending_category_id'] }}" /></td>
                                         <td class="py-2 px-4 w-1/4">{{ $item['spendingCategory']['spending_category'] }}
-                                        </td>
+                                        </td> --}}
+                                        <td class="py-2 px-4 keterangan w-1/4">{{ $item['description'] }}<input
+                                                type="hidden" class="column_keterangan" name="keterangan[]"
+                                                id="keterangan[]" value="{{ $item['description'] }}" /></td>
                                         <td class="py-2 px-4 total_pengeluaran w-1/4">
                                             {{ $item['amount_of_expenditure'] }}<input type="hidden"
                                                 name="total_pengeluaran[]" id="total_pengeluaran[]"
                                                 value="{{ $item['amount_of_expenditure'] }}" /></td>
-                                        <td class="py-2 px-4 keterangan w-1/4">{{ $item['description'] }}<input
-                                                type="hidden" class="column_keterangan" name="keterangan[]"
-                                                id="keterangan[]" value="{{ $item['description'] }}" /></td>
                                         <td class="py-2 px-4 w-1/4">
                                             <button onclick="hapusRow(this)" class="flex items-center text-danger">
                                                 Hapus</button>
@@ -179,21 +179,22 @@
     @push('scripts')
         <script>
             function tambahPengeluaran() {
-                var kategori = $('#kategori').val().split('_');
+                // var kategori = $('#kategori').val().split('_');
                 var total_pengeluaran = $('#total_pengeluaran').val();
                 var keterangan = $('#keterangan').val();
 
-                if (kategori.length == 1 || total_pengeluaran == "" || keterangan == "") {
+                // kategori.length == 1 || 
+                if (total_pengeluaran == "" || keterangan == "") {
                     alert('Harap mengisi form kategori, total pengeluaran, keterangan');
                     return false;
                 }
 
+                // <td class="py-2 px-4 kategori_id" hidden>${kategori[0]}<input type="hidden" name="kategori_id[]" id="kategori_id[]" value="${kategori[0]}" /></td>
+                // <td class="py-2 px-4 w-1/4">${kategori[1]}</td>
                 var pengeluaran = `
                     <tr class="row-data">
-                            <td class="py-2 px-4 kategori_id" hidden>${kategori[0]}<input type="hidden" name="kategori_id[]" id="kategori_id[]" value="${kategori[0]}" /></td>
-                            <td class="py-2 px-4 w-1/4">${kategori[1]}</td>
-                            <td class="py-2 px-4 total_pengeluaran w-1/4">${total_pengeluaran}<input type="hidden" name="total_pengeluaran[]" id="total_pengeluaran[]" value="${total_pengeluaran}" /></td>
                             <td class="py-2 px-4 keterangan w-1/4">${keterangan}<input type="hidden" class="column_keterangan" name="keterangan[]" id="keterangan[]" value="${keterangan}" /></td>
+                            <td class="py-2 px-4 total_pengeluaran w-1/4">${total_pengeluaran}<input type="hidden" name="total_pengeluaran[]" id="total_pengeluaran[]" value="${total_pengeluaran}" /></td>
                             <td class="py-2 px-4 w-1/4"> 
                                 <button onclick="hapusRow(this)" class="flex items-center text-danger">
                                 Hapus</button>

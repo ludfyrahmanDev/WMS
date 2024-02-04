@@ -15,7 +15,7 @@ class SpendingCategory extends Model
 
     protected $fillable = [
         'spending_category',
-        'spending_types'
+        // 'spending_types'
     ];
 
     public function getIDSaldo()

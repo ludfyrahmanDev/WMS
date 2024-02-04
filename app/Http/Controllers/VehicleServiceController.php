@@ -27,17 +27,23 @@ class VehicleServiceController extends Controller
             ->with('driver', 'vehicle', 'vehicleServiceDetail')
             ->orderBy($request->get('sort_by', 'date'), $request->get('order', 'desc'));
         $total = 0;
+
         foreach ($all->get() as $key => $value) {
             foreach ($value->vehicleServiceDetail as $key => $value) {
                 $total += $value->amount_of_expenditure;
             }
         }
+
+        $cekSaldo = new SpendingController();
+
+        $saldo = $cekSaldo->saldoKendaraan($request);
+
         $data = $all->paginate($request->get('per_page', 10));
         $title = 'Data Servis Kendaraan';
         $route = 'vehicle_service';
         $request = $request->toArray();
 
-        return view('pages.backoffice.vehicle_service.index', compact('data', 'title', 'route', 'request', 'total'));
+        return view('pages.backoffice.vehicle_service.index', compact('data', 'title', 'route', 'request', 'total', 'saldo'));
     }
 
     public function create()
@@ -60,7 +66,7 @@ class VehicleServiceController extends Controller
 
         $data['driver'] = $vehicleService->getDriver();
         $data['vehicle'] = $vehicleService->getVehicle();
-        $data['spendingCategory'] = $vehicleService->getSpendingCategory();
+        // $data['spendingCategory'] = $vehicleService->getSpendingCategory();
 
         $title = 'Data Servis Kendaraan';
         $route = route('vehicle_service.store');
@@ -74,6 +80,23 @@ class VehicleServiceController extends Controller
         $user = auth()->user();
 
         try {
+            // cek saldo
+            $totalKeterangan = COUNT($request->keterangan);
+
+            $totalHarga = 0;
+            for ($i = 0; $i < $totalKeterangan; $i++) {
+                $totalHarga += intval($request->total_pengeluaran[$i]);
+            }
+
+            $saldo = new SpendingController();
+
+            $cekSaldo = $saldo->saldoKendaraan($request);
+
+            if (intval($totalHarga) > intval($cekSaldo)) {
+                return back()->with('failed', 'Gagal, saldo tidak cukup!');
+            }
+            // selesai total harga
+
             $vehicleService = new VehicleService();
             $vehicleService->date = $request->tanggal;
             $vehicleService->driver_id = $request->driver;
@@ -82,12 +105,10 @@ class VehicleServiceController extends Controller
             $vehicleService->who_update = $user['name'];
             $vehicleService->save();
 
-            $totalKategori = COUNT($request->kategori_id);
-
-            for ($i = 0; $i < $totalKategori; $i++) {
+            for ($i = 0; $i < $totalKeterangan; $i++) {
                 $vehicleServiceDetail = new VehicleServiceDetail();
                 $vehicleServiceDetail->vehicle_service_id = $vehicleService->id;
-                $vehicleServiceDetail->spending_category_id = $request->kategori_id[$i];
+                // $vehicleServiceDetail->spending_category_id = $request->kategori_id[$i];
                 $vehicleServiceDetail->amount_of_expenditure = $request->total_pengeluaran[$i];
                 $vehicleServiceDetail->description = $request->keterangan[$i];
                 $vehicleServiceDetail->save();
@@ -95,7 +116,7 @@ class VehicleServiceController extends Controller
 
             return redirect(route('vehicle_service.index'))->with('success', 'Berhasil menambah data!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menambah data!'.$th->getMessage());
+            return back()->with('failed', 'Gagal menambah data!' . $th->getMessage());
         }
     }
 
@@ -106,17 +127,17 @@ class VehicleServiceController extends Controller
             return redirect(route('vehicle_service.index'))->with('success', 'Berhasil menghapus data!');
         } catch (\Throwable $th) {
             dd($th->getMessage());
-            return back()->with('failed', 'Gagal menghapus data!'.$th->getMessage());
+            return back()->with('failed', 'Gagal menghapus data!' . $th->getMessage());
         }
     }
 
     public function edit(VehicleService $vehicleService)
     {
-        $vehicleService->load('vehicleServiceDetail.spendingCategory');
+        // $vehicleService->load('vehicleServiceDetail.spendingCategory');
 
         $data['driver'] = $vehicleService->getDriver();
         $data['vehicle'] = $vehicleService->getVehicle();
-        $data['spendingCategory'] = $vehicleService->getSpendingCategory();
+        // $data['spendingCategory'] = $vehicleService->getSpendingCategory();
         $data['header'] = $vehicleService;
         $data['detail'] = $vehicleService->vehicleServiceDetail;
 
@@ -132,6 +153,23 @@ class VehicleServiceController extends Controller
         $user = auth()->user();
 
         try {
+            // cek saldo
+            $totalKeterangan = COUNT($request->keterangan);
+
+            $totalHarga = 0;
+            for ($i = 0; $i < $totalKeterangan; $i++) {
+                $totalHarga += intval($request->total_pengeluaran[$i]);
+            }
+
+            $saldo = new SpendingController();
+
+            $cekSaldo = $saldo->saldoKendaraan($request);
+
+            if (intval($totalHarga) > intval($cekSaldo)) {
+                return back()->with('failed', 'Gagal, saldo tidak cukup!');
+            }
+            // selesai total harga
+
             // update table vehicle service
             $vehicleService->date = $request->tanggal;
             $vehicleService->driver_id = $request->driver;
@@ -143,12 +181,12 @@ class VehicleServiceController extends Controller
             $vehicleService->vehicleServiceDetail()->delete();
 
             // insert vehicle service detail
-            $totalKategori = COUNT($request->kategori_id);
+            $totalKeterangan = COUNT($request->keterangan);
 
-            for ($i = 0; $i < $totalKategori; $i++) {
+            for ($i = 0; $i < $totalKeterangan; $i++) {
                 $vehicleServiceDetail = new VehicleServiceDetail();
                 $vehicleServiceDetail->vehicle_service_id = $vehicleService->id;
-                $vehicleServiceDetail->spending_category_id = $request->kategori_id[$i];
+                // $vehicleServiceDetail->spending_category_id = $request->kategori_id[$i];
                 $vehicleServiceDetail->amount_of_expenditure = $request->total_pengeluaran[$i];
                 $vehicleServiceDetail->description = $request->keterangan[$i];
                 $vehicleServiceDetail->save();
@@ -156,7 +194,7 @@ class VehicleServiceController extends Controller
 
             return redirect(route('vehicle_service.index'))->with('success', 'Berhasil mengubah data!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal mengubah data!'.$th->getMessage());
+            return back()->with('failed', 'Gagal mengubah data!' . $th->getMessage());
         }
     }
 
@@ -164,12 +202,13 @@ class VehicleServiceController extends Controller
     {
         $name = 'Data Servis Kendaraan - ' . date('Y-m-d');
         $fileName = $name . '.xlsx';
-        Excel::store(new VehicleServiceExport($request), 'public/excel/'.$fileName);
+        Excel::store(new VehicleServiceExport($request), 'public/excel/' . $fileName);
         return Excel::download(new VehicleServiceExport($request), $fileName);
     }
 
-    public function exportPdf(Request $request){ 
-        
+    public function exportPdf(Request $request)
+    {
+
         $data = VehicleService::with(['driver', 'vehicle', 'vehicleServiceDetail', 'vehicleServiceDetail.spendingCategory'])
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
             ->get();

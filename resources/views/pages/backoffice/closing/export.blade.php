@@ -44,6 +44,12 @@
                                 <td>{{ toThousand($closing_detail->nominal) }}</td>
                             </tr>
                         @endforeach
+
+                        @if ($item->closing_detail->isEmpty())
+                        <tr>
+                            <td colspan="2" class="text-center">Data Kosong</td>
+                        </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -68,17 +74,17 @@
                             <td>Saldo Individu: </td>
                             <td>{{ toThousand($item->main_balance ?? 0) }}</td>
                         </tr>
-                        <tr>
+                        {{-- <tr>
                             <td>Saldo BRI: </td>
                             <td>{{ toThousand($item->bri_balance ?? 0) }}</td>
                         </tr>
                         <tr>
                             <td>Saldo Bisnis: </td>
                             <td>{{ toThousand($item->business_balance ?? 0) }}</td>
-                        </tr>
+                        </tr> --}}
                         <tr>
-                            <td>Hutang Toko: </td>
-                            <td>{{ toThousand($item->shop_debt ?? 0) }}</td>
+                            <td>Piutang Toko: </td>
+                            <td>{{ toThousand($item->shop_receivables ?? 0) }}</td>
                         </tr>
 
                         <tr>
@@ -87,7 +93,7 @@
                         </tr>
                         <tr>
                             <td>Total Semua: </td>
-                            <td>{{ toThousand(intval($item->debt ?? 0) + intval($item->cust_has_not_paid ?? 0) + intval($item->main_balance ?? 0) + intval($item->bri_balance ?? 0) + intval($item->business_balance ?? 0) + intval($item->shop_debt ?? 0) + intval($item->shop_capital ?? 0)) }}
+                            <td>{{ toThousand(intval($item->debt ?? 0) - intval($item->cust_has_not_paid ?? 0) - intval($item->main_balance ?? 0) - intval($item->shop_receivables ?? 0) - intval($item->shop_capital ?? 0)) }}
                             </td>
                         </tr>
                     </tbody>

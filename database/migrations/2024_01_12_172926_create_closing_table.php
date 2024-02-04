@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('closing', function (Blueprint $table) {
             $table->id();
-            $table->integer('cust_has_not_paid');
+            $table->integer('cust_has_not_paid')->nullable();
             $table->integer('main_balance');
-            $table->integer('receivables');
-            $table->integer('debt');
-            $table->integer('bri_balance');
-            $table->integer('business_balance');
-            $table->integer('shop_debt');
+            $table->integer('receivables')->nullable();
+            $table->integer('debt')->nullable();
+            // $table->integer('bri_balance');
+            // $table->integer('business_balance');
+            $table->integer('shop_receivables');
             $table->integer('shop_capital');
             $table->string('who_create');
             $table->timestamps();

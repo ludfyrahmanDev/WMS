@@ -291,6 +291,7 @@ die(); ?> --}}
                 var sub = qty * hargaKG;
                 $('#subtotal').val(sub);
             }
+
             function tambahProduk() {
                 var produk = $('#produk').val().split('_');
                 var qty = $('#qty').val();
@@ -336,6 +337,10 @@ die(); ?> --}}
 
                 $('.grand_total').text(totalSubtotal);
                 $('#grand_total').val(totalSubtotal);
+
+                if ($('#tipe_pembelian').val() == 'Kontan') {
+                    $('#total_bayar').val(totalSubtotal);
+                }
             }
 
             function hapusRow(event) {
@@ -348,6 +353,10 @@ die(); ?> --}}
 
                 $('.grand_total').text(totalSubtotal);
                 $('#grand_total').val(totalSubtotal);
+
+                if ($('#tipe_pembelian').val() == 'Kontan') {
+                    $('#total_bayar').val(totalSubtotal);
+                }
             }
 
             // function saveDeliveryOrder() {
