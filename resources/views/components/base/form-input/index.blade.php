@@ -1,4 +1,4 @@
-@props(['formInputSize' => null, 'rounded' => null])
+@props(['formInputSize' => null, 'rounded' => null,'price' => false])
 @aware(['formInline' => null, 'inputGroup' => null])
 
 <input
@@ -12,6 +12,7 @@
                 $formInputSize == 'lg' ? 'text-lg py-1.5 px-4' : null,
                 $rounded ? 'rounded-full' : null,
                 $formInline ? 'flex-1' : null,
+                $price ? 'input-price' : null,
                 $inputGroup
                     ? 'rounded-none [&:not(:first-child)]:border-l-transparent first:rounded-l last:rounded-r z-10'
                     : null,
@@ -19,3 +20,15 @@
             ]),
         )->merge($attributes->whereDoesntStartWith('class')->getAttributes()) }}
 />
+
+@once
+    @push('vendors')
+        @vite('resources/js/vendor/cleave/index.js')
+    @endpush
+@endonce
+
+@once
+    @push('scripts')
+        @vite('resources/js/components/cleave/index.js')
+    @endpush
+@endonce

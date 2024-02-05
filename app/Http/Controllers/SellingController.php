@@ -73,7 +73,7 @@ class SellingController extends Controller
             $selling->vehicle_id            = $request->supplier;
             $selling->driver_id             = $request->driver;
             $selling->vehicle_id            = $request->kendaraan;
-            $selling->drivers_pocket_money  = $request->uang_saku;
+            $selling->drivers_pocket_money  = curencyToInteger($request->uang_saku);
             $selling->purchasing_method     = $request->tipe_pembelian;
             $selling->payment_type          = $request->tipe_pembayaran;
             $selling->notes                 = $request->catatan;

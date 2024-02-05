@@ -88,6 +88,16 @@ License: You must have a valid license purchased only from themeforest(the above
                 window.location.href = window.location.origin + window.location.pathname + '?per_page=' + e.target.value;
             });
         }
+        function currencyToNumber(currency) {
+            // remove rp and dot
+            return parseInt(currency.replace('Rp', '').replace(/\./g, ''));
+        }
+        function toCurrency(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR'
+            }).format(number);
+        }
     </script>
 
     <!-- END: Pages, layouts, components JS Assets-->

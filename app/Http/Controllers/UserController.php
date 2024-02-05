@@ -26,7 +26,7 @@ class UserController extends Controller
         ], [])
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
             ->paginate($request->get('per_page', 10));
-        $title = 'Data User Akun';
+        $title = "Data User Akun";
         $route = 'users';
         return view('pages.backoffice.user.index', compact('data', 'title','route'));
     }

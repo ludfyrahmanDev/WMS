@@ -57,3 +57,9 @@ if(!function_exists('toThousand')){
         return $prefix .number_format($amount, 0, ',', ',');
     }
 }
+if(!function_exists('curencyToInteger')){
+    function curencyToInteger($amount)
+    {
+        return (int)str_replace(['Rp. ', ','], '', $amount);
+    }
+}

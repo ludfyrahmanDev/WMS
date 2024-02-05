@@ -106,7 +106,7 @@
                             <x-base.form-label for="crud-form-1">Uang Saku Pengemudi</x-base.form-label>
                             <x-base.form-input class="w-full" id="crud-form-1" type="text" name="uang_saku"
                                 id="uang_saku" value="{{ $data['header']->drivers_pocket_money ?? old('uang_saku') }}"
-                                placeholder="Masukkan uang saku pengemudi"
+                                placeholder="Masukkan uang saku pengemudi" price="true"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                         </div>
                         <div class="input-form col-span-4">
@@ -183,7 +183,7 @@
                         <div class="input-form col-span-4">
                             <x-base.form-label for="harga_jual">Harga Jual</x-base.form-label>
                             <x-base.form-input class="w-full" type="text" name="harga_jual" value=""
-                                id="harga_jual" placeholder="Masukkan Harga Jual" />
+                                id="harga_jual" placeholder="Masukkan Harga Jual" price="true"/>
                         </div>
                     </div>
 
@@ -354,7 +354,7 @@
                 var produk = $('#produk').val().split('_');
                 var qty = $('#qty_jual').val();
                 // var harga = $('#harga').val();
-                var harga_jual = $('#harga_jual').val();
+                var harga_jual = currencyToNumber($('#harga_jual').val());
                 // var profit = parseInt((harga_jual - harga) * qty);
                 var profit = $('#laba_bersih').val();
                 var subtotal = parseInt(harga_jual) * parseInt(qty);
@@ -409,8 +409,8 @@
                         <td class="py-2 px-4 profit_peritem" hidden><input type="hidden" name="profit_peritem[]" id="profit_peritem[]" class="column_profit_peritem" value="${labaPerItem}" /></td>
                         <td class="py-2 px-4 w-1/4">${produk[1]}</td>
                         <td class="py-2 px-4 jumlah_qty w-1/4">${qty}<input type="hidden" name="jumlah_qty[]" id="jumlah_qty[]" value="${qty}" /></td>
-                        <td class="py-2 px-4 harga_jual">${harga_jual}<input type="hidden" name="harga_jual[]" id="harga_jual[]" value="${harga_jual}" /></td>
-                        <td class="py-2 px-4 subtotal w-1/4">${subtotal}<input type="hidden" class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]" value="${subtotal}" /></td>
+                        <td class="py-2 px-4 harga_jual">${toCurrency(harga_jual)}<input type="hidden" name="harga_jual[]" id="harga_jual[]" value="${harga_jual}" /></td>
+                        <td class="py-2 px-4 subtotal w-1/4">${toCurrency(subtotal)}<input type="hidden" class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]" value="${subtotal}" /></td>
                         <td class="py-2 px-4 w-1/4"> 
                             <button onclick="hapusRow(this)" class="flex items-center text-danger">
                             Hapus</button>

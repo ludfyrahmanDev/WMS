@@ -68,6 +68,7 @@ export default defineConfig({
                 "resources/js/layouts/side-menu/index.js",
 
                 // Components
+                "resources/js/components/cleave/index.js",
                 "resources/js/components/calendar/index.js",
                 "resources/js/components/calendar/draggable/index.js",
                 "resources/js/components/balloon-block-editor/index.js",
