@@ -64,7 +64,6 @@ class SellingController extends Controller
     public function store(SellingStoreRequest $request)
     {
         $user = auth()->user();
-
         try {
             // insert Table Selling
             $selling                        = new Selling();

@@ -30,7 +30,7 @@
     "src": "node_modules/leaflet/dist/images/marker-icon.png"
   },
   "resources/css/app.css": {
-    "file": "assets/app-d0a639ab.css",
+    "file": "assets/app-d8f6be01.css",
     "isEntry": true,
     "src": "resources/css/app.css"
   },
@@ -294,6 +294,11 @@
     "file": "assets/index-05bff611.js",
     "isEntry": true,
     "src": "resources/js/components/classic-editor/index.js"
+  },
+  "resources/js/components/cleave/index.js": {
+    "file": "assets/index-08d10d10.js",
+    "isEntry": true,
+    "src": "resources/js/components/cleave/index.js"
   },
   "resources/js/components/dark-mode-switcher/index.js": {
     "file": "assets/index-72799570.js",

@@ -221,10 +221,10 @@
                                         <td class="py-2 px-4 jumlah_qty w-1/4">{{ $item['total_qty'] }}<input
                                                 type="hidden" name="jumlah_qty[]" id="jumlah_qty[]"
                                                 value="{{ $item['total_qty'] }}" /></td>
-                                        <td class="py-2 px-4 harga_jual">{{ $item['price_sell'] }}<input type="hidden"
+                                        <td class="py-2 px-4 harga_jual">{{ toThousand($item['price_sell']) }}<input type="hidden"
                                                 name="harga_jual[]" id="harga_jual[]"
                                                 value="{{ $item['price_sell'] }}" /></td>
-                                        <td class="py-2 px-4 subtotal w-1/4">{{ $item['subtotal'] }}<input type="hidden"
+                                        <td class="py-2 px-4 subtotal w-1/4">{{ toThousand($item['subtotal']) }}<input type="hidden"
                                                 class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]"
                                                 value="{{ $item['subtotal'] }}" /></td>
                                         <td class="py-2 px-4 w-1/4">
@@ -485,8 +485,8 @@
                                 var stockHarga = `
                                     <tr class="row-data">
                                         <td class="py-2 px-4 w-1/4">${i + 1}</td>
-                                        <td class="py-2 px-4 w-1/4">${response[i].stock}</td>
-                                        <td class="py-2 px-4 w-1/4">${response[i].price_kg}</td>
+                                        <td class="py-2 px-4 w-1/4">${toCurrency(response[i].stock)}</td>
+                                        <td class="py-2 px-4 w-1/4">${toCurrency(response[i].price_kg)}</td>
                                     </tr>
                                 `;
 

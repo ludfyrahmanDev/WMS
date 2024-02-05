@@ -52,7 +52,7 @@ if(!function_exists('linkPagination')){
     }
 }
 if(!function_exists('toThousand')){
-    function toThousand($amount, $prefix = 'Rp. ')
+    function toThousand($amount, $prefix = 'Rp ')
     {
         return $prefix .number_format($amount, 0, ',', ',');
     }
@@ -60,6 +60,7 @@ if(!function_exists('toThousand')){
 if(!function_exists('curencyToInteger')){
     function curencyToInteger($amount)
     {
-        return (int)str_replace(['Rp. ', ','], '', $amount);
+        // replace Rp. and . and ,
+        return (int) str_replace(['Rp', '.', ','], '', $amount);
     }
 }
