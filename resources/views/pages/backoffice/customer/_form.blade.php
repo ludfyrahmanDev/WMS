@@ -41,7 +41,7 @@
                         @endif
                     </div>
                     <div class="input-form">
-                        <x-base.form-label for="phone">No. Handphone</x-base.form-label>
+                        <x-base.form-label for="phone">No. Handphone <sup>(optional)</sup></x-base.form-label>
                         <x-base.form-input class="w-full mb-3" id="phone" type="text" name="phone"
                             value="{{ $data->phone ?? old('phone') }}" placeholder="Masukkan no handphone customer..."
                             onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
@@ -71,7 +71,7 @@
                         @endif
                     </div>
                     <div class="input-form">
-                        <x-base.form-label for="address">Alamat</x-base.form-label>
+                        <x-base.form-label for="address">Alamat <sup>(optional)</sup></x-base.form-label>
                         <x-base.form-textarea class="form-control" id="address" name="address"
                             placeholder="Masukkan alamat..." value="{{ $data->address ?? old('address') }}">
                         </x-base.form-textarea>

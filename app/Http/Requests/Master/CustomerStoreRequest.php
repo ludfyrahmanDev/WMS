@@ -15,10 +15,8 @@ class CustomerStoreRequest extends FormRequest
     {
         return [
             'name'      => ['required'],
-            'phone'     => ['required', 'numeric'],
             'ongkosan'  => ['required'],
-            'borongan'  => ['required'],
-            'address'   => ['required']
+            'borongan'  => ['required']
         ];
     }
 
@@ -26,11 +24,8 @@ class CustomerStoreRequest extends FormRequest
     {
         return [
             'name.required'     => 'Nama customer tidak boleh kosong',
-            'phone.required'    => 'No Handphone tidak boleh kosong',
-            'phone.numeric'     => 'No Handphone hanya boleh angka',
             'ongkosan'          => 'Ongkosan tidak boleh kosong',
-            'borongan'          => 'Borongan tidak boleh kosong',
-            'address'           => 'Alamat tidak boleh kosong'
+            'borongan'          => 'Borongan tidak boleh kosong'
         ];
     }
 }

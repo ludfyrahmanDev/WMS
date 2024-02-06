@@ -64,7 +64,7 @@ class SpendingController extends Controller
         ], [])
         ->with('spendingCategory')
         ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
-        $income = $all->get()->where('mutation', 'Uang Masuk')->where('spendingCategory.spending_category', '<>', 'saldo kendaraan')->sum('nominal');
+        $income = $all->get()->where('mutation', 'Uang Masuk')->where('spendingCategory.spending_category', '<>', 'Saldo Kendaraan')->sum('nominal');
         $outcome = $all->get()->where('mutation', 'Uang Keluar')->sum('nominal');
         $sellingCompleted = Selling::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
         $sellingInCompleted = Selling::where('status', '!=','Completed')->sum(\DB::raw('(grand_total - total_payment)'));
@@ -77,7 +77,7 @@ class SpendingController extends Controller
                 $total += $value->amount_of_expenditure;
             }
         }
-        dd($income);
+        
         $saldo =( $income + $sellingCompleted) - ($outcome + $purchaseCompleted + $total);
         return $saldo;
     }
@@ -92,7 +92,7 @@ class SpendingController extends Controller
         ], [])
         ->with('spendingCategory')
         ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
-        $saldoKendaraan = $all->get()->where('spendingCategory.spending_category', 'saldo kendaraan');
+        $saldoKendaraan = $all->get()->where('spendingCategory.spending_category', 'Saldo Kendaraan');
         $service = VehicleService::get();
         $total = 0;
         foreach ($service as $key => $value) {

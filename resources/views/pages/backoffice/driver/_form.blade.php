@@ -39,7 +39,7 @@
                         @enderror
                     </div>
                     <div class="mt-3 input-form">
-                        <x-base.form-label for="crud-form-1">Alamat</x-base.form-label>
+                        <x-base.form-label for="crud-form-1">Alamat <sup>(Opsional)</sup></x-base.form-label>
 
                         <x-base.form-textarea class="form-control" id="validation-form-6" name="address"
                             placeholder="Input Alamat" 
@@ -51,9 +51,9 @@
                         @enderror
                     </div>
                     <div class="mt-3 input-form">
-                        <x-base.form-label for="crud-form-1">No Telp</x-base.form-label>
+                        <x-base.form-label for="crud-form-1">No Telp <sup>(Opsional)</sup></x-base.form-label>
                         <x-base.form-input class="w-full" id="crud-form-1" type="text"
-                            required value="{{ $data->phone ?? old('phone') }}" name="phone"
+                        value="{{ $data->phone ?? old('phone') }}" name="phone"
                             placeholder="Input No Telp" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                         @error('phone')
                             <div class="pristine-error text-danger mt-2">

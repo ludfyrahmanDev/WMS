@@ -94,15 +94,19 @@
                             <x-base.table.td
                                 class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
                                 <div class="flex items-center justify-center">
-                                    <a class="mr-3 flex items-center"
-                                        href="{{ route('spendingCategory.edit', $item->id) }}">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
-                                        Edit
-                                    </a>
-                                    <a class="flex items-center text-danger" data-tw-toggle="modal"
-                                        data-tw-target="#delete-confirmation-modal-{{ $item->id }}" href="#">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                    </a>
+                                    @if ($item['spending_category'] != 'Saldo Utama' && $item['spending_category'] != 'Saldo Kendaraan')
+                                        <a class="mr-3 flex items-center"
+                                            href="{{ route('spendingCategory.edit', $item->id) }}">
+                                            <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
+                                            Edit
+                                        </a>
+                                        <a class="flex items-center text-danger" data-tw-toggle="modal"
+                                            data-tw-target="#delete-confirmation-modal-{{ $item->id }}" href="#">
+                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                        </a>
+                                    @endif
+
+
                                     <x-base.dialog id="delete-confirmation-modal-{{ $item->id }}">
                                         <x-base.dialog.panel>
                                             <div class="p-5 text-center">

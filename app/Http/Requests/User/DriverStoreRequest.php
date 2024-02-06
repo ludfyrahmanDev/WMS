@@ -22,19 +22,14 @@ class DriverStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required'],
-            'address' => ['required'],
-            'phone' => ['max:13', 'required'],
+            'name' => ['required']
         ];
     }
 
     public function messages()
     {
         return [
-            'name.required' => 'Nama tidak boleh kosong',
-            'address.required' => 'Alamat tidak boleh kosong',
-            'phone.max' => 'No Telp maksimal 13 angka',
-            'phone.required' => 'No Telp tidak boleh kosong',
+            'name.required' => 'Nama tidak boleh kosong'
         ];
     }
 }

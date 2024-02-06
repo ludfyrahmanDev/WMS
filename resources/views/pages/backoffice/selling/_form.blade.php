@@ -485,7 +485,7 @@
                                 var stockHarga = `
                                     <tr class="row-data">
                                         <td class="py-2 px-4 w-1/4">${i + 1}</td>
-                                        <td class="py-2 px-4 w-1/4">${toCurrency(response[i].stock)}</td>
+                                        <td class="py-2 px-4 w-1/4">${response[i].stock}</td>
                                         <td class="py-2 px-4 w-1/4">${toCurrency(response[i].price_kg)}</td>
                                     </tr>
                                 `;
