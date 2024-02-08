@@ -290,7 +290,7 @@
                         <x-base.table.tr>
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600"
-                                colspan="8">
+                                colspan="9">
                                 <div class="flex justify-center items-center">
                                     <x-base.lucide class="h-16 w-16 text-slate-500" icon="Inbox" />
                                     <div class="ml-2 text-slate-500">

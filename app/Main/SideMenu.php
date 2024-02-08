@@ -192,6 +192,14 @@ class SideMenu
                         ],
                         'route_name' => 'vehicle_service.index',
                     ],
+                    'vehicle_service' => [
+                        'icon' => 'file-box',
+                        'title' => 'Laporan Angkutan',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'route_name' => 'transport.index',
+                    ],
                 ]
             ],
             'Closing' => [

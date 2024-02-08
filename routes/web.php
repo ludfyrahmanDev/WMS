@@ -21,6 +21,7 @@ use App\Http\Controllers\VehicleServiceController;
 use App\Http\Controllers\SpendingCategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\TransportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +59,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('customer', CustomerController::class);
     Route::resource('driver', DriverController::class);
     Route::resource('vehicle', VehicleController::class);
+    Route::resource('transport', TransportController::class);
     Route::resource('supplier', SupplierController::class);
     Route::resource('spendingCategory', SpendingCategoryController::class);
     Route::resource('spending', SpendingController::class);
@@ -79,6 +81,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('selling', SellingController::class);
     Route::get('selling_export', [SellingController::class, 'export'])->name('selling.export');
     Route::get('selling_export_pdf', [SellingController::class, 'exportPdf'])->name('selling.export-pdf');
+    Route::get('transport_export', [TransportController::class, 'export'])->name('transport.export');
+    Route::get('transport_export_pdf', [TransportController::class, 'exportPdf'])->name('transport.export-pdf');
     Route::get('selling_export_one/{id}', [SellingController::class, 'exportPdfSingle'])->name('selling.export-one');
     Route::get('/getHargaStock', [SellingController::class, 'getHargaStock']);
     // end transaction

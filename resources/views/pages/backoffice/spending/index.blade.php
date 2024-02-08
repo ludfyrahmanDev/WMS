@@ -23,29 +23,17 @@
                 </x-base.button>
             </a>
             <x-base.menu>
-                <x-base.menu.button
-                    class="!box px-2"
-                    as="x-base.button"
-                >
+                <x-base.menu.button class="!box px-2" as="x-base.button">
                     <span class="flex h-5 w-5 items-center justify-center">
-                        <x-base.lucide
-                            class="h-4 w-4"
-                            icon="file"
-                        />
+                        <x-base.lucide class="h-4 w-4" icon="file" />
                     </span>
                 </x-base.menu.button>
                 <x-base.menu.items class="w-40">
                     <x-base.menu.item href="{{ route($route . '.export', $request) }}" target="_blank">
-                        <x-base.lucide
-                            class="mr-2 h-4 w-4"
-                            icon="sheet"
-                        /> Export to Excel
+                        <x-base.lucide class="mr-2 h-4 w-4" icon="sheet" /> Export to Excel
                     </x-base.menu.item>
                     <x-base.menu.item href="{{ route($route . '.export-pdf', $request) }}">
-                        <x-base.lucide
-                            class="mr-2 h-4 w-4"
-                            icon="FileText"
-                        /> Export to PDF
+                        <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to PDF
                     </x-base.menu.item>
                 </x-base.menu.items>
             </x-base.menu>
@@ -67,7 +55,7 @@
         <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
             <div class="overflow-x-auto">
                 <x-base.table>
-                    
+
                     <x-base.table.tbody>
                         <x-base.table.tr>
                             <x-base.table.td class="border-b dark:border-darkmode-400">
@@ -79,9 +67,9 @@
                                 </div>
                             </x-base.table.td>
                             <x-base.table.td class="w-32 border-b text-right dark:border-darkmode-400 text-green-800">
-                                {{toThousand($sellingCompleted ?? 0)}}
+                                {{ toThousand($sellingCompleted ?? 0) }}
                             </x-base.table.td>
-                           
+
                         </x-base.table.tr>
                         <x-base.table.tr>
                             <x-base.table.td class="border-b dark:border-darkmode-400">
@@ -93,9 +81,9 @@
                                 </div>
                             </x-base.table.td>
                             <x-base.table.td class="w-32 border-b text-right dark:border-darkmode-400 text-danger">
-                                {{toThousand($sellingInCompleted ?? 0)}}
+                                {{ toThousand($sellingInCompleted ?? 0) }}
                             </x-base.table.td>
-                            
+
                         </x-base.table.tr>
                         <x-base.table.tr>
                             <x-base.table.td class="border-b dark:border-darkmode-400">
@@ -107,9 +95,9 @@
                                 </div>
                             </x-base.table.td>
                             <x-base.table.td class="w-32 border-b text-right dark:border-darkmode-400 text-green-800">
-                                {{toThousand($purchaseCompleted ?? 0)}}
+                                {{ toThousand($purchaseCompleted ?? 0) }}
                             </x-base.table.td>
-                            
+
                         </x-base.table.tr>
                         <x-base.table.tr>
                             <x-base.table.td>
@@ -121,21 +109,21 @@
                                 </div>
                             </x-base.table.td>
                             <x-base.table.td class="w-32 text-right text-danger">
-                                {{toThousand($purchaseInCompleted ?? 0)}}
+                                {{ toThousand($purchaseInCompleted ?? 0) }}
                             </x-base.table.td>
-                           
+
                         </x-base.table.tr>
                         <x-base.table.tr>
                             <x-base.table.td>
                                 <div class="whitespace-nowrap font-medium">
-                                   Mutasi Masuk
+                                    Mutasi Masuk
                                 </div>
                                 <div class="mt-0.5 whitespace-nowrap text-sm text-slate-500">
                                     data transaksi lain lain mutasi masuk
                                 </div>
                             </x-base.table.td>
                             <x-base.table.td class="w-32 text-right text-green-800">
-                                {{toThousand($income ?? 0)}}
+                                {{ toThousand($income ?? 0) }}
                             </x-base.table.td>
                         </x-base.table.tr>
                         <x-base.table.tr>
@@ -148,9 +136,9 @@
                                 </div>
                             </x-base.table.td>
                             <x-base.table.td class="w-32 text-right text-danger">
-                                {{toThousand($outcome ?? 0)}}
+                                {{ toThousand($outcome ?? 0) }}
                             </x-base.table.td>
-                           
+
                         </x-base.table.tr>
                         <x-base.table.tr>
                             <x-base.table.td>
@@ -162,18 +150,18 @@
                                 </div>
                             </x-base.table.td>
                             <x-base.table.td class="w-32 text-right text-danger">
-                                {{toThousand($total ?? 0)}}
+                                {{ toThousand($total ?? 0) }}
                             </x-base.table.td>
-                           
+
                         </x-base.table.tr>
                         <x-base.table.tr class="text-xl text-primary font-bold">
                             <x-base.table.td>
                                 <h1>Total Saldo</h1>
                             </x-base.table.td>
                             <x-base.table.td class="w-52 text-right">
-                                {{toThousand($saldo ?? 0)}}
+                                {{ toThousand($saldo ?? 0) }}
                             </x-base.table.td>
-                           
+
                         </x-base.table.tr>
                     </x-base.table.tbody>
                 </x-base.table>
@@ -210,7 +198,7 @@
                         <x-base.table.tr class="intro-x">
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ ($data ->currentpage()-1) * $data ->perpage() + $loop->index + 1 }}
+                                {{ ($data->currentpage() - 1) * $data->perpage() + $loop->index + 1 }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
@@ -234,19 +222,23 @@
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ toThousand($item->nominal)}} <br/>{{ $item['mutation'] }} 
+                                {{ toThousand($item->nominal) }} <br />{{ $item['mutation'] }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
                                 <div class="flex items-center justify-center">
-                                    <a class="mr-3 flex items-center" href="{{ route('spending.edit', $item->id) }}">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
-                                        Edit
-                                    </a>
-                                    <a class="flex items-center text-danger" data-tw-toggle="modal"
-                                        data-tw-target="#delete-confirmation-modal-{{ $item->id }}" href="#">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                    </a>
+                                    @if (
+                                        $item['spendingCategory']['spending_category'] != 'Saldo Utama' &&
+                                            $item['spendingCategory']['spending_category'] != 'Saldo Kendaraan')
+                                        <a class="mr-3 flex items-center" href="{{ route('spending.edit', $item->id) }}">
+                                            <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
+                                            Edit
+                                        </a>
+                                        <a class="flex items-center text-danger" data-tw-toggle="modal"
+                                            data-tw-target="#delete-confirmation-modal-{{ $item->id }}" href="#">
+                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                        </a>
+                                    @endif
                                     <x-base.dialog id="delete-confirmation-modal-{{ $item->id }}">
                                         <x-base.dialog.panel>
                                             <div class="p-5 text-center">
