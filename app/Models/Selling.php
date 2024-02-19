@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Traits\Filterable;
 use App\Models\Driver;
 use App\Models\Customer;
 use App\Models\SellingDetail;
+use App\Models\Traits\Filterable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Selling extends Model
 {
-    use HasFactory, Filterable;
+    use HasFactory, Filterable, SoftDeletes;
 
     protected $table = 'selling';
 
@@ -29,6 +30,8 @@ class Selling extends Model
         'status',
         'payment_type'
     ];
+
+    protected $dates = ['deleted_at'];
 
     public function driver()
     {

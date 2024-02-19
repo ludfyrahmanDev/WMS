@@ -15,6 +15,15 @@
             </x-base.alert.dismiss-button>
         </x-base.alert>
     @endif
+    @if (session('failed'))
+        <x-base.alert class="mb-2 flex items-center" variant="outline-danger">
+            <x-base.lucide class="mr-2 h-6 w-6" icon="AlertOctagon" />
+            {{ session('failed') }}
+            <x-base.alert.dismiss-button class="btn-close" type="button" aria-label="Close">
+                <x-base.lucide class="h-4 w-4" icon="X" />
+            </x-base.alert.dismiss-button>
+        </x-base.alert>
+    @endif
     <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
             <a href="{{ route($route . '.create') }}">
