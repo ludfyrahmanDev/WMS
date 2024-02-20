@@ -15,6 +15,15 @@
             </x-base.alert.dismiss-button>
         </x-base.alert>
     @endif
+    @if (session('failed'))
+        <x-base.alert class="mb-2 flex items-center" variant="outline-danger">
+            <x-base.lucide class="mr-2 h-6 w-6" icon="AlertOctagon" />
+            {{ session('failed') }}
+            <x-base.alert.dismiss-button class="btn-close" type="button" aria-label="Close">
+                <x-base.lucide class="h-4 w-4" icon="X" />
+            </x-base.alert.dismiss-button>
+        </x-base.alert>
+    @endif
     <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
             <a href="{{ route($route . '.create') }}">
@@ -92,11 +101,11 @@
                             </x-base.table.td>
                             <x-base.table.td
                                 class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['address'] }}
+                                {{ $item['address'] ?? '-' }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['phone'] }}
+                                {{ $item['phone'] ?? '-' }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">

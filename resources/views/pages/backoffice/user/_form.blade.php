@@ -55,7 +55,7 @@
                         <x-base.form-input class="w-full" id="crud-form-1" type="password" name="password_confirmation"
                             placeholder="Input Password Konfirmasi" />
                     </div>
-                    <div class="mt-3 input-form">
+                    {{-- <div class="mt-3 input-form">
                         <x-base.form-label for="crud-form-1">Role</x-base.form-label>
                         <x-base.form-select id="category" name='role' required>
                             @php
@@ -67,7 +67,7 @@
                                     {{ $item['label'] }}</option>
                             @endforeach
                         </x-base.form-select>
-                    </div>
+                    </div> --}}
                     <div class="mt-3 input-form">
                         <x-base.form-label for="crud-form-1">Jenis Kelamin</x-base.form-label>
                         <x-base.form-select id="gender" name='gender' required>

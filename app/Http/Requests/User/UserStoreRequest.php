@@ -16,7 +16,7 @@ class UserStoreRequest extends FormRequest
         return [
             'name'      => ['string', 'required'],
             'email'     => ['email', 'required', 'unique:users'],
-            'role'      => ['required'],
+            // 'role'      => ['required'],
             'gender'    => ['required'],
             'password'  => ['required', 'min:6', 'confirmed'],
             'file'     => ['nullable','image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],

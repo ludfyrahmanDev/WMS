@@ -168,14 +168,6 @@ class SideMenu
                         ],
                         'title' => 'Laporan Pengeluaran'
                     ],
-                    'sellings' => [
-                        'icon' => 'file-line-chart',
-                        'title' => 'Laporan Penjualan',
-                        'params' => [
-                            'layout' => 'side-menu'
-                        ],
-                        'route_name' => 'selling.index',
-                    ],
                     'delivery_order' => [
                         'icon' => 'file-box',
                         'title' => 'Laporan Pembelian',
@@ -183,6 +175,14 @@ class SideMenu
                             'layout' => 'side-menu'
                         ],
                         'route_name' => 'delivery_order.index',
+                    ],
+                    'sellings' => [
+                        'icon' => 'file-line-chart',
+                        'title' => 'Laporan Penjualan',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'route_name' => 'selling.index',
                     ],
                     'vehicle_service' => [
                         'icon' => 'file-box',
@@ -192,7 +192,7 @@ class SideMenu
                         ],
                         'route_name' => 'vehicle_service.index',
                     ],
-                    'vehicle_service' => [
+                    'transport' => [
                         'icon' => 'file-box',
                         'title' => 'Laporan Angkutan',
                         'params' => [
