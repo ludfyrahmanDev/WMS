@@ -100,7 +100,7 @@
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['phone'] }}
+                                {{ $item['phone'] ?? '-' }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">

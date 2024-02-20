@@ -133,6 +133,8 @@ class DeliveryOrderController extends Controller
         try {
             $deliveryOrderDetails  = $delivery_order->delivery_order_detail;
 
+            $delivery_order->delivery_order_detail()->delete();
+            
             foreach ($deliveryOrderDetails as $detail) {
                 $detail->stock()->delete();
             }
@@ -171,11 +173,17 @@ class DeliveryOrderController extends Controller
         $user = auth()->user();
         try {
             if ($request->mode == 'konfirmasi lunas') {
-                $delivery_order->status = 'Completed';
-                $delivery_order->who_update = $user['name'];
-                $delivery_order->save();
 
-                return redirect(route('delivery_order.index'))->with('success', 'Berhasil update data!');
+                if (intval($delivery_order->grand_total) != intval($delivery_order->total_payment)) {
+                    return back()->with('failed', 'Gagal, Total Bayar belum sesuai dengan Grand Total!');
+                } else {
+                    $delivery_order->status = 'Completed';
+                    $delivery_order->who_update = $user['name'];
+                    $delivery_order->save();
+
+                    return redirect(route('delivery_order.index'))->with('success', 'Berhasil update data!');
+                }
+
                 return false;
             } else if ($request->mode == 'angsuran') {
                 //cek saldo

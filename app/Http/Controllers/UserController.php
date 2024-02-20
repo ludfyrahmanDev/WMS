@@ -68,7 +68,7 @@ class UserController extends Controller
             $user = new User();
             $user->name = $request->name;
             $user->email = $request->email;
-            $user->role = $request->role;
+            $user->role = 'admin';
             $user->gender = $request->gender;
             $user->password = bcrypt($request->password);
             $user->photo = $request->hasFile('file') ?
@@ -122,7 +122,7 @@ class UserController extends Controller
         try {
             $user->name = $request->name;
             $user->email = $request->email;
-            $user->role = $request->role;
+            $user->role = 'admin';
             $user->gender = $request->gender;
             $user->password = $request->password ? bcrypt($request->password) : $user->password;
             $user->photo = $request->hasFile('file') ?

@@ -168,11 +168,17 @@ class SellingController extends Controller
 
         try {
             if ($request->mode == 'Konfirmasi Lunas') {
-                $selling->status = 'Completed';
-                $selling->updated_by = $user['name'];
-                $selling->save();
 
-                return redirect(route('selling.index'))->with('success', 'Berhasil update data!');
+                if (intval($selling->grand_total) != intval($selling->total_payment)) {
+                    return back()->with('failed', 'Gagal, Total Bayar belum sesuai dengan Grand Total!');
+                } else {
+                    $selling->status = 'Completed';
+                    $selling->updated_by = $user['name'];
+                    $selling->save();
+
+                    return redirect(route('selling.index'))->with('success', 'Berhasil update data!');
+                }
+
                 return false;
             } else if ($request->mode == 'angsuran') {
                 $selling->total_payment = intval($selling->total_payment) + intval($request->angsuran);
@@ -180,9 +186,9 @@ class SellingController extends Controller
                 $selling->notes = $request->catatan;
                 $selling->save();
 
-                $spending = Spending::whereIDSaldo();
-                $spending->nominal += $request->angsuran;
-                $spending->save();
+                // $spending = Spending::whereIDSaldo();
+                // $spending->nominal += $request->angsuran;
+                // $spending->save();
 
                 return redirect(route('selling.index'))->with('success', 'Berhasil update data!');
                 return false;
@@ -205,9 +211,9 @@ class SellingController extends Controller
             if ($request->mode != null) {
                 $selling->status = 'On Progress';
 
-                $spending = Spending::whereIDSaldo();
-                $spending->nominal += $request->total_bayar;
-                $spending->save();
+                // $spending = Spending::whereIDSaldo();
+                // $spending->nominal += $request->total_bayar;
+                // $spending->save();
             } else {
                 $selling->status = 'In Progress';
             }
