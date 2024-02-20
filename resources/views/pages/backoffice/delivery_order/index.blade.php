@@ -120,7 +120,12 @@
                 Showing 1 to {{ $data->total() < 10 ? $data->total() : 10 }} of {{ $data->total() }} entries
             </div>
             <div class="mt-3 w-full sm:mt-0 flex sm:ml-auto sm:w-auto md:ml-0">
-                <x-base.litepicker class="mx-auto block w-56" id='filter-date' />
+                <div class=" flex w-72">
+                    <x-base.form-input  class="datepicker !box mr-4 sm:w-56" id="start_date" type="date"
+                        value="{{ $request['start_date'] ?? old('start_date') }}" required placeholder="Tanggal Mulai" />
+                    <x-base.form-input  class="datepicker !box mr-4 sm:w-56" id="end_date" type="date"
+                        value="{{ $reques['end_date'] ?? old('end_date') }}" required placeholder="Tanggal Mulai" />
+                </div>
                 {{-- make live search --}}
                 <div class="relative w-56 text-slate-500 ml-2">
                     <x-base.form-input class="!box w-56 pr-10" type="text" id="search"

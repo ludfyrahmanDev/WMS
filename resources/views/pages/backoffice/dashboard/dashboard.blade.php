@@ -6,7 +6,7 @@
 
 @section('subcontent')
     <div class="grid grid-cols-12 gap-6">
-        <div class="col-span-12 2xl:col-span-9">
+        <div class="col-span-12 2xl:col-span-12">
             <div class="grid grid-cols-12 gap-6">
                 <!-- BEGIN: General Report -->
                 <div class="col-span-12 mt-8">
@@ -152,17 +152,13 @@
                 <!-- END: General Report -->
                 <!-- BEGIN: Sales Report -->
                 <div class="col-span-12 mt-8 lg:col-span-12">
-                    <div class="intro-y block h-10 items-center sm:flex">
+                    <div class="intro-y block h-10 justify-between items-center sm:flex">
                         <h2 class="mr-5 truncate text-lg font-medium">Laporan Penjualan</h2>
-                        <div class="relative mt-3 text-slate-500 sm:ml-auto sm:mt-0">
-                            <x-base.lucide
-                                class="absolute inset-y-0 left-0 z-10 my-auto ml-3 h-4 w-4"
-                                icon="Calendar"
-                            />
-                            <x-base.litepicker
-                                class="datepicker !box pl-10 sm:w-56"
-                                type="text"
-                            />
+                        <div class=" flex w-5/12">
+                            <x-base.form-input  class="datepicker !box mr-4 sm:w-56" id="start_date" type="date"
+                                value="{{ $request->start_date ?? old('start_date') }}" required placeholder="Tanggal Mulai" />
+                            <x-base.form-input  class="datepicker !box mr-4 sm:w-56" id="end_date" type="date"
+                                value="{{ $request->end_date ?? old('end_date') }}" required placeholder="Tanggal Mulai" />
                         </div>
                     </div>
                     <div class="intro-y box mt-12 p-5 sm:mt-5">

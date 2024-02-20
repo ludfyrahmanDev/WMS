@@ -75,7 +75,6 @@ License: You must have a valid license purchased only from themeforest(the above
         const filter = document.querySelector('#filter-date');
         if (filter) {
             filter.addEventListener('keyup', function (e) {
-                console.log(e.target.value)
                 if (e.key === 'Enter') {
                     window.location.href = window.location.origin + window.location.pathname + '?search=' + e.target.value;
                 }
@@ -88,6 +87,24 @@ License: You must have a valid license purchased only from themeforest(the above
                 window.location.href = window.location.origin + window.location.pathname + '?per_page=' + e.target.value;
             });
         }
+
+        const start_date = document.querySelector('#start_date');
+        const end_date = document.querySelector('#end_date');
+        if (start_date && end_date) {
+            start_date.addEventListener('change', function (e) {
+                reloadPage(window.location.href, 'start_date', e.target.value);
+            });
+            end_date.addEventListener('change', function (e) {
+                reloadPage(window.location.href, 'end_date', e.target.value);
+            });
+        }
+
+        function reloadPage(activeurl, param, value) {
+            const url = new URL(activeurl);
+            url.searchParams.set(param, value);
+            window.location.href = url.href;
+        }
+        
         function currencyToNumber(currency) {
             // remove rp and dot
             return parseInt(currency.replace('Rp', '').replace(/\./g, ''));
@@ -102,5 +119,6 @@ License: You must have a valid license purchased only from themeforest(the above
 
     <!-- END: Pages, layouts, components JS Assets-->
 </body>
+@stack('bottom-scripts')
 
 </html>

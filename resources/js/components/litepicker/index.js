@@ -33,7 +33,6 @@
             date += !options.singleMode
                 ? " - " + dayjs().add(1, "month").format(options.format)
                 : "";
-                console.log(date);
             $(this).val(date);
 
         }

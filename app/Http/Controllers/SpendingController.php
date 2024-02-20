@@ -32,6 +32,11 @@ class SpendingController extends Controller
         ], [])
         ->with('spendingCategory')
         ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+        if($request->has('start_date') && $request->has('end_date')){
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $all = $all->whereBetween('purchase_date', [$start_date, $end_date]);
+        }
         $income = $all->get()->where('mutation', 'Uang Masuk')->sum('nominal');
         $outcome = $all->get()->where('mutation', 'Uang Keluar')->sum('nominal');
         $sellingCompleted = Selling::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
@@ -51,7 +56,7 @@ class SpendingController extends Controller
         $route = 'spending';
         $request = $request->toArray();
 
-        return view('pages.backoffice.spending.index', compact('data', 'title', 'route', 'request', 'saldo', 'income', 'outcome', 'sellingCompleted', 'sellingInCompleted', 'purchaseCompleted', 'purchaseInCompleted','total'));
+        return view('pages.backoffice.spending.index', compact('data', 'request','title', 'route', 'request', 'saldo', 'income', 'outcome', 'sellingCompleted', 'sellingInCompleted', 'purchaseCompleted', 'purchaseInCompleted','total'));
     }
 
     public function saldo(Request $request){
@@ -101,7 +106,7 @@ class SpendingController extends Controller
             }
         }
 
-        $saldo = $saldoKendaraan[0]['nominal'] - $total;
+        $saldo = ($saldoKendaraan[0]['nominal'] ?? 0) - $total;
         return $saldo;
     }
 

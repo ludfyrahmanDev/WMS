@@ -27,7 +27,11 @@ class VehicleServiceController extends Controller
             ->with('driver', 'vehicle', 'vehicleServiceDetail')
             ->orderBy($request->get('sort_by', 'date'), $request->get('order', 'desc'));
         $total = 0;
-
+        if($request->has('start_date') && $request->has('end_date')){
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $all = $all->whereBetween('purchase_date', [$start_date, $end_date]);
+        }
         foreach ($all->get() as $key => $value) {
             foreach ($value->vehicleServiceDetail as $key => $value) {
                 $total += $value->amount_of_expenditure;
@@ -43,7 +47,7 @@ class VehicleServiceController extends Controller
         $route = 'vehicle_service';
         $request = $request->toArray();
 
-        return view('pages.backoffice.vehicle_service.index', compact('data', 'title', 'route', 'request', 'total', 'saldo'));
+        return view('pages.backoffice.vehicle_service.index', compact('data', 'request','title', 'route', 'request', 'total', 'saldo'));
     }
 
     public function create()

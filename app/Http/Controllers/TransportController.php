@@ -17,11 +17,15 @@ class TransportController extends Controller
     {
         $all = Transport::with('customer', 'driver')
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
-
+        if($request->has('start_date') && $request->has('end_date')){
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $all = $all->whereBetween('purchase_date', [$start_date, $end_date]);
+        }
         $data = $all->paginate($request->get('per_page', 10));
         $title = 'Laporan Angkutan';
         $route = 'transport';
-        return view('pages.backoffice.transport.index', compact('data', 'title', 'route', 'request'));
+        return view('pages.backoffice.transport.index', compact('data', 'request','title', 'route', 'request'));
     }
 
     public function export(Request $request)

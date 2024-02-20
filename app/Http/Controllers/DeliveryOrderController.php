@@ -25,6 +25,11 @@ class DeliveryOrderController extends Controller
         ], [])
             ->with('supplier')
             ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'));
+        if($request->has('start_date') && $request->has('end_date')){
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $all = $all->whereBetween('purchase_date', [$start_date, $end_date]);
+        }
         $total = $all->get()->sum('grand_total');
         $completed = $all->get()->sum('total_payment');
         $inCompleted = $all->get()->where('status', '!=', 'Completed')->sum(function ($item) {
@@ -35,8 +40,7 @@ class DeliveryOrderController extends Controller
         $title = 'Data Pembelian';
         $route = 'delivery_order';
         $request = $request->toArray();
-
-        return view('pages.backoffice.delivery_order.index', compact('data', 'title', 'route', 'request', 'completed', 'total', 'inCompleted'));
+        return view('pages.backoffice.delivery_order.index', compact('data', 'request','title', 'route', 'request', 'completed', 'total', 'inCompleted'));
     }
 
     public function create()
