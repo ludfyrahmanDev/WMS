@@ -16,6 +16,7 @@ class SupplierController extends Controller
             'phone',
             'pic'
         ], [])
+        ->withCount('deliveryOrder')
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
             ->paginate($request->get('per_page', 10));
 

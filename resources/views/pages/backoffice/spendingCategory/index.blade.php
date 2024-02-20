@@ -109,10 +109,12 @@
                                             <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
                                             Edit
                                         </a>
-                                        <a class="flex items-center text-danger" data-tw-toggle="modal"
+                                       @if ($item->spending_count == 0)
+                                       <a class="flex items-center text-danger" data-tw-toggle="modal"
                                             data-tw-target="#delete-confirmation-modal-{{ $item->id }}" href="#">
                                             <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
                                         </a>
+                                       @endif
                                     @endif
 
 
