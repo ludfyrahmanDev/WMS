@@ -669,6 +669,14 @@
     "isEntry": true,
     "src": "resources/js/vendor/ckeditor/inline/index.js"
   },
+  "resources/js/vendor/cleave/index.js": {
+    "file": "assets/index-7e6c24b4.js",
+    "imports": [
+      "__commonjsHelpers-725317a4.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/vendor/cleave/index.js"
+  },
   "resources/js/vendor/dom/index.js": {
     "file": "assets/index-86d2e506.js",
     "imports": [

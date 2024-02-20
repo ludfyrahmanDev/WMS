@@ -54,6 +54,7 @@ export default defineConfig({
                 "resources/js/vendor/tom-select/index.js",
                 "resources/js/vendor/transition/index.js",
                 "resources/js/vendor/xlsx/index.js",
+                "resources/js/vendor/cleave/index.js",
 
                 // Pages
                 "resources/js/pages/chat/index.js",

@@ -26,14 +26,16 @@
 
         if ($(this).data("format")) {
             options.format = $(this).data("format");
-        }
+        }   
 
         if (!$(this).val()) {
             let date = dayjs().format(options.format);
             date += !options.singleMode
                 ? " - " + dayjs().add(1, "month").format(options.format)
                 : "";
+                console.log(date);
             $(this).val(date);
+
         }
 
         new Litepicker({
