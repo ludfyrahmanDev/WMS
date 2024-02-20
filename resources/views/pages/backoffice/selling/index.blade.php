@@ -124,7 +124,7 @@
                     <x-base.form-input  class="datepicker !box mr-4 sm:w-56" id="start_date" type="date"
                         value="{{ $request['start_date'] ?? old('start_date') }}" required placeholder="Tanggal Mulai" />
                     <x-base.form-input  class="datepicker !box mr-4 sm:w-56" id="end_date" type="date"
-                        value="{{ $reques['end_date'] ?? old('end_date') }}" required placeholder="Tanggal Mulai" />
+                        value="{{ $request['end_date'] ?? old('end_date') }}" required placeholder="Tanggal Mulai" />
                 </div>
                 <div class="relative w-56 text-slate-500">
                     <x-base.form-input class="!box w-56 pr-10" type="text" placeholder="Search..." id="search"
@@ -134,7 +134,7 @@
             </div>
         </div>
         <!-- BEGIN: Data List -->
-        <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
+        <div class="intro-y col-span-12 overflow-auto lg:overflow-auto">
             <x-base.table class="mt-2 border-separate border-spacing-y-[10px]">
                 <x-base.table.thead>
                     <x-base.table.tr>

@@ -43,7 +43,7 @@
                     <x-base.form-input  class="datepicker !box mr-4 sm:w-56" id="start_date" type="date"
                         value="{{ $request['start_date'] ?? old('start_date') }}" required placeholder="Tanggal Mulai" />
                     <x-base.form-input  class="datepicker !box mr-4 sm:w-56" id="end_date" type="date"
-                        value="{{ $reques['end_date'] ?? old('end_date') }}" required placeholder="Tanggal Mulai" />
+                        value="{{ $request['end_date'] ?? old('end_date') }}" required placeholder="Tanggal Mulai" />
                 </div>
                 {{-- make live search --}}
                 <div class="relative w-56 text-slate-500">
@@ -130,7 +130,7 @@
                         <x-base.table.tr>
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600"
-                                colspan="7">
+                                colspan="8">
                                 <div class="flex justify-center items-center">
                                     <x-base.lucide class="h-16 w-16 text-slate-500" icon="Inbox" />
                                     <div class="ml-2 text-slate-500">

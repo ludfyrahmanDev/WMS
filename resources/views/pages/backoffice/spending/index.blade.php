@@ -54,7 +54,7 @@
                     <x-base.form-input  class="datepicker !box mr-4 sm:w-56" id="start_date" type="date"
                         value="{{ $request['start_date'] ?? old('start_date') }}" required placeholder="Tanggal Mulai" />
                     <x-base.form-input  class="datepicker !box mr-4 sm:w-56" id="end_date" type="date"
-                        value="{{ $reques['end_date'] ?? old('end_date') }}" required placeholder="Tanggal Mulai" />
+                        value="{{ $request['end_date'] ?? old('end_date') }}" required placeholder="Tanggal Mulai" />
                 </div>
                 {{-- make live search --}}
                 <div class="relative w-56 text-slate-500">
