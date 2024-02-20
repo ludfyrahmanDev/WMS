@@ -26,7 +26,7 @@ class SellingController extends Controller
         if($request->has('start_date') && $request->has('end_date')){
             $start_date = $request->start_date;
             $end_date = $request->end_date;
-            $all = $all->whereBetween('purchase_date', [$start_date, $end_date]);
+            $all = $all->whereBetween('created_at', [$start_date, $end_date]);
         }
         $total = $all->get()->sum('grand_total');
         $completed = $all->get()->sum('total_payment');
