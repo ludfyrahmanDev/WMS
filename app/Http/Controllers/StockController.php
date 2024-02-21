@@ -12,7 +12,7 @@ class StockController extends Controller
 {
     public function index(Request $request)
     {
-        $data = Stock::filterResource($request, [
+        $all = Stock::filterResource($request, [
             'product.product',
             'purchase_date',
             'first_stock',
@@ -22,9 +22,15 @@ class StockController extends Controller
             ->with('product')
             ->where('is_active', 1)
             ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'))
-            ->orderBy($request->get('sort_by', 'last_stock'), $request->get('order', 'asc'))
-            ->paginate($request->get('per_page', 10));
+            ->orderBy($request->get('sort_by', 'last_stock'), $request->get('order', 'asc'));
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $all = $all->whereBetween('purchase_date', [$start_date, $end_date]);
+        }
+        // ->paginate($request->get('per_page', 10));
 
+        $data = $all->paginate($request->get('per_page', 10));
         $title = 'Data Stok';
         $route = 'stock';
         $request = $request->toArray();
@@ -39,8 +45,9 @@ class StockController extends Controller
         return Excel::download(new StockExport($request), $fileName);
     }
 
-    public function exportPdf(Request $request){
-        $data = Stock::filterResource($request, [
+    public function exportPdf(Request $request)
+    {
+        $all = Stock::filterResource($request, [
             'product.product',
             'purchase_date',
             'first_stock',
@@ -51,8 +58,14 @@ class StockController extends Controller
             ->where('is_active', 1)
             ->where('last_stock', '>',  0)
             ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'))
-            ->orderBy($request->get('sort_by', 'last_stock'), $request->get('order', 'asc'))
-            ->get();
+            ->orderBy($request->get('sort_by', 'last_stock'), $request->get('order', 'asc'));
+            if ($request->has('start_date') && $request->has('end_date')) {
+                $start_date = $request->start_date;
+                $end_date = $request->end_date;
+                $all = $all->whereBetween('purchase_date', [$start_date, $end_date]);
+            }
+
+        $data = $all->get();
         $title = 'Data Stok';
         $pdf = PDF::loadView('pages.backoffice.stock.export', compact('data', 'title'))->setPaper('a4', 'landscape');;
         $name = 'Laporan Stok';

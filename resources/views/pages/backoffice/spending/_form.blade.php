@@ -94,7 +94,7 @@
                     </div>
                     <div class="mt-3 input-form">
                         <x-base.form-label for="crud-form-1">Nominal</x-base.form-label>
-                        <x-base.form-input class="w-full" id="crud-form-1" type="text" name="nominal"
+                        <x-base.form-input class="w-full" id="crud-form-1" type="text" name="nominal" price="true"
                             value="{{ $data->nominal ?? old('nominal') }}" placeholder="Input Nominal Pengeluaran"
                             required onkeypress="return event.charCode >= 48 && event.charCode <= 57"  />
                         @error('nominal')

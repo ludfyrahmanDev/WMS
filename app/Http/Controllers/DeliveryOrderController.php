@@ -93,8 +93,8 @@ class DeliveryOrderController extends Controller
             $delivery_order->supplier_id = $request->supplier;
             $delivery_order->driver_id = $request->driver;
             $delivery_order->vehicle_id = $request->kendaraan;
-            $delivery_order->grand_total = $request->grand_total;
-            $delivery_order->total_payment = $request->total_bayar;
+            $delivery_order->grand_total = curencyToInteger($request->grand_total);
+            $delivery_order->total_payment = curencyToInteger($request->total_bayar);
             $delivery_order->status = 'In Progress';
             $delivery_order->who_create = $user['name'];
             $delivery_order->who_update = $user['name'];
@@ -110,7 +110,7 @@ class DeliveryOrderController extends Controller
                 $stock->product_id = $request->produk_id[$i];
                 $stock->purchase_date = $request->tanggal_pembelian;
                 $stock->is_active = 0;
-                $stock->price_kg = $request->hargaKG[$i];
+                $stock->price_kg = curencyToInteger($request->hargaKG[$i]);
                 $stock->first_stock = $request->jumlah_qty[$i];
                 $stock->stock_in_use = 0;
                 $stock->last_stock   = $request->jumlah_qty[$i];
@@ -120,7 +120,7 @@ class DeliveryOrderController extends Controller
                 $delivery_order_detail->delivery_order_id = $delivery_order->id;
                 $delivery_order_detail->stock_id = $stock->id;
                 $delivery_order_detail->purchase_amount = $request->jumlah_qty[$i];
-                $delivery_order_detail->subtotal = $request->subtotal_produk[$i];
+                $delivery_order_detail->subtotal = curencyToInteger($request->subtotal_produk[$i]);
                 $delivery_order_detail->save();
             }
 
@@ -147,7 +147,7 @@ class DeliveryOrderController extends Controller
 
             return  redirect('delivery_order')->with('success', 'Berhasil menghapus data!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menghapus data!' . $th->getMessage());
+            return redirect('delivery_order')->with('failed', 'Gagal menghapus data!' . $th->getMessage());
         }
     }
 
@@ -324,7 +324,7 @@ class DeliveryOrderController extends Controller
     }
     public function exportPdf(Request $request)
     {
-        $data = DeliveryOrder::filterResource($request, [
+        $all = DeliveryOrder::filterResource($request, [
             'purchase_date',
             'pick_up_date',
             'supplier.name',
@@ -332,8 +332,14 @@ class DeliveryOrderController extends Controller
             'status'
         ], [])
             ->with(['supplier', 'vehicle', 'delivery_order_detail'])
-            ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'))
-            ->get();
+            ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'));
+            if($request->has('start_date') && $request->has('end_date')){
+                $start_date = $request->start_date;
+                $end_date = $request->end_date;
+                $all = $all->whereBetween('purchase_date', [$start_date, $end_date]);
+            }
+
+        $data = $all->get();    
         $title = 'Data Pembelian';
         $pdf = \PDF::loadView('pages.backoffice.delivery_order.export', compact('data', 'title'))->setPaper('a4', 'landscape');;
         $name = 'Laporan Pembelian';

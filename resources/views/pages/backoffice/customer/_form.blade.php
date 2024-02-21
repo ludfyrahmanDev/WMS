@@ -52,7 +52,7 @@
                     </div>
                     <div class="input-form">
                         <x-base.form-label for="ongkosan">Ongkosan (Rp)</x-base.form-label>
-                        <x-base.form-input class="w-full mb-3" id="ongkosan" type="text" name="ongkosan"
+                        <x-base.form-input class="w-full mb-3" id="ongkosan" type="text" name="ongkosan" price="true"
                             value="{{ $data->ongkosan ?? old('ongkosan') }}" placeholder="Masukkan harga ongkosan..."
                             onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
                         @if ($errors->has('ongkosan'))
@@ -62,7 +62,7 @@
                     </div>
                     <div class="input-form">
                         <x-base.form-label for="borongan">Borongan (Rp)</x-base.form-label>
-                        <x-base.form-input class="w-full mb-3" id="borongan" type="text" name="borongan"
+                        <x-base.form-input class="w-full mb-3" id="borongan" type="text" name="borongan" price="true"
                             value="{{ $data->borongan ?? old('borongan') }}" placeholder="Masukkan harga borongan..."
                             onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
                         @if ($errors->has('borongan'))

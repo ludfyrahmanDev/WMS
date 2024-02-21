@@ -24,7 +24,7 @@ class ClosingExport implements FromView, ShouldAutoSize
     {
         $request = $this->request;
 
-        $data = Closing::filterResource($request, [
+        $all = Closing::filterResource($request, [
             'created_at',
             'cust_has_not_paid',
             'main_balance',
@@ -37,9 +37,14 @@ class ClosingExport implements FromView, ShouldAutoSize
             'who_create'
         ], [])
             ->with(['closing_detail', 'closing_detail.customer'])
-            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
-            ->get();
-            
+            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $all = $all->whereBetween('created_at', [$start_date, $end_date]);
+        }
+
+        $data = $all->get();
         $title = 'Data Rekap';
         return view('pages.backoffice.closing.export', compact('data', 'title'));
     }

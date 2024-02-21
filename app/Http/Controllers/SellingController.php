@@ -23,7 +23,7 @@ class SellingController extends Controller
     {
         $all = Selling::with('customer', 'driver')
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
-        if($request->has('start_date') && $request->has('end_date')){
+        if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;
             $end_date = $request->end_date;
             $all = $all->whereBetween('created_at', [$start_date, $end_date]);
@@ -36,7 +36,8 @@ class SellingController extends Controller
         $data = $all->paginate($request->get('per_page', 10));
         $title = 'Data Penjualan';
         $route = 'selling';
-        return view('pages.backoffice.selling.index', compact('data', 'request','title', 'route', 'request', 'total', 'completed', 'inCompleted'));
+        $request = $request->toArray();
+        return view('pages.backoffice.selling.index', compact('data', 'title', 'route', 'request', 'total', 'completed', 'inCompleted'));
     }
 
     public function create(Selling $selling)
@@ -56,6 +57,7 @@ class SellingController extends Controller
             'purchasing_method'     => null,
             'notes'                 => null,
             'status'                => null,
+            'grand_total'           => null,
             'payment_type'          => null
         ];
 
@@ -82,9 +84,9 @@ class SellingController extends Controller
             $selling->payment_type          = $request->tipe_pembayaran;
             $selling->notes                 = $request->catatan;
             $selling->status                = $request->catatan;
-            $selling->grand_total           = $request->grand_total;
-            $selling->total_payment         = $request->total_bayar;
-            $selling->net_profit            = $request->laba_bersih;
+            $selling->grand_total           = curencyToInteger($request->grand_total);
+            $selling->total_payment         = curencyToInteger($request->total_bayar);
+            $selling->net_profit            = curencyToInteger($request->laba_bersih);
             $selling->status                = 'In Progress';
             $selling->created_by            = $user['name'];
             $selling->updated_by            = $user['name'];
@@ -96,8 +98,8 @@ class SellingController extends Controller
             for ($i = 0; $i < $totalDataProduk; $i++) {
                 $produk_id = $request->produk_id[$i];
                 $qty = $request->jumlah_qty[$i];
-                $harga_jual = $request->harga_jual[$i];
-                $subtotal = $request->subtotal_produk[$i];
+                $harga_jual = curencyToInteger($request->harga_jual[$i]);
+                $subtotal = curencyToInteger($request->subtotal_produk[$i]);
 
                 // cek stok by product id
                 $stocks = Stock::select('id', 'last_stock', 'price_kg', 'product_id')
@@ -209,9 +211,9 @@ class SellingController extends Controller
             $selling->purchasing_method     = $request->tipe_pembelian;
             $selling->payment_type          = $request->tipe_pembayaran;
             $selling->notes                 = $request->catatan;
-            $selling->grand_total           = $request->grand_total;
-            $selling->total_payment         = $request->total_bayar;
-            $selling->net_profit            = $request->laba_bersih;
+            $selling->grand_total           = curencyToInteger($request->grand_total);
+            $selling->total_payment         = curencyToInteger($request->total_bayar);
+            $selling->net_profit            = curencyToInteger($request->laba_bersih);
 
             if ($request->mode != null) {
                 $selling->status = 'On Progress';
@@ -235,8 +237,8 @@ class SellingController extends Controller
             for ($i = 0; $i < $totalDataProduk; $i++) {
                 $produk_id = $request->produk_id[$i];
                 $qty = $request->jumlah_qty[$i];
-                $harga_jual = $request->harga_jual[$i];
-                $subtotal = $request->subtotal_produk[$i];
+                $harga_jual = curencyToInteger($request->harga_jual[$i]);
+                $subtotal = curencyToInteger($request->subtotal_produk[$i]);
 
                 // cek stok by product id
                 $stocks = Stock::select('id', 'last_stock', 'price_kg', 'product_id')
@@ -368,12 +370,17 @@ class SellingController extends Controller
 
     public function exportPdf(Request $request)
     {
-        $data = Selling::with(['customer', 'driver', 'selling_detail', 'selling_detail.stock', 'selling_detail.stock.product'])
-            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
-            ->get();
+        $all = Selling::with(['customer', 'driver', 'selling_detail', 'selling_detail.stock', 'selling_detail.stock.product'])
+            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $all = $all->whereBetween('created_at', [$start_date, $end_date]);
+        }
 
+        $data = $all->get();
         $title = 'Data Penjualan';
-        $pdf = \PDF::loadView('pages.backoffice.selling.export', compact('data', 'title'))->setPaper('a4', 'landscape');;
+        $pdf = \PDF::loadView('pages.backoffice.selling.export', compact('data', 'title'))->setPaper('a4', 'landscape');
         $name = 'Laporan Penjualan';
         // show preview pdf
         return $pdf->download("$name.pdf");

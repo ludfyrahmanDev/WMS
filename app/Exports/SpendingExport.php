@@ -25,7 +25,7 @@ class SpendingExport implements FromView, ShouldAutoSize
     public function view(): View
     {
         $request = $this->request;
-        $data = Spending::filterResource($request, [
+        $all = Spending::filterResource($request, [
             'date',
             'spendingCategory.spending_category',
             'mutation',
@@ -41,9 +41,14 @@ class SpendingExport implements FromView, ShouldAutoSize
         ->orderBy($request->get('sort_by', 'date'), $request->get('order', 'desc'))
         ->orderBy($request->get('sort_by', 'spending_category_id'), $request->get('order', 'asc'))
         ->orderBy($request->get('sort_by', 'mutation'), $request->get('order', 'asc'))
-        ->orderBy($request->get('sort_by', 'payment_method'), $request->get('order', 'asc'))
-        ->get();    
+        ->orderBy($request->get('sort_by', 'payment_method'), $request->get('order', 'asc'));
+        if($request->has('start_date') && $request->has('end_date')){
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $all = $all->whereBetween('created_at', [$start_date, $end_date]);
+        }
 
+        $data = $all->get();
         $title = 'Data Pengeluaran';
         return view('pages.backoffice.spending.export', compact('data', 'title'));
     }

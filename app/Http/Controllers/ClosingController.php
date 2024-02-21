@@ -26,6 +26,11 @@ class ClosingController extends Controller
             'who_create'
         ], [])
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $all = $all->whereBetween('created_at', [$start_date, $end_date]);
+        }
         $data = $all->paginate($request->get('per_page', 10));
 
         $cekDataDateNow = Closing::cekDataDateNow();
@@ -74,7 +79,7 @@ class ClosingController extends Controller
 
             return redirect(route('closing.index'))->with('success', 'Berhasil menyimpan data!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal, menyimpan data!'.$th->getMessage());
+            return back()->with('failed', 'Gagal, menyimpan data!' . $th->getMessage());
         }
     }
 
@@ -91,13 +96,13 @@ class ClosingController extends Controller
     {
         $name = 'Data Rekap - ' . date('Y-m-d');
         $fileName = $name . '.xlsx';
-        Excel::store(new ClosingExport($request), 'public/excel/'.$fileName);
+        Excel::store(new ClosingExport($request), 'public/excel/' . $fileName);
         return Excel::download(new ClosingExport($request), $fileName);
     }
 
     public function exportPdf(Request $request)
     {
-        $data = Closing::filterResource($request, [
+        $all = Closing::filterResource($request, [
             'created_at',
             'cust_has_not_paid',
             'main_balance',
@@ -110,8 +115,14 @@ class ClosingController extends Controller
             'who_create'
         ], [])
             ->with(['closing_detail', 'closing_detail.customer'])
-            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
-            ->get();
+            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $all = $all->whereBetween('created_at', [$start_date, $end_date]);
+        }
+
+        $data = $all->get();
         $title = 'Data Rekap';
         $pdf = \PDF::loadView('pages.backoffice.closing.export', compact('data', 'title'))->setPaper('a4', 'landscape');;
         $name = 'Laporan Rekap';

@@ -25,10 +25,15 @@ class SellingExport implements FromView, ShouldAutoSize
     public function view(): View
     {
         $request = $this->request;
-        $data = Selling::with(['customer', 'driver','selling_detail','selling_detail.stock','selling_detail.stock.product'])
-        ->whereDate('created_at', Carbon::today())
-        ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
-        ->get();
+        $all = Selling::with(['customer', 'driver','selling_detail','selling_detail.stock','selling_detail.stock.product'])
+        ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $all = $all->whereBetween('created_at', [$start_date, $end_date]);
+        }
+
+        $data = $all->get();
         $title = 'Data Penjualan';
         return view('pages.backoffice.selling.export', compact('data', 'title'));
     }

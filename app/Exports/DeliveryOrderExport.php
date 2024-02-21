@@ -25,7 +25,7 @@ class DeliveryOrderExport implements FromView, ShouldAutoSize
     public function view(): View
     {
         $request = $this->request;
-        $data = DeliveryOrder::filterResource($request, [
+        $all = DeliveryOrder::filterResource($request, [
             'purchase_date',
             'pick_up_date',
             'supplier.name',
@@ -34,8 +34,14 @@ class DeliveryOrderExport implements FromView, ShouldAutoSize
         ], [])
             ->with(['supplier', 'driver', 'vehicle', 'delivery_order_detail', 'delivery_order_detail.stock', 'delivery_order_detail.stock.product'])
             // ->whereDate('created_at', Carbon::today())
-            ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'))
-            ->get();
+            ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'));
+            if($request->has('start_date') && $request->has('end_date')){
+                $start_date = $request->start_date;
+                $end_date = $request->end_date;
+                $all = $all->whereBetween('purchase_date', [$start_date, $end_date]);
+            }
+
+        $data = $all->get();
             
         $title = 'Data Pembelian';
         return view('pages.backoffice.delivery_order.export', compact('data', 'title'));

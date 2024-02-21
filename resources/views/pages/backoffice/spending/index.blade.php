@@ -155,7 +155,7 @@
                             </x-base.table.td>
 
                         </x-base.table.tr>
-                        <x-base.table.tr>
+                        {{-- <x-base.table.tr>
                             <x-base.table.td>
                                 <div class="whitespace-nowrap font-medium">
                                     Service Kendaraan
@@ -168,10 +168,10 @@
                                 {{ toThousand($total ?? 0) }}
                             </x-base.table.td>
 
-                        </x-base.table.tr>
+                        </x-base.table.tr> --}}
                         <x-base.table.tr class="text-xl text-primary font-bold">
                             <x-base.table.td>
-                                <h1>Total Saldo</h1>
+                                <h1>Saldo Utama</h1>
                             </x-base.table.td>
                             <x-base.table.td class="w-52 text-right">
                                 {{ toThousand($saldo ?? 0) }}

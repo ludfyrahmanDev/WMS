@@ -37,26 +37,26 @@ class SpendingController extends Controller
             $end_date = $request->end_date;
             $all = $all->whereBetween('created_at', [$start_date, $end_date]);
         }
-        $income = $all->get()->where('mutation', 'Uang Masuk')->sum('nominal');
+        $income = $all->get()->where('mutation', 'Uang Masuk')->where('spendingCategory.spending_category', '<>', 'Saldo Kendaraan')->sum('nominal');
         $outcome = $all->get()->where('mutation', 'Uang Keluar')->sum('nominal');
         $sellingCompleted = Selling::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
         $sellingInCompleted = Selling::where('status', '!=','Completed')->sum(\DB::raw('(grand_total - total_payment)'));
         $purchaseCompleted = DeliveryOrder::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
         $purchaseInCompleted = DeliveryOrder::where('status', '!=','Completed')->sum((\DB::raw('(grand_total - total_payment)')));
-        $service = VehicleService::get();
-        $total = 0;
-        foreach ($service as $key => $value) {
-            foreach ($value->vehicleServiceDetail as $key => $value) {
-                $total += $value->amount_of_expenditure;
-            }
-        }
-        $saldo =( $income + $sellingCompleted) - ($outcome + $purchaseCompleted + $total);
+        // $service = VehicleService::get();
+        // $total = 0;
+        // foreach ($service as $key => $value) {
+        //     foreach ($value->vehicleServiceDetail as $key => $value) {
+        //         $total += $value->amount_of_expenditure;
+        //     }
+        // }
+        $saldo =( $income + $sellingCompleted) - ($outcome + $purchaseCompleted);
         $data = $all->paginate($request->get('per_page', 10));
         $title = 'Data Transaksi Lain Lain';
         $route = 'spending';
         $request = $request->toArray();
 
-        return view('pages.backoffice.spending.index', compact('data', 'request','title', 'route', 'request', 'saldo', 'income', 'outcome', 'sellingCompleted', 'sellingInCompleted', 'purchaseCompleted', 'purchaseInCompleted','total'));
+        return view('pages.backoffice.spending.index', compact('data', 'request','title', 'route', 'request', 'saldo', 'income', 'outcome', 'sellingCompleted', 'sellingInCompleted', 'purchaseCompleted', 'purchaseInCompleted'));
     }
 
     public function saldo(Request $request){
@@ -75,15 +75,8 @@ class SpendingController extends Controller
         $sellingInCompleted = Selling::where('status', '!=','Completed')->sum(\DB::raw('(grand_total - total_payment)'));
         $purchaseCompleted = DeliveryOrder::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
         $purchaseInCompleted = DeliveryOrder::where('status', '!=','Completed')->sum((\DB::raw('(grand_total - total_payment)')));
-        $service = VehicleService::get();
-        $total = 0;
-        foreach ($service as $key => $value) {
-            foreach ($value->vehicleServiceDetail as $key => $value) {
-                $total += $value->amount_of_expenditure;
-            }
-        }
         
-        $saldo =( $income + $sellingCompleted) - ($outcome + $purchaseCompleted + $total);
+        $saldo =( $income + $sellingCompleted) - ($outcome + $purchaseCompleted);
         return $saldo;
     }
 
@@ -97,7 +90,7 @@ class SpendingController extends Controller
         ], [])
         ->with('spendingCategory')
         ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
-        $saldoKendaraan = $all->get()->where('spendingCategory.spending_category', 'Saldo Kendaraan');
+        $saldoKendaraan = $all->get()->where('spendingCategory.spending_category', 'Saldo Kendaraan')->sum('nominal');
         $service = VehicleService::get();
         $total = 0;
         foreach ($service as $key => $value) {
@@ -106,7 +99,7 @@ class SpendingController extends Controller
             }
         }
 
-        $saldo = ($saldoKendaraan[0]['nominal'] ?? 0) - $total;
+        $saldo = ($saldoKendaraan ?? 0) - $total;
         return $saldo;
     }
 
@@ -146,7 +139,7 @@ class SpendingController extends Controller
             $spending->who_update = $user['name'];
             $spending->description = $request->description;
             $spending->payment_method = $request->payment_method;
-            $spending->nominal = $request->nominal;
+            $spending->nominal = curencyToInteger($request->nominal);
             $spending->save();
 
             return redirect('spending')->with('success', 'Berhasil menambah data!');
@@ -168,7 +161,7 @@ class SpendingController extends Controller
         return view('pages.backoffice.spending._form', compact('kategori', 'enum', 'data', 'title', 'route', 'type'));
     }
 
-    public function update (SpendingStoreRequest $request, Spending $spending)
+    public function update(SpendingStoreRequest $request, Spending $spending)
     {
         $user = auth()->user();
 
@@ -179,7 +172,7 @@ class SpendingController extends Controller
             $spending->who_update = $user['name'];
             $spending->description = $request->description;
             $spending->payment_method = $request->payment_method;
-            $spending->nominal = $request->nominal;
+            $spending->nominal = curencyToInteger($request->nominal);
             $spending->save();
 
             return redirect('spending')->with('success', 'Berhasil mengubah data!');
@@ -209,7 +202,7 @@ class SpendingController extends Controller
     }
 
     public function exportPdf(Request $request){
-        $data = Spending::filterResource($request, [
+        $all = Spending::filterResource($request, [
             'date',
             'spendingCategory.spending_category',
             'mutation',
@@ -223,9 +216,14 @@ class SpendingController extends Controller
         ->orderBy($request->get('sort_by', 'date'), $request->get('order', 'desc'))
         ->orderBy($request->get('sort_by', 'spending_category_id'), $request->get('order', 'asc'))
         ->orderBy($request->get('sort_by', 'mutation'), $request->get('order', 'asc'))
-        ->orderBy($request->get('sort_by', 'payment_method'), $request->get('order', 'asc'))
-        ->get();
+        ->orderBy($request->get('sort_by', 'payment_method'), $request->get('order', 'asc'));
+        if($request->has('start_date') && $request->has('end_date')){
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $all = $all->whereBetween('created_at', [$start_date, $end_date]);
+        }
 
+        $data = $all->get();
         $title = 'Data Transaksi Lain Lain';
 
         $options = new Options();
@@ -246,7 +244,7 @@ class SpendingController extends Controller
         $dompdf->render();
 
         // Nama file untuk diunduh
-        $name = 'laporan_pengeluaran_' . date('d-m-Y', strtotime($data[0]->date));
+        $name = 'laporan_pengeluaran_' . date('d-m-Y');
 
         // Unduh file PDF
         return $dompdf->stream("$name.pdf");
