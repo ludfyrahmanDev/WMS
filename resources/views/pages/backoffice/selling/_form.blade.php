@@ -239,7 +239,7 @@
                             <tr class="bg-dark text-white">
                                 <th class="py-2 px-4 border-b text-center" colspan="4">Laba Bersih</th>
                                 <th class="py-2 px-4 border-b text-center laba_bersih">
-                                    {{ $data['header']->net_profit ?? 0 }}</th>
+                                    {{ toThousand($data['header']->net_profit) ?? 0 }}</th>
                                 <th class="py-2 px-4 border-b text-center" hidden><x-base.form-input
                                         class="w-3/5 text-center" id="laba_bersih" type="text" name="laba_bersih"
                                         value="{{ $data['header']->net_profit ?? 0 }}" /></th>
@@ -247,7 +247,7 @@
                             <tr class="bg-dark text-white">
                                 <th class="py-2 px-4 border-b text-center" colspan="4">Grand Total</th>
                                 <th class="py-2 px-4 border-b text-center grand_total">
-                                    {{ $data['header']->grand_total ?? 0 }}</th>
+                                    {{ toThousand($data['header']->grand_total) ?? 0 }}</th>
                                 <th class="py-2 px-4 border-b text-center" hidden><x-base.form-input
                                         class="w-3/5 text-center" id="grand_total" type="text" name="grand_total"
                                         value="{{ $data['header']->grand_total ?? 0 }}" /></th>
@@ -257,7 +257,7 @@
                                 <th class="py-2 px-4 border-b text-center">
                                     <x-base.form-input class="w-3/3 text-center" id="total_bayar" type="text"
                                         name="total_bayar" value="{{ $data['header']->total_payment ?? 0 }}"
-                                        placeholder="Input Total Bayar" required
+                                        placeholder="Input Total Bayar" required price="true"
                                         onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                                 </th>
                             </tr>
@@ -421,16 +421,16 @@
 
                 var totalSubtotal = 0;
                 $('.column_subtotal').each(function() {
-                    totalSubtotal += parseInt($(this).val())
+                    var sub_sementara = $(this).val();
+                    totalSubtotal += parseInt(currencyToNumber(sub_sementara));
                 })
 
-                $('.laba_bersih').text(totalLaba);
+                $('.laba_bersih').text(toCurrency(totalLaba));
                 $('#laba_bersih').val(totalLaba);
-                $('.grand_total').text(totalSubtotal);
+                $('.grand_total').text(toCurrency(totalSubtotal));
                 $('#grand_total').val(totalSubtotal);
 
                 arrLaba = [];
-
             }
 
             function hapusRow(event) {
@@ -438,20 +438,22 @@
 
                 var totalSubtotal = 0;
                 $('.column_subtotal').each(function() {
-                    totalSubtotal += parseInt($(this).val())
+                    var sub_sementara = $(this).val();
+                    totalSubtotal += parseInt(currencyToNumber(sub_sementara));
                 })
 
                 var profitPerItem = 0;
                 $('.column_profit_peritem').each(function() {
-                    profitPerItem += parseInt($(this).val())
+                    var profit_sementara = $(this).val();
+                    profitPerItem += parseInt(currencyToNumber(profit_sementara));
                 })
 
                 var totalProfit = profitPerItem;
 
-                $('.laba_bersih').text(totalProfit);
+                $('.laba_bersih').text(toCurrency(totalProfit));
                 $('#laba_bersih').val(totalProfit);
 
-                $('.grand_total').text(totalSubtotal);
+                $('.grand_total').text(toCurrency(totalSubtotal));
                 $('#grand_total').val(totalSubtotal);
             }
 

@@ -101,7 +101,7 @@
                         <div class="input-form col-span-6">
                             <x-base.form-label for="crud-form-1">Total Pengeluaran</x-base.form-label>
                             <x-base.form-input class="w-full" id="crud-form-1" type="text" name="total_pengeluaran"
-                                id="total_pengeluaran" value="" placeholder="Input Total Pengeluaran"
+                                id="total_pengeluaran" value="" placeholder="Input Total Pengeluaran" price="true"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                         </div>
                     </div>
@@ -145,7 +145,7 @@
                                                 type="hidden" class="column_keterangan" name="keterangan[]"
                                                 id="keterangan[]" value="{{ $item['description'] }}" /></td>
                                         <td class="py-2 px-4 total_pengeluaran w-1/4">
-                                            {{ $item['amount_of_expenditure'] }}<input type="hidden"
+                                            {{ toThousand($item['amount_of_expenditure']) }}<input type="hidden"
                                                 name="total_pengeluaran[]" id="total_pengeluaran[]"
                                                 value="{{ $item['amount_of_expenditure'] }}" /></td>
                                         <td class="py-2 px-4 w-1/4">

@@ -64,8 +64,8 @@ class CustomerController extends Controller
             $cust = new Customer();
             $cust->name = $request->name;
             $cust->phone = $request->phone;
-            $cust->ongkosan = $request->ongkosan;
-            $cust->borongan = $request->borongan;
+            $cust->ongkosan = curencyToInteger($request->ongkosan);
+            $cust->borongan = curencyToInteger($request->borongan);
             $cust->address = $request->address;
             $cust->save();
 
@@ -106,8 +106,8 @@ class CustomerController extends Controller
         try {
             $customer->name = $request->name;
             $customer->phone = $request->phone;
-            $customer->ongkosan = $request->ongkosan;
-            $customer->borongan = $request->borongan;
+            $customer->ongkosan = curencyToInteger($request->ongkosan);
+            $customer->borongan = curencyToInteger($request->borongan);
             $customer->address = $request->address;
             $customer->save();
             

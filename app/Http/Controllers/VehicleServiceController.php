@@ -113,7 +113,7 @@ class VehicleServiceController extends Controller
                 $vehicleServiceDetail = new VehicleServiceDetail();
                 $vehicleServiceDetail->vehicle_service_id = $vehicleService->id;
                 // $vehicleServiceDetail->spending_category_id = $request->kategori_id[$i];
-                $vehicleServiceDetail->amount_of_expenditure = $request->total_pengeluaran[$i];
+                $vehicleServiceDetail->amount_of_expenditure = curencyToInteger($request->total_pengeluaran[$i]);
                 $vehicleServiceDetail->description = $request->keterangan[$i];
                 $vehicleServiceDetail->save();
             }
@@ -191,7 +191,7 @@ class VehicleServiceController extends Controller
                 $vehicleServiceDetail = new VehicleServiceDetail();
                 $vehicleServiceDetail->vehicle_service_id = $vehicleService->id;
                 // $vehicleServiceDetail->spending_category_id = $request->kategori_id[$i];
-                $vehicleServiceDetail->amount_of_expenditure = $request->total_pengeluaran[$i];
+                $vehicleServiceDetail->amount_of_expenditure = curencyToInteger($request->total_pengeluaran[$i]);
                 $vehicleServiceDetail->description = $request->keterangan[$i];
                 $vehicleServiceDetail->save();
             }
@@ -212,13 +212,15 @@ class VehicleServiceController extends Controller
 
     public function exportPdf(Request $request)
     {
-
-        $data = VehicleService::with(['driver', 'vehicle', 'vehicleServiceDetail', 'vehicleServiceDetail.spendingCategory'])
-            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
-            ->get();
-
-        // echo json_encode($data); die;
-
+        $all = VehicleService::with(['driver', 'vehicle', 'vehicleServiceDetail', 'vehicleServiceDetail.spendingCategory'])
+            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+            if($request->has('start_date') && $request->has('end_date')){
+                $start_date = $request->start_date;
+                $end_date = $request->end_date;
+                $all = $all->whereBetween('created_at', [$start_date, $end_date]);
+            }
+        
+        $data = $all->get();
         $title = 'Data Transaksi Lain Lain';
 
         $options = new Options();
@@ -239,7 +241,7 @@ class VehicleServiceController extends Controller
         $dompdf->render();
 
         // Nama file untuk diunduh
-        $name = 'laporan_servis_kendaraan_' . date('d-m-Y', strtotime($data[0]->date));
+        $name = 'laporan_servis_kendaraan_' . date('d-m-Y');
 
         // Unduh file PDF
         return $dompdf->stream("$name.pdf");

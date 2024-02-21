@@ -169,14 +169,14 @@ die(); ?> --}}
                         <div class="input-form col-span-3">
                             <x-base.form-label for="crud-form-1">Harga/Kg</x-base.form-label>
                             <x-base.form-input class="w-full" id="crud-form-1" type="text" name="harga_kg"
-                                onkeyup="changeSubtotal()"
+                                onkeyup="changeSubtotal()" price="true"
                                 id="harga_kg" value="" placeholder="Input Harga/Kg"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                         </div>
                         <div class="input-form col-span-3">
                             <x-base.form-label for="crud-form-1">Subtotal</x-base.form-label>
                             <x-base.form-input class="w-full" type="text" name="subtotal" id="subtotal"
-                                value="" placeholder="0"
+                                value="" placeholder="0" price="true"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57" disabled />
                         </div>
                     </div>
@@ -252,7 +252,7 @@ die(); ?> --}}
                                 <th class="py-2 px-4 border-b text-center">
                                     <x-base.form-input class="w-3/3 text-center" id="total_bayar" type="text"
                                         name="total_bayar" value="{{ $data['header']->total_payment ?? 0 }}"
-                                        placeholder="Input Total Bayar" required
+                                        placeholder="Input Total Bayar" required price="true"
                                         onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                                 </th>
                             </tr>
@@ -288,8 +288,9 @@ die(); ?> --}}
             function changeSubtotal(){
                 var qty = $('#qty').val();
                 var hargaKG = $('#harga_kg').val();
-                var sub = qty * hargaKG;
-                $('#subtotal').val(sub);
+                var hargaFix = isNaN(currencyToNumber(hargaKG)) ? 0 : currencyToNumber(hargaKG);
+                var sub = qty * hargaFix;
+                $('#subtotal').val(toCurrency(sub));
             }
 
             function tambahProduk() {
@@ -301,6 +302,8 @@ die(); ?> --}}
                     alert('Harap mengisi form produk, qty, harga/Kg, subtotal');
                     return false;
                 }
+
+                console.log(subtotal);
 
                 var boolean = true
                 $('.produk_id').each(function() {
@@ -321,7 +324,7 @@ die(); ?> --}}
                             <td class="py-2 px-4 w-1/4">${produk[1]}</td>
                             <td class="py-2 px-4 jumlah_qty w-1/4">${qty}<input type="hidden" name="jumlah_qty[]" id="jumlah_qty[]" value="${qty}" /></td>
                             <td class="py-2 px-4 hargaKG w-1/4">${hargaKG}<input type="hidden" class="column_hargaKG" name="hargaKG[]" id="hargaKG[]" value="${hargaKG}" /></td>
-                            <td class="py-2 px-4 subtotal w-1/4">${subtotal}<input type="hidden" class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]" value="${subtotal}" /></td>
+                            <td class="py-2 px-4 subtotal w-1/4">${subtotal}<input type="hidden" class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]" value="${currencyToNumber(subtotal)}" /></td>
                             <td class="py-2 px-4 w-1/4"> 
                                 <button onclick="hapusRow(this)" class="flex items-center text-danger">
                                 Hapus</button>
@@ -332,14 +335,15 @@ die(); ?> --}}
 
                 var totalSubtotal = 0;
                 $('.column_subtotal').each(function() {
-                    totalSubtotal += parseInt($(this).val())
+                    var sub_sementara = $(this).val();
+                    totalSubtotal += parseInt(currencyToNumber(sub_sementara));
                 })
 
-                $('.grand_total').text(totalSubtotal);
+                $('.grand_total').text(toCurrency(totalSubtotal));
                 $('#grand_total').val(totalSubtotal);
 
                 if ($('#tipe_pembelian').val() == 'Kontan') {
-                    $('#total_bayar').val(totalSubtotal);
+                    $('#total_bayar').val(toCurrency(totalSubtotal));
                 }
             }
 
@@ -348,14 +352,15 @@ die(); ?> --}}
 
                 var totalSubtotal = 0;
                 $('.column_subtotal').each(function() {
-                    totalSubtotal += parseInt($(this).val())
+                    var sub_sementara = $(this).val();
+                    totalSubtotal += parseInt(currencyToNumber(sub_sementara));
                 })
 
-                $('.grand_total').text(totalSubtotal);
+                $('.grand_total').text(toCurrency(totalSubtotal));
                 $('#grand_total').val(totalSubtotal);
 
                 if ($('#tipe_pembelian').val() == 'Kontan') {
-                    $('#total_bayar').val(totalSubtotal);
+                    $('#total_bayar').val(toCurrency(totalSubtotal));
                 }
             }
 

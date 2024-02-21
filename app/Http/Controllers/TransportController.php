@@ -17,7 +17,7 @@ class TransportController extends Controller
     {
         $all = Transport::with('customer', 'driver')
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
-        if($request->has('start_date') && $request->has('end_date')){
+        if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;
             $end_date = $request->end_date;
             $all = $all->whereBetween('created_at', [$start_date, $end_date]);
@@ -25,7 +25,8 @@ class TransportController extends Controller
         $data = $all->paginate($request->get('per_page', 10));
         $title = 'Laporan Angkutan';
         $route = 'transport';
-        return view('pages.backoffice.transport.index', compact('data', 'request','title', 'route', 'request'));
+        $request = $request->toArray();
+        return view('pages.backoffice.transport.index', compact('data', 'request', 'title', 'route', 'request'));
     }
 
     public function export(Request $request)
@@ -38,12 +39,15 @@ class TransportController extends Controller
 
     public function exportPdf(Request $request)
     {
-        $data = Transport::with('customer', 'driver')
-            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
-            ->get();
+        $all = Transport::with('customer', 'driver')
+            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $all = $all->whereBetween('created_at', [$start_date, $end_date]);
+        }
 
-        // echo json_encode($data); die;
-
+        $data = $all->get();
         $title = 'Data Angkutan';
 
         // Inisialisasi opsi Dompdf
