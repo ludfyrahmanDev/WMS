@@ -24,7 +24,9 @@
                     </div>
                     <div class="mt-5 grid grid-cols-12 gap-6">
                         <div class="intro-y col-span-12 sm:col-span-6 xl:col-span-3">
-                            <div @class([
+                            <a
+                            href="{{route('product.index')}}"
+                            @class([
                                 'relative zoom-in',
                                 'before:content-[\'\'] before:w-[90%] before:shadow-[0px_3px_20px_#0000000b] before:bg-slate-50 before:h-full before:mt-3 before:absolute before:rounded-md before:mx-auto before:inset-x-0 before:dark:bg-darkmode-400/70',
                             ])>
@@ -51,10 +53,11 @@
                                     <div class="mt-6 text-3xl font-medium leading-8">{{$item_sellings->count()}}</div>
                                     <div class="mt-1 text-base text-slate-500">Item Sales</div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                         <div class="intro-y col-span-12 sm:col-span-6 xl:col-span-3">
-                            <div @class([
+                            <a
+                            href="{{route('selling.index')}}" @class([
                                 'relative zoom-in',
                                 'before:content-[\'\'] before:w-[90%] before:shadow-[0px_3px_20px_#0000000b] before:bg-slate-50 before:h-full before:mt-3 before:absolute before:rounded-md before:mx-auto before:inset-x-0 before:dark:bg-darkmode-400/70',
                             ])>
@@ -81,10 +84,12 @@
                                     <div class="mt-6 text-3xl font-medium leading-8">{{$sellings->count()}}</div>
                                     <div class="mt-1 text-base text-slate-500">New Orders</div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                         <div class="intro-y col-span-12 sm:col-span-6 xl:col-span-3">
-                            <div @class([
+                            <a
+                            href="{{route('product.index')}}"
+                            @class([
                                 'relative zoom-in',
                                 'before:content-[\'\'] before:w-[90%] before:shadow-[0px_3px_20px_#0000000b] before:bg-slate-50 before:h-full before:mt-3 before:absolute before:rounded-md before:mx-auto before:inset-x-0 before:dark:bg-darkmode-400/70',
                             ])>
@@ -113,10 +118,12 @@
                                         Total Products
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                         <div class="intro-y col-span-12 sm:col-span-6 xl:col-span-3">
-                            <div @class([
+                            <a
+                            href="{{route('delivery_order.index')}}"
+                            @class([
                                 'relative zoom-in',
                                 'before:content-[\'\'] before:w-[90%] before:shadow-[0px_3px_20px_#0000000b] before:bg-slate-50 before:h-full before:mt-3 before:absolute before:rounded-md before:mx-auto before:inset-x-0 before:dark:bg-darkmode-400/70',
                             ])>
@@ -145,7 +152,7 @@
                                         New Purchase
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -286,7 +293,9 @@
                     </div>
                     <div class="mt-5">
                         @foreach ($sellings->slice(0,5) as $selling)
-                            <div class="intro-x">
+                            <a
+                            href="{{route('selling.show', $selling->id)}}"
+                            class="intro-x">
                                 <div class="box zoom-in mb-3 flex items-center px-5 py-3">
                                     <div class="image-fit hidden h-10 w-10 flex-none overflow-hidden rounded-full">
                                         <img
@@ -307,7 +316,7 @@
                                      {{ toThousand($selling->grand_total) }}
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         @endforeach
                         @empty($sellings->count())
                             <div class="intro-x">

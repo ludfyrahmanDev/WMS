@@ -24,6 +24,7 @@ class CustomerController extends Controller
             'borongan',
             'alamat',
         ], [])
+        ->withCount('selling')
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
             ->paginate($request->get('per_page', 10));
         $title = 'Data Customer';

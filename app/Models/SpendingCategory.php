@@ -22,4 +22,9 @@ class SpendingCategory extends Model
     {
         return SpendingCategory::where('spending_category', 'saldo')->value('id');
     }
+
+    public function spending()
+    {
+        return $this->hasMany(Spending::class, 'spending_category_id');
+    }
 }

@@ -33,4 +33,9 @@ class Customer extends Authenticatable
     ];
 
     protected $primaryKey = 'id';
+
+    public function selling()
+    {
+        return $this->hasMany(Selling::class, 'customer_id');
+    }
 }

@@ -19,6 +19,7 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $data = Product::with('category')
+        ->withCount('stock')
         ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
         ->paginate($request->get('per_page', 10));
         $title = 'Data Produk';

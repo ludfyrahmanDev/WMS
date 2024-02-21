@@ -21,4 +21,9 @@ class Supplier extends Model
     ];
 
     protected $dates = ['deleted_at'];
+
+    public function deliveryOrder()
+    {
+        return $this->hasMany(DeliveryOrder::class);
+    }
 }

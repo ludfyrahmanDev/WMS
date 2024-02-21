@@ -22,4 +22,19 @@ class Vehicle extends Model
     ];
 
     protected $dates = ['deleted_at'];
+
+    public function service()
+    {
+        return $this->hasMany(VehicleService::class, 'vehicle_id');
+    }
+
+    public function selling()
+    {
+        return $this->hasMany(Selling::class, 'vehicle_id');
+    }
+
+    public function deliveryOrder()
+    {
+        return $this->hasMany(DeliveryOrder::class, 'vehicle_id');
+    }
 }

@@ -122,10 +122,12 @@
                                         <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
                                         Edit
                                     </a>
-                                    <a class="flex items-center text-danger" data-tw-toggle="modal"
-                                        data-tw-target="#delete-confirmation-modal-{{ $item->id }}" href="#">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                    </a>
+                                    @if($item->stock_count == 0 )
+                                        <a class="flex items-center text-danger" data-tw-toggle="modal"
+                                            data-tw-target="#delete-confirmation-modal-{{ $item->id }}" href="#">
+                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                        </a>
+                                    @endif
                                     <x-base.dialog id="delete-confirmation-modal-{{ $item->id }}">
                                         <x-base.dialog.panel>
                                             <div class="p-5 text-center">
