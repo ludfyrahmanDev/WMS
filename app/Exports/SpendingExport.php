@@ -37,7 +37,7 @@ class SpendingExport implements FromView, ShouldAutoSize
             $query->where('spending_category', '<>', 'Kendaraan');
         })
         // where by this day
-        ->whereDate('created_at', Carbon::today())
+        // ->whereDate('created_at', Carbon::today())
         ->orderBy($request->get('sort_by', 'date'), $request->get('order', 'desc'))
         ->orderBy($request->get('sort_by', 'spending_category_id'), $request->get('order', 'asc'))
         ->orderBy($request->get('sort_by', 'mutation'), $request->get('order', 'asc'))
@@ -45,7 +45,7 @@ class SpendingExport implements FromView, ShouldAutoSize
         if($request->has('start_date') && $request->has('end_date')){
             $start_date = $request->start_date;
             $end_date = $request->end_date;
-            $all = $all->whereBetween('created_at', [$start_date, $end_date]);
+            $all = $all->whereBetween('date', [$start_date, $end_date]);
         }
 
         $data = $all->get();

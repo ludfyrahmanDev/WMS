@@ -34,7 +34,7 @@ class StockExport implements FromView, ShouldAutoSize
         ], [])
             ->with('product')
             ->where('is_active', 1)
-            ->where('last_stock', '>',  0)
+            // ->where('last_stock', '>',  0)
             ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'))
             ->orderBy($request->get('sort_by', 'last_stock'), $request->get('order', 'asc'));
         if ($request->has('start_date') && $request->has('end_date')) {

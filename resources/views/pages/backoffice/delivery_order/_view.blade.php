@@ -202,7 +202,7 @@
                                 <tr class="bg-dark ">
                                     <th class="py-2 px-4 border-b text-center text-white" colspan="3">Angsuran</th>
                                     <th class="py-2 px-4 border-b text-center">
-                                        <x-base.form-input class="w-3/5 text-center" id="angsuran" type="text"
+                                        <x-base.form-input class="w-3/5 text-center" price="true" id="angsuran" type="text"
                                             name="angsuran" value="" placeholder="Input Angsuran" required
                                             onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                                     </th>

@@ -25,7 +25,7 @@ class DeliveryOrderController extends Controller
         ], [])
             ->with('supplier')
             ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'));
-        if($request->has('start_date') && $request->has('end_date')){
+        if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;
             $end_date = $request->end_date;
             $all = $all->whereBetween('purchase_date', [$start_date, $end_date]);
@@ -40,7 +40,7 @@ class DeliveryOrderController extends Controller
         $title = 'Data Pembelian';
         $route = 'delivery_order';
         $request = $request->toArray();
-        return view('pages.backoffice.delivery_order.index', compact('data', 'request','title', 'route', 'request', 'completed', 'total', 'inCompleted'));
+        return view('pages.backoffice.delivery_order.index', compact('data', 'request', 'title', 'route', 'request', 'completed', 'total', 'inCompleted'));
     }
 
     public function create()
@@ -84,6 +84,10 @@ class DeliveryOrderController extends Controller
 
             if (intval($request->total_bayar) > intval($cekSaldo)) {
                 return back()->with('failed', 'Gagal, saldo tidak cukup!');
+            }
+
+            if (intval(curencyToInteger($request->total_bayar)) > intval(curencyToInteger($request->grand_total))) {
+                return back()->with('failed', 'Gagal, Total Bayar melebihi dari Grand Total!');
             }
 
             // insert Table Delivery order 
@@ -138,7 +142,7 @@ class DeliveryOrderController extends Controller
             $deliveryOrderDetails  = $delivery_order->delivery_order_detail;
 
             $delivery_order->delivery_order_detail()->delete();
-            
+
             foreach ($deliveryOrderDetails as $detail) {
                 $detail->stock()->delete();
             }
@@ -195,11 +199,15 @@ class DeliveryOrderController extends Controller
 
                 $cekSaldo = $saldo->saldo($request);
 
-                if (intval($request->angsuran) > intval($cekSaldo)) {
+                if (intval(curencyToInteger($request->angsuran)) > intval($cekSaldo)) {
                     return back()->with('failed', 'Gagal, saldo tidak cukup!');
                 }
 
-                $delivery_order->total_payment = intval($delivery_order->total_payment) + intval($request->angsuran);
+                if ((intval($delivery_order->total_payment) + intval(curencyToInteger($request->angsuran))) > intval($delivery_order->grand_total)) {
+                    return back()->with('failed', 'Gagal, Total Bayar melebihi dari Grand Total!');
+                }
+
+                $delivery_order->total_payment = intval($delivery_order->total_payment) + intval(curencyToInteger($request->angsuran));
                 $delivery_order->who_update = $user['name'];
                 $delivery_order->notes = $request->catatan;
                 $delivery_order->save();
@@ -208,12 +216,16 @@ class DeliveryOrderController extends Controller
                 return false;
             }
 
+            if (intval(curencyToInteger($request->total_bayar)) > intval(curencyToInteger($request->grand_total))) {
+                return back()->with('failed', 'Gagal, Total Bayar melebihi dari Grand Total!');
+            }
+
             //cek saldo
             $saldo = new SpendingController();
 
             $cekSaldo = $saldo->saldo($request);
 
-            if (intval($request->total_bayar) > intval($cekSaldo)) {
+            if (intval(curencyToInteger($request->total_bayar)) > intval($cekSaldo)) {
                 return back()->with('failed', 'Gagal, saldo tidak cukup!');
             }
 
@@ -223,8 +235,8 @@ class DeliveryOrderController extends Controller
             $delivery_order->supplier_id = $request->supplier;
             $delivery_order->driver_id = $request->driver;
             $delivery_order->vehicle_id = $request->kendaraan;
-            $delivery_order->grand_total = $request->grand_total;
-            $delivery_order->total_payment = $request->total_bayar;
+            $delivery_order->grand_total = curencyToInteger($request->grand_total);
+            $delivery_order->total_payment = curencyToInteger($request->total_bayar);
 
             if ($request->mode != null) {
                 $delivery_order->status = 'On Progress';
@@ -273,7 +285,7 @@ class DeliveryOrderController extends Controller
                 $delivery_order_detail->delivery_order_id = $delivery_order->id;
                 $delivery_order_detail->stock_id = $stock->id;
                 $delivery_order_detail->purchase_amount = $request->jumlah_qty[$i];
-                $delivery_order_detail->subtotal = $request->subtotal_produk[$i];
+                $delivery_order_detail->subtotal = curencyToInteger($request->subtotal_produk[$i]);
                 $delivery_order_detail->save();
             }
 
@@ -333,13 +345,13 @@ class DeliveryOrderController extends Controller
         ], [])
             ->with(['supplier', 'vehicle', 'delivery_order_detail'])
             ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'));
-            if($request->has('start_date') && $request->has('end_date')){
-                $start_date = $request->start_date;
-                $end_date = $request->end_date;
-                $all = $all->whereBetween('purchase_date', [$start_date, $end_date]);
-            }
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $all = $all->whereBetween('purchase_date', [$start_date, $end_date]);
+        }
 
-        $data = $all->get();    
+        $data = $all->get();
         $title = 'Data Pembelian';
         $pdf = \PDF::loadView('pages.backoffice.delivery_order.export', compact('data', 'title'))->setPaper('a4', 'landscape');;
         $name = 'Laporan Pembelian';

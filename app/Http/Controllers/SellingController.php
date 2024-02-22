@@ -26,7 +26,7 @@ class SellingController extends Controller
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;
             $end_date = $request->end_date;
-            $all = $all->whereBetween('created_at', [$start_date, $end_date]);
+            $all = $all->whereBetween('date', [$start_date, $end_date]);
         }
         $total = $all->get()->sum('grand_total');
         $completed = $all->get()->sum('total_payment');
@@ -72,6 +72,10 @@ class SellingController extends Controller
     {
         $user = auth()->user();
         try {
+            if (intval(curencyToInteger($request->total_bayar)) > intval(curencyToInteger($request->grand_total))) {
+                return back()->with('failed', 'Gagal, Total Bayar melebihi dari Grand Total!');
+            }
+
             // insert Table Selling
             $selling                        = new Selling();
             $selling->date                  = $request->tgl_jual;
@@ -188,7 +192,11 @@ class SellingController extends Controller
 
                 return false;
             } else if ($request->mode == 'angsuran') {
-                $selling->total_payment = intval($selling->total_payment) + intval($request->angsuran);
+                if ((intval($selling->total_payment) + intval(curencyToInteger($request->angsuran))) > intval($selling->grand_total)) {
+                    return back()->with('failed', 'Gagal, Total Bayar melebihi dari Grand Total!');
+                }
+
+                $selling->total_payment = intval($selling->total_payment) + intval(curencyToInteger($request->angsuran));
                 $selling->updated_by = $user['name'];
                 $selling->notes = $request->catatan;
                 $selling->save();
@@ -199,6 +207,10 @@ class SellingController extends Controller
 
                 return redirect(route('selling.index'))->with('success', 'Berhasil update data!');
                 return false;
+            }
+
+            if (intval(curencyToInteger($request->total_bayar)) > intval(curencyToInteger($request->grand_total))) {
+                return back()->with('failed', 'Gagal, Total Bayar melebihi dari Grand Total!');
             }
 
             // insert Table Selling
@@ -375,7 +387,7 @@ class SellingController extends Controller
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;
             $end_date = $request->end_date;
-            $all = $all->whereBetween('created_at', [$start_date, $end_date]);
+            $all = $all->whereBetween('date', [$start_date, $end_date]);
         }
 
         $data = $all->get();
