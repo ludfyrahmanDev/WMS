@@ -425,6 +425,7 @@
                     totalSubtotal += parseInt(currencyToNumber(sub_sementara));
                 })
 
+                console.log(totalLaba);
                 $('.laba_bersih').text(toCurrency(totalLaba));
                 $('#laba_bersih').val(totalLaba);
                 $('.grand_total').text(toCurrency(totalSubtotal));

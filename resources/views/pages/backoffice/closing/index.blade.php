@@ -226,7 +226,7 @@
                             Piutang Toko
                         </x-base.form-label>
                         <x-base.form-input class="w-full" id="crud-form-1" type="text" name="piutang_toko"
-                            id="piutang_toko" value="" placeholder="Input Piutang Toko"
+                            id="piutang_toko" value="" price="true" placeholder="Input Piutang Toko"
                             onkeypress="return event.charCode >= 48 && event.charCode <= 57" required />
                     </div>
                     <div class="col-span-12 sm:col-span-6">
@@ -234,7 +234,7 @@
                             Modal Toko
                         </x-base.form-label>
                         <x-base.form-input class="w-full" id="crud-form-1" type="text" name="modal_toko"
-                            id="modal_toko" value="" placeholder="Input Modal Toko"
+                            id="modal_toko" value="" price="true" placeholder="Input Modal Toko"
                             onkeypress="return event.charCode >= 48 && event.charCode <= 57" required />
                     </div>
                 </x-base.dialog.description>

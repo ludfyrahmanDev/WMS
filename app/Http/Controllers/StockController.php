@@ -6,6 +6,7 @@ use PDF;
 use App\Models\Stock;
 use App\Exports\StockExport;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class StockController extends Controller
@@ -47,6 +48,7 @@ class StockController extends Controller
 
     public function exportPdf(Request $request)
     {
+
         $all = Stock::filterResource($request, [
             'product.product',
             'purchase_date',
@@ -56,14 +58,14 @@ class StockController extends Controller
         ], [])
             ->with('product')
             ->where('is_active', 1)
-            ->where('last_stock', '>',  0)
+            // ->where('last_stock', '>',  0)
             ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'))
             ->orderBy($request->get('sort_by', 'last_stock'), $request->get('order', 'asc'));
-            if ($request->has('start_date') && $request->has('end_date')) {
-                $start_date = $request->start_date;
-                $end_date = $request->end_date;
-                $all = $all->whereBetween('purchase_date', [$start_date, $end_date]);
-            }
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $all = $all->whereBetween('purchase_date', [$start_date, $end_date]);
+        }
 
         $data = $all->get();
         $title = 'Data Stok';

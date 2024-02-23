@@ -29,7 +29,7 @@ class ClosingController extends Controller
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;
             $end_date = $request->end_date;
-            $all = $all->whereBetween('created_at', [$start_date, $end_date]);
+            $all = $all->whereBetween('date', [$start_date, $end_date]);
         }
         $data = $all->paginate($request->get('per_page', 10));
 
@@ -57,13 +57,14 @@ class ClosingController extends Controller
             $hutang = Closing::getHutang();
 
             $closing->cust_has_not_paid = $totalCustHasNotPaid == null ? 0 : $totalCustHasNotPaid;
+            $closing->date = date('Y-m-d');
             $closing->main_balance = $totalSaldo;
             $closing->receivables = $totalCustHasNotPaid == null ? 0 : $totalCustHasNotPaid;
             $closing->debt = $hutang == null ? 0 : $hutang;
             // $closing->bri_balance = $request->saldo_bri;
             // $closing->business_balance = $request->saldo_bisnis;
-            $closing->shop_receivables = $request->piutang_toko;
-            $closing->shop_capital = $request->modal_toko;
+            $closing->shop_receivables = intval(curencyToInteger($request->piutang_toko));
+            $closing->shop_capital = intval(curencyToInteger($request->modal_toko));
             $closing->who_create = $user['name'];
             $closing->save();
 
@@ -119,7 +120,7 @@ class ClosingController extends Controller
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;
             $end_date = $request->end_date;
-            $all = $all->whereBetween('created_at', [$start_date, $end_date]);
+            $all = $all->whereBetween('date', [$start_date, $end_date]);
         }
 
         $data = $all->get();

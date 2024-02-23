@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('closing', function (Blueprint $table) {
             $table->id();
+            $table->date('date');
             $table->integer('cust_has_not_paid')->nullable();
             $table->integer('main_balance');
             $table->integer('receivables')->nullable();
