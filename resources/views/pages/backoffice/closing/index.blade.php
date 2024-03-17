@@ -116,15 +116,15 @@
                             </x-base.table.td>
                             <x-base.table.td
                                 class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['cust_has_not_paid'] }}
+                                {{ toThousand($item['cust_has_not_paid'] ?? 0)  }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['main_balance'] }}
+                                {{ toThousand($item['main_balance'] ?? 0) }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['debt'] }}
+                                {{ toThousand($item['debt'] ?? 0) }}
                             </x-base.table.td>
                             {{-- <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
@@ -136,11 +136,11 @@
                             </x-base.table.td> --}}
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['shop_receivables'] }}
+                                {{ toThousand($item['shop_receivables'] ?? 0) }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['shop_capital'] }}
+                                {{ toThousand($item['shop_capital'] ?? 0) }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
@@ -288,7 +288,7 @@
                                     <tr class="row-data">
                                         <td class="py-2 px-4 w-1/4">${i + 1}</td>
                                         <td class="py-2 px-4 w-1/4">${response[i].name}</td>
-                                        <td class="py-2 px-4 w-1/4">${response[i].nominal}</td>
+                                        <td class="py-2 px-4 w-1/4">${toCurrency(response[i].nominal)}</td>
                                     </tr>
                                 `;
 
