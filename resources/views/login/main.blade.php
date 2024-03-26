@@ -58,7 +58,6 @@
                                     class="intro-x login__input block min-w-full px-4 py-3 xl:min-w-[350px]"
                                     id="email"
                                     type="text"
-                                    value="midone@left4code.com"
                                     placeholder="Email"
                                 />
                                 <div
@@ -69,7 +68,6 @@
                                     class="intro-x login__input mt-4 block min-w-full px-4 py-3 xl:min-w-[350px]"
                                     id="password"
                                     type="password"
-                                    value="password"
                                     placeholder="Password"
                                 />
                                 <div
