@@ -99,12 +99,6 @@
                             >
                                 Login
                             </x-base.button>
-                            <x-base.button
-                                class="mt-3 w-full px-4 py-3 align-top xl:mt-0 xl:w-32"
-                                variant="outline-secondary"
-                            >
-                                Register
-                            </x-base.button>
                         </div>
                         <div class="intro-x hidden mt-10 text-center text-slate-600 dark:text-slate-500 xl:mt-24 xl:text-left">
                             By signin up, you agree to our
