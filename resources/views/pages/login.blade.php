@@ -34,11 +34,10 @@
                             alt="Midone Tailwind HTML Admin Template"
                         />
                         <div class="-intro-x mt-10 text-4xl font-medium leading-tight text-white">
-                            A few more clicks to <br />
-                            sign in to your account.
+                            Selamat datang di aplikasi WMS(warehouse management system)
                         </div>
                         <div class="-intro-x mt-5 text-lg text-white text-opacity-70 dark:text-slate-400">
-                            Manage all your e-commerce accounts in one place
+                            Aplikasi ini membantu anda dalam mengelola barang masuk dan keluar
                         </div>
                     </div>
                 </div>
@@ -51,8 +50,7 @@
                             Sign In
                         </h2>
                         <div class="intro-x mt-2 text-center text-slate-400 xl:hidden">
-                            A few more clicks to sign in to your account. Manage all your
-                            e-commerce accounts in one place
+                            Selamat datang di aplikasi WMS(warehouse management system)
                         </div>
                         <div class="intro-x mt-8">
                             <x-base.form-input

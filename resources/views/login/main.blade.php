@@ -23,7 +23,7 @@
                             src="{{ Vite::asset('resources/images/logo.svg') }}"
                             alt="Midone Tailwind HTML Admin Template"
                         />
-                        <span class="ml-3 text-lg text-white"> Rubick </span>
+                        <span class="ml-3 text-lg text-white"> WMS </span>
                     </a>
                     <div class="my-auto">
                         <img
@@ -32,11 +32,10 @@
                             alt="Midone Tailwind HTML Admin Template"
                         />
                         <div class="-intro-x mt-10 text-4xl font-medium leading-tight text-white">
-                            A few more clicks to <br />
-                            sign in to your account.
+                            Selamat datang di aplikasi WMS(warehouse management system)
                         </div>
                         <div class="-intro-x mt-5 text-lg text-white text-opacity-70 dark:text-slate-400">
-                            Manage all your e-commerce accounts in one place
+                            Kelola barang masuk dan keluar dengan mudah
                         </div>
                     </div>
                 </div>
@@ -90,7 +89,7 @@
                                     Remember me
                                 </label>
                             </div>
-                            <a href="">Forgot Password?</a>
+                            <a href="" class="hidden">Forgot Password?</a>
                         </div>
                         <div class="intro-x mt-5 text-center xl:mt-8 xl:text-left">
                             <x-base.button
@@ -107,7 +106,7 @@
                                 Register
                             </x-base.button>
                         </div>
-                        <div class="intro-x mt-10 text-center text-slate-600 dark:text-slate-500 xl:mt-24 xl:text-left">
+                        <div class="intro-x hidden mt-10 text-center text-slate-600 dark:text-slate-500 xl:mt-24 xl:text-left">
                             By signin up, you agree to our
                             <a
                                 class="text-primary dark:text-slate-200"
