@@ -337,6 +337,11 @@
                         >
                             View More
                         </a>
+                        @push('scripts')
+                        <script type="module">
+                            // example of using jquery in laravel vite
+                        </script>
+                        @endpush
                     </div>
                 </div>
             </div>

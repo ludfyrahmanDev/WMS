@@ -40,7 +40,6 @@ License: You must have a valid license purchased only from themeforest(the above
     <!-- BEGIN: Vendor JS Assets-->
     @stack('vendors')
     <!-- END: Vendor JS Assets-->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- BEGIN: Pages, layouts, components JS Assets-->
     @stack('scripts')
     <script>
