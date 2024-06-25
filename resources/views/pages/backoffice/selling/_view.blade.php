@@ -181,10 +181,10 @@
                                         <td class="py-2 px-4 jumlah_qty w-1/4">{{ $item['total_qty'] }}<input
                                                 type="hidden" name="jumlah_qty[]" id="jumlah_qty[]"
                                                 value="{{ $item['total_qty'] }}" /></td>
-                                        <td class="py-2 px-4 harga_jual">{{ $item['price_sell'] }}<input type="hidden"
+                                        <td class="py-2 px-4 harga_jual">{{ toThousand($item['price_sell']) }}<input type="hidden"
                                                 name="harga_jual[]" id="harga_jual[]"
                                                 value="{{ $item['price_sell'] }}" /></td>
-                                        <td class="py-2 px-4 subtotal w-1/4">{{ $item['subtotal'] }}<input type="hidden"
+                                        <td class="py-2 px-4 subtotal w-1/4">{{ toThousand($item['subtotal']) }}<input type="hidden"
                                                 class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]"
                                                 value="{{ $item['subtotal'] }}" /></td>
                                     </tr>
@@ -195,18 +195,18 @@
                             <tr class="bg-dark text-white">
                                 <th class="py-2 px-4 border-b text-center" colspan="3">Laba Bersih</th>
                                 <th class="py-2 px-4 border-b text-center laba_bersih">
-                                    {{ $data['header']->net_profit ?? 0 }}</th>
+                                    {{ toThousand($data['header']->net_profit ?? 0) }}</th>
                             </tr>
                             <tr class="bg-dark text-white">
                                 <th class="py-2 px-4 border-b text-center" colspan="3">Grand Total</th>
                                 <th class="py-2 px-4 border-b text-center grand_total">
-                                    {{ $data['header']->grand_total ?? 0 }}</th>
+                                    {{ toThousand($data['header']->grand_total ?? 0) }}</th>
                             </tr>
                             @if ($data['header']->status == 'On Progress')
                                 <tr class="bg-dark text-white">
                                     <th class="py-2 px-4 border-b text-center text-white" colspan="3">Total Bayar</th>
                                     <th class="py-2 px-4 border-b text-center">
-                                        {{ $data['header']->total_payment ?? 0 }}
+                                        {{ toThousand($data['header']->total_payment ?? 0) }}
                                     </th>
                                 </tr>
                                 <tr class="bg-dark ">
@@ -221,7 +221,7 @@
                                 <tr class="bg-dark text-white">
                                     <th class="py-2 px-4 border-b text-center text-white" colspan="3">Total Bayar</th>
                                     <th class="py-2 px-4 border-b text-center">
-                                        {{ $data['header']->total_payment ?? 0 }}
+                                        {{ toThousand($data['header']->total_payment ?? 0) }}
                                     </th>
                                 </tr>
                             @endif

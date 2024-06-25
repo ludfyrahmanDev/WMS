@@ -176,7 +176,9 @@ class SellingController extends Controller
     public function update(SellingStoreRequest $request, Selling $selling)
     {
         $user = auth()->user();
-
+        $request->angsuran = str_replace('Rp ', '', $request->angsuran);
+        $request->angsuran = (int)str_replace('.', '', $request->angsuran);
+        $request['angsuran'] = (int)$request->angsuran;
         try {
             if ($request->mode == 'Konfirmasi Lunas') {
 
