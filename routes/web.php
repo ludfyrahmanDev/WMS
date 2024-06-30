@@ -73,6 +73,7 @@ Route::middleware('auth')->group(function () {
     // end master data section
     // transaction
     Route::resource('delivery_order', DeliveryOrderController::class);
+    Route::post('delivery_order/{delivery_order}/add_quota', [DeliveryOrderController::class, 'addQuota'])->name('delivery_order.add-quota');
     Route::get('delivery_order_export', [DeliveryOrderController::class, 'export'])->name('delivery_order.export');
     Route::get('delivery_order_export_pdf', [DeliveryOrderController::class, 'exportPdf'])->name('delivery_order.export-pdf');
     Route::resource('vehicle_service', VehicleServiceController::class);

@@ -7,6 +7,7 @@ use App\Models\Driver;
 use App\Models\Product;
 use App\Models\Vehicle;
 use App\Models\Supplier;
+use App\Models\DeliveryOrderQuota;
 use App\Models\Traits\Filterable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +22,6 @@ class DeliveryOrder extends Model
 
     protected $fillable = [
         'purchase_date',
-        'pick_up_date',
         'supplier_id',
         'vehicle_id',
         'driver_id',
@@ -43,6 +43,11 @@ class DeliveryOrder extends Model
     public function getDriver()
     {
         return Driver::select('id', 'name')->get();
+    }
+
+    public function delivery_order_quota()
+    {
+        return $this->hasMany(DeliveryOrderQuota::class);
     }
 
     public function getVehicle()

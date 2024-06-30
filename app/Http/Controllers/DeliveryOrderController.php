@@ -11,6 +11,8 @@ use App\Exports\DeliveryOrderExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use App\Models\DeliveryOrderQuota;
+use Illuminate\Support\Facades\DB;
 
 class DeliveryOrderController extends Controller
 {
@@ -78,6 +80,7 @@ class DeliveryOrderController extends Controller
 
         try {
             //cek saldo
+            DB::beginTransaction();
             $saldo = new SpendingController();
 
             $cekSaldo = $saldo->saldo($request);
@@ -93,7 +96,7 @@ class DeliveryOrderController extends Controller
             // insert Table Delivery order 
             $delivery_order = new DeliveryOrder();
             $delivery_order->purchase_date = $request->tanggal_pembelian;
-            $delivery_order->pick_up_date = $request->tanggal_pengambilan;
+            // $delivery_order->pick_up_date = $request->tanggal_pengambilan;
             $delivery_order->supplier_id = $request->supplier;
             $delivery_order->driver_id = $request->driver;
             $delivery_order->vehicle_id = $request->kendaraan;
@@ -110,23 +113,47 @@ class DeliveryOrderController extends Controller
             $totalDataProduk = COUNT($request->produk_id);
 
             for ($i = 0; $i < $totalDataProduk; $i++) {
-                $stock = new Stock();
-                $stock->product_id = $request->produk_id[$i];
-                $stock->purchase_date = $request->tanggal_pembelian;
-                $stock->is_active = 0;
-                $stock->price_kg = curencyToInteger($request->hargaKG[$i]);
-                $stock->first_stock = $request->jumlah_qty[$i];
-                $stock->stock_in_use = 0;
-                $stock->last_stock   = $request->jumlah_qty[$i];
-                $stock->save();
+                // 'delivery_order_id',
+                // 'purchase_amount',
+                // 'subtotal',
+                // 'product_id',
+                // 'purchase_date',
+                // 'price_kg',
+                // 'first_stock',
+                // 'stock_in_use',
+                // 'last_stock'
+                
 
-                $delivery_order_detail = new DeliveryOrderDetail();
-                $delivery_order_detail->delivery_order_id = $delivery_order->id;
-                $delivery_order_detail->stock_id = $stock->id;
-                $delivery_order_detail->purchase_amount = $request->jumlah_qty[$i];
-                $delivery_order_detail->subtotal = curencyToInteger($request->subtotal_produk[$i]);
-                $delivery_order_detail->save();
+                $orderQuota                      = new DeliveryOrderQuota();
+                $orderQuota->delivery_order_id   = $delivery_order->id;
+                $orderQuota->purchase_amount     = $request->jumlah_qty[$i];
+                $orderQuota->subtotal            = curencyToInteger($request->subtotal_produk[$i]);
+                $orderQuota->product_id          = $request->produk_id[$i];
+                $orderQuota->purchase_date       = $request->tanggal_pembelian;
+                $orderQuota->price_kg            = curencyToInteger($request->hargaKG[$i]);
+                $orderQuota->first_stock         = $request->jumlah_qty[$i];
+                $orderQuota->stock_in_use        = 0;
+                $orderQuota->last_stock          = $request->jumlah_qty[$i];
+                $orderQuota->created_at          = Carbon::now();
+                $orderQuota->save();
+                // $stock = new Stock();
+                // $stock->product_id = $request->produk_id[$i];
+                // $stock->purchase_date = $request->tanggal_pembelian;
+                // $stock->is_active = 0;
+                // $stock->price_kg = curencyToInteger($request->hargaKG[$i]);
+                // $stock->first_stock = $request->jumlah_qty[$i];
+                // $stock->stock_in_use = 0;
+                // $stock->last_stock   = $request->jumlah_qty[$i];
+                // $stock->save();
+
+                // $delivery_order_detail = new DeliveryOrderDetail();
+                // $delivery_order_detail->delivery_order_id = $delivery_order->id;
+                // $delivery_order_detail->stock_id = $stock->id;
+                // $delivery_order_detail->purchase_amount = $request->jumlah_qty[$i];
+                // $delivery_order_detail->subtotal = curencyToInteger($request->subtotal_produk[$i]);
+                // $delivery_order_detail->save();
             }
+            DB::commit();
 
             return redirect(route('delivery_order.index'))->with('success', 'Berhasil menambah data!');
         } catch (\Throwable $th) {
@@ -158,16 +185,16 @@ class DeliveryOrderController extends Controller
     public function edit(DeliveryOrder $delivery_order)
     {
         $deliveryOrder = new DeliveryOrder;
-
-        $delivery_order->load('delivery_order_detail.stock');
-        $delivery_order->load('delivery_order_detail.stock.product');
+        $delivery_order->load('delivery_order_quota');
+        // $delivery_order->load('delivery_order_detail.stock');
+        // $delivery_order->load('delivery_order_detail.stock.product');
 
         $data['supplier'] = $deliveryOrder->getSupplier();
         $data['driver'] = $deliveryOrder->getDriver();
         $data['vehicle'] = $deliveryOrder->getVehicle();
         $data['product'] = $deliveryOrder->getProduct();
         $data['header'] = $delivery_order;
-        $data['detail'] = $delivery_order->delivery_order_detail;
+        $data['detail'] = $delivery_order->delivery_order_quota;
 
         $title = 'Data Pembelian';
         $route = route('delivery_order.update', $delivery_order);
@@ -231,7 +258,7 @@ class DeliveryOrderController extends Controller
 
             // update Table Delivery order 
             $delivery_order->purchase_date = $request->tanggal_pembelian;
-            $delivery_order->pick_up_date = $request->tanggal_pengambilan;
+            // $delivery_order->pick_up_date = $request->tanggal_pengambilan;
             $delivery_order->supplier_id = $request->supplier;
             $delivery_order->driver_id = $request->driver;
             $delivery_order->vehicle_id = $request->kendaraan;
@@ -258,36 +285,33 @@ class DeliveryOrderController extends Controller
                 $detail->stock()->delete();
             }
 
-            // $delivery_order->delivery_order_detail()->delete();
-            // $delivery_order->stock()->delete();
-
             //insert Table Delivery Order Detail
             $totalDataProduk = COUNT($request->produk_id);
 
-            for ($i = 0; $i < $totalDataProduk; $i++) {
-                $stock = new Stock();
-                $stock->product_id = $request->produk_id[$i];
-                $stock->purchase_date = $request->tanggal_pembelian;
+            // for ($i = 0; $i < $totalDataProduk; $i++) {
+            //     $stock = new Stock();
+            //     $stock->product_id = $request->produk_id[$i];
+            //     $stock->purchase_date = $request->tanggal_pembelian;
 
-                if ($request->mode != null) {
-                    $stock->is_active = 1;
-                } else {
-                    $stock->is_active = 0;
-                }
+            //     if ($request->mode != null) {
+            //         $stock->is_active = 1;
+            //     } else {
+            //         $stock->is_active = 0;
+            //     }
 
-                $stock->price_kg = $request->hargaKG[$i];
-                $stock->first_stock = $request->jumlah_qty[$i];
-                $stock->stock_in_use = 0;
-                $stock->last_stock   = $request->jumlah_qty[$i];
-                $stock->save();
+            //     $stock->price_kg = $request->hargaKG[$i];
+            //     $stock->first_stock = $request->jumlah_qty[$i];
+            //     $stock->stock_in_use = 0;
+            //     $stock->last_stock   = $request->jumlah_qty[$i];
+            //     $stock->save();
 
-                $delivery_order_detail = new DeliveryOrderDetail();
-                $delivery_order_detail->delivery_order_id = $delivery_order->id;
-                $delivery_order_detail->stock_id = $stock->id;
-                $delivery_order_detail->purchase_amount = $request->jumlah_qty[$i];
-                $delivery_order_detail->subtotal = curencyToInteger($request->subtotal_produk[$i]);
-                $delivery_order_detail->save();
-            }
+            //     $delivery_order_detail = new DeliveryOrderDetail();
+            //     $delivery_order_detail->delivery_order_id = $delivery_order->id;
+            //     $delivery_order_detail->stock_id = $stock->id;
+            //     $delivery_order_detail->purchase_amount = $request->jumlah_qty[$i];
+            //     $delivery_order_detail->subtotal = curencyToInteger($request->subtotal_produk[$i]);
+            //     $delivery_order_detail->save();
+            // }
 
             if ($request->mode != null) {
                 return redirect(route('delivery_order.index'))->with('success', 'Berhasil konfirmasi data!');
@@ -309,22 +333,57 @@ class DeliveryOrderController extends Controller
     public function show(DeliveryOrder $delivery_order)
     {
         $deliveryOrder = new DeliveryOrder;
-
-        $delivery_order->load('delivery_order_detail.stock');
-        $delivery_order->load('delivery_order_detail.stock.product');
-
+        $delivery_order->load('delivery_order_quota');
+        $delivery_order->load('delivery_order_quota.product');
+        // $delivery_order->load('delivery_order_detail.stock');
+        // $delivery_order->load('delivery_order_detail.stock.product');
         $data['supplier'] = $deliveryOrder->getSupplier();
         $data['driver'] = $deliveryOrder->getDriver();
         $data['vehicle'] = $deliveryOrder->getVehicle();
         $data['product'] = $deliveryOrder->getProduct();
         $data['header'] = $delivery_order;
-        $data['detail'] = $delivery_order->delivery_order_detail;
+        $data['detail'] = $delivery_order->delivery_order_quota;
 
         $title = 'Data Pembelian';
         $route = route('delivery_order.update', $delivery_order);
         $type = 'view';
 
-        return view('pages.backoffice.delivery_order._view', compact('data', 'title', 'route', 'type'));
+
+        $routeQuota = route('delivery_order.add-quota', $delivery_order);
+
+
+        return view('pages.backoffice.delivery_order._view', compact('data', 'title', 'route', 'type','routeQuota'));
+    }
+
+    public function addQuota(Request $request, DeliveryOrder $delivery_order){ 
+        $totalDataProduk = COUNT($request->produk_id);
+        try {
+            DB::beginTransaction();
+            for ($i = 0; $i < $totalDataProduk; $i++) {
+                $deliveryOrderQuota = DeliveryOrderQuota::where('delivery_order_id', $delivery_order->id)->where('product_id', $request->produk_id[$i])->first();
+                $stock = new Stock();
+                $stock->product_id = $request->produk_id[$i];
+                $stock->purchase_date = $request->tanggal_pengambilan;
+                $stock->is_active = 1;
+                $stock->price_kg = $deliveryOrderQuota->price_kg;
+                $stock->first_stock = $request->jumlah_qty[$i];
+                $stock->stock_in_use = 0;
+                $stock->last_stock   = $request->jumlah_qty[$i];
+                $stock->save();
+
+                $delivery_order_detail = new DeliveryOrderDetail();
+                $delivery_order_detail->delivery_order_id = $delivery_order->id;
+                $delivery_order_detail->stock_id = $stock->id;
+                $delivery_order_detail->purchase_amount = $request->jumlah_qty[$i];
+                $delivery_order_detail->subtotal = curencyToInteger($deliveryOrderQuota->subtotal);
+                $delivery_order_detail->save();
+            }
+            DB::commit();
+            return redirect(route('delivery_order.index'))->with('success', 'Berhasil Tambah data pengambilan!');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return back()->with('failed', 'Gagal mengubah data!' . $th->getMessage());
+        }
     }
 
     public function export(Request $request)
