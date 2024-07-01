@@ -41,7 +41,7 @@ die(); ?> --}}
                 <!-- BEGIN: Form Layout -->
                 <div class="intro-y box p-5" id="myForm">
                     <div class="grid grid-cols-12 gap-2">
-                        <div class="input-form col-span-4">
+                        <div class="input-form col-span-6">
                             <x-base.form-label for="crud-form-1">Tanggal Pembelian</x-base.form-label>
                             <x-base.form-input class="w-full" id="tanggal_pembelian" type="date" name="tanggal_pembelian"
                                 value="{{ $data['header']->purchase_date ?? date('Y-m-d') }}" required
@@ -52,18 +52,18 @@ die(); ?> --}}
                                 </div>
                             @enderror
                         </div>
-                        <div class="input-form col-span-4">
+                        <div class="input-form col-span-4 hidden">
                             <x-base.form-label for="crud-form-1">Tanggal Pengambilan</x-base.form-label>
                             <x-base.form-input class="w-full" id="tanggal_pengambilan" type="date"
                                 name="tanggal_pengambilan" value="{{ $data['header']->pick_up_date ?? date('Y-m-d') }}"
-                                placeholder="Pilih Tanggal Pengambilan" required />
+                                placeholder="Pilih Tanggal Pengambilan"  />
                             @error('tanggal_pengambilan')
                                 <div class="pristine-error text-danger mt-2">
                                     {{ $message }}
                                 </div>
                             @enderror
                         </div>
-                        <div class="input-form col-span-4">
+                        <div class="input-form col-span-6">
                             <x-base.form-label for="supplier">Supplier</x-base.form-label>
                             <x-base.tom-select name="supplier" id="supplier" class="w-full"
                                 data-placeholder="Pilih Supplier" required>
@@ -217,16 +217,16 @@ die(); ?> --}}
                             @if (isset($data['detail']))
                                 @foreach ($data['detail'] as $item)
                                     <tr class="row-data">
-                                        <td class="py-2 px-4 produk_id" hidden>{{ $item['stock']['product_id'] }}<input
+                                        <td class="py-2 px-4 produk_id" hidden>{{ $item['product_id'] }}<input
                                                 type="hidden" name="produk_id[]" id="produk_id[]"
-                                                value="{{ $item['stock']['product_id'] }}" /></td>
-                                        <td class="py-2 px-4 w-1/4">{{ $item['stock']['product']['product'] }}</td>
+                                                value="{{ $item['product_id'] }}" /></td>
+                                        <td class="py-2 px-4 w-1/4">{{ $item['product']['product'] }}</td>
                                         <td class="py-2 px-4 jumlah_qty w-1/4">{{ $item['purchase_amount'] }}<input
                                                 type="hidden" name="jumlah_qty[]" id="jumlah_qty[]"
                                                 value="{{ $item['purchase_amount'] }}" /></td>
-                                        <td class="py-2 px-4 hargaKG w-1/4">{{ toThousand($item['stock']['price_kg']) }}<input
+                                        <td class="py-2 px-4 hargaKG w-1/4">{{ toThousand($item['price_kg']) }}<input
                                                 type="hidden" class="column_hargaKG" name="hargaKG[]" id="hargaKG[]"
-                                                value="{{ $item['stock']['price_kg'] }}" /></td>
+                                                value="{{ $item['price_kg'] }}" /></td>
                                         <td class="py-2 px-4 subtotal w-1/4">{{ toThousand($item['subtotal']) }}<input type="hidden"
                                                 class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]"
                                                 value="{{ $item['subtotal'] }}" /></td>
@@ -264,7 +264,7 @@ die(); ?> --}}
                     <div class="mt-5 text-right">
                         <x-base.button class="mr-1 w-24" type="button" variant="outline-secondary">
                             <a href="{{ route('delivery_order.index') }}" variant="outline-secondary">
-                                Cancel
+                                {{ $type != 'detail' ? 'Batal' : 'Kembali' }}
                             </a>
                         </x-base.button>
                         <x-base.button class="w-24" type="submit" variant="primary">

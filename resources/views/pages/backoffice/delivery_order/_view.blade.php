@@ -165,20 +165,18 @@
                                 <!-- Tambahkan header lainnya sesuai kebutuhan -->
                             </tr>
                         </thead>
-                        <tbody id="products">
+                        <tbody >
                             @if (isset($data['detail']))
                                 @foreach ($data['detail'] as $item)
                                     <tr class="row-data">
-                                        <td class="py-2 px-4 produk_id" hidden>{{ $item['stock']['product_id'] }}<input
-                                                type="hidden" name="produk_id[]" id="produk_id[]"
-                                                value="{{ $item['stock']['product_id'] }}" /></td>
-                                        <td class="py-2 px-4 w-1/4">{{ $item['stock']['product']['product'] }}</td>
+                                        <td class="py-2 px-4" hidden>{{ $item['product_id'] }}</td>
+                                        <td class="py-2 px-4 w-1/4">{{ $item['product']['product'] }}</td>
                                         <td class="py-2 px-4 jumlah_qty w-1/4">{{ $item['purchase_amount'] }}<input
                                                 type="hidden" name="jumlah_qty[]" id="jumlah_qty[]"
                                                 value="{{ $item['purchase_amount'] }}" /></td>
-                                        <td class="py-2 px-4 hargaKG w-1/4">{{ toThousand($item['stock']['price_kg']) }}<input
+                                        <td class="py-2 px-4 hargaKG w-1/4">{{ toThousand($item['price_kg']) }}<input
                                                 type="hidden" class="column_hargaKG" name="hargaKG[]" id="hargaKG[]"
-                                                value="{{ $item['stock']['price_kg'] }}" /></td>
+                                                value="{{ $item['price_kg'] }}" /></td>
                                         <td class="py-2 px-4 subtotal w-1/4">{{ toThousand($item['subtotal']) }}<input type="hidden"
                                                 class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]"
                                                 value="{{ $item['subtotal'] }}" /></td>
@@ -199,6 +197,7 @@
                                         {{ toThousand($data['header']->total_payment ?? 0) }}
                                     </th>
                                 </tr>
+                                @if($data['header']['transaction_type'] == 'Kontan')
                                 <tr class="bg-dark ">
                                     <th class="py-2 px-4 border-b text-center text-white" colspan="3">Angsuran</th>
                                     <th class="py-2 px-4 border-b text-center">
@@ -207,6 +206,7 @@
                                             onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                                     </th>
                                 </tr>
+                                @endif
                             @else
                                 <tr class="bg-dark ">
                                     <th class="py-2 px-4 border-b text-center text-white" colspan="3">Total Bayar</th>
@@ -223,12 +223,12 @@
                     <div class="mt-5 text-right">
                         <x-base.button class="mr-1 w-24" type="button" variant="outline-secondary">
                             <a href="{{ route('delivery_order.index') }}" variant="outline-secondary">
-                                Cancel
+                                Kembali
                             </a>
                         </x-base.button>
                         @if ($data['header']->status == 'On Progress')
-                            <x-base.button class="w-24" type="submit" variant="primary">
-                                Save
+                            <x-base.button class="w-50 hidden" type="submit" variant="primary">
+                                Tambah Produk
                             </x-base.button>
                         @endif
                     </div>
@@ -237,22 +237,112 @@
             </form>
         </div>
     </div>
+    @if($data['header']['status'] == 'Completed')
+    <div class="mt-5 grid grid-cols-12 gap-6">
+
+        <div class="intro-y col-span-12 lg:col-span-12">
+
+            
+                <!-- BEGIN: Form Layout -->
+                <div class="intro-y box p-5" id="myForm">
+                    <form action="{{ $routeQuota }}" method="post" enctype="multipart/form-data">
+                        @csrf
+                        <div class="grid grid-cols-12 gap-2 ">
+                            <div class="input-form col-span-6">
+                                <x-base.form-label for="crud-form-1">Produk</x-base.form-label>
+                                <x-base.tom-select name="produk" id="produk" class="w-full" data-placeholder="Pilih Produk">
+                                    <option value="">Pilih Produk</option>
+                                    @foreach ($data['detail'] as $product)
+                                        <option value="{{ $product->product->id }}_{{ $product->product->product ?? '-' }}">{{ $product->product->product ?? '-' }}
+                                        </option>
+                                    @endforeach
+                                </x-base.tom-select>
+                            </div>
+                            <div class="input-form col-span-6">
+                                <x-base.form-label for="qty">QTY</x-base.form-label>
+                                <x-base.form-input class="w-full" id="crud-form-1" type="text" name="qty"
+                                id="qty" value="" placeholder="Input Qty Produk"
+                                onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                                @error('qty')
+                                    <div class="pristine-error text-danger mt-2">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="mt-5 text-right">
+                            <x-base.button class="w-50" type="button" onclick="tambahProduk()"  variant="primary">
+                                Tambah Produk
+                            </x-base.button>
+                        </div>
+                        <br>
+                        <hr style="border: 1px solid black;">
+                        <br>
+                        @error('produk_id')
+                            <div class="pristine-error text-danger mt-2">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                        @error('total_bayar')
+                            <div class="pristine-error text-danger mt-2">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                        <table class="min-w-full bg-white border-gray-300" id="table_product">
+                            <thead>
+                                <tr class="bg-dark text-white">
+                                    <th class="py-2 px-4 border-b text-left w-1/2">Produk</th>
+                                    <th class="py-2 px-4 border-b text-left w-1/2">Qty</th>
+                                    <th class="py-2 px-4 border-b text-left w-1/2">Aksi</th>
+                                    <!-- Tambahkan header lainnya sesuai kebutuhan -->
+                                </tr>
+                            </thead>
+                            <tbody id="products">
+                            
+                            </tbody>
+                            <tfoot>
+                                <tr class="bg-dark ">
+                                    <th class="py-2 px-4 border-b text-center text-white" colspan="2">Tanggal Pengambilan</th>
+                                    <th class="py-2 px-4 border-b text-center ">
+                                        <x-base.form-input class="w-full" id="tanggal_pengambilan" type="date"
+                                            name="tanggal_pengambilan" value="{{ $data['header']->pick_up_date ?? date('Y-m-d') }}"
+                                            placeholder="Pilih Tanggal Pengambilan"  />
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <div class="mt-5 text-right">
+                            <x-base.button class="mr-1 w-24" type="button" variant="outline-secondary">
+                                <a href="{{ route('delivery_order.index') }}" variant="outline-secondary">
+                                    {{ $type != 'detail' ? 'Batal' : 'Kembali' }}
+                                </a>
+                            </x-base.button>
+                            <x-base.button class="w-24" type="submit" variant="primary">
+                                Save
+                            </x-base.button>
+                        </div>
+                    </form>
+                </div>
+                <!-- END: Form Layout -->
+        </div>
+    </div>
+    @endif
 
     @push('scripts')
         <script>
             function tambahProduk() {
                 var produk = $('#produk').val().split('_');
                 var qty = $('#qty').val();
-                var subtotal = $('#subtotal').val();
 
-                if (produk.length == 0 || qty == "" || subtotal == "") {
-                    alert('Harap mengisi form produk, qty, subtotal');
+                if (produk.length == 0 || qty == "" ) {
+                    alert('Harap mengisi form produk, qty');
                     return false;
                 }
 
                 var boolean = true
                 $('.produk_id').each(function() {
                     var produk_id = $(this).text();
+                    console.log(produk_id, produk[0])
                     if (produk_id == produk[0]) {
                         boolean = false;
                     }
@@ -268,7 +358,6 @@
                             <td class="py-2 px-4 produk_id" hidden>${produk[0]}<input type="hidden" name="produk_id[]" id="produk_id[]" value="${produk[0]}" /></td>
                             <td class="py-2 px-4 w-1/4">${produk[1]}</td>
                             <td class="py-2 px-4 jumlah_qty w-1/4">${qty}<input type="hidden" name="jumlah_qty[]" id="jumlah_qty[]" value="${qty}" /></td>
-                            <td class="py-2 px-4 subtotal w-1/4">${subtotal}<input type="hidden" class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]" value="${subtotal}" /></td>
                             <td class="py-2 px-4 w-1/4"> 
                                 <button onclick="hapusRow(this)" class="flex items-center text-danger">
                                 Hapus</button>
@@ -277,13 +366,8 @@
                 `;
                 $('#products').html($('#products').html() + products);
 
-                var totalSubtotal = 0;
-                $('.column_subtotal').each(function() {
-                    totalSubtotal += parseInt($(this).val())
-                })
-
-                $('.grand_total').text(totalSubtotal);
-                $('#grand_total').val(totalSubtotal);
+                $('#produk').val('');
+                $('#qty').val('');
             }
 
             function hapusRow(event) {
