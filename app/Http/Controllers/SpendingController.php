@@ -41,15 +41,12 @@ class SpendingController extends Controller
         $outcome = $all->get()->where('mutation', 'Uang Keluar')->sum('nominal');
         $sellingCompleted = Selling::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
         $sellingInCompleted = Selling::where('status', '!=','Completed')->sum(\DB::raw('(grand_total - total_payment)'));
-        $purchaseCompleted = DeliveryOrder::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
-        $purchaseInCompleted = DeliveryOrder::where('status', '!=','Completed')->sum((\DB::raw('(grand_total - total_payment)')));
-        // $service = VehicleService::get();
-        // $total = 0;
-        // foreach ($service as $key => $value) {
-        //     foreach ($value->vehicleServiceDetail as $key => $value) {
-        //         $total += $value->amount_of_expenditure;
-        //     }
-        // }
+        // $purchaseCompleted = DeliveryOrder::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
+        // sum append field from deliveryorder
+        $purchaseCompleted = DeliveryOrder::get()->sum('payment');
+        $inCompleted = DeliveryOrder::get()->sum('grand_total');
+        $purchaseInCompleted = $purchaseCompleted - $inCompleted;
+        
         $saldo =( $income + $sellingCompleted) - ($outcome + $purchaseCompleted);
         $data = $all->paginate($request->get('per_page', 10));
         $title = 'Data Transaksi Lain Lain';

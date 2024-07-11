@@ -191,7 +191,7 @@
                                     {{ toThousand($data['header']->grand_total ?? 0) }}</th>
                             </tr>
                             @if ($data['header']->status == 'On Progress')
-                                <tr class="bg-dark ">
+                                <tr class="bg-dark hidden">
                                     <th class="py-2 px-4 border-b text-center text-white" colspan="3">Total Bayar</th>
                                     <th class="py-2 px-4 border-b text-center text-white">
                                         {{ toThousand($data['header']->total_payment ?? 0) }}
@@ -211,7 +211,7 @@
                                 <tr class="bg-dark ">
                                     <th class="py-2 px-4 border-b text-center text-white" colspan="3">Total Bayar</th>
                                     <th class="py-2 px-4 border-b text-center text-white">
-                                        {{ toThousand($data['header']->total_payment ?? 0) }}
+                                        {{ toThousand($data['payment'] ?? 0) }}
                                     </th>
                                 </tr>
                             @endif
@@ -253,7 +253,7 @@
                                 <x-base.tom-select name="produk" id="produk" class="w-full" data-placeholder="Pilih Produk">
                                     <option value="">Pilih Produk</option>
                                     @foreach ($data['detail'] as $product)
-                                        <option value="{{ $product->product->id }}_{{ $product->product->product ?? '-' }}">{{ $product->product->product ?? '-' }}
+                                        <option value="{{ $product->product->id }}_{{ $product->product->product ?? '-' }}_{{$product->price_kg}}">{{ $product->product->product ?? '-' }}
                                         </option>
                                     @endforeach
                                 </x-base.tom-select>
@@ -293,6 +293,7 @@
                                 <tr class="bg-dark text-white">
                                     <th class="py-2 px-4 border-b text-left w-1/2">Produk</th>
                                     <th class="py-2 px-4 border-b text-left w-1/2">Qty</th>
+                                    <th class="py-2 px-4 border-b text-left w-1/2">Subtotal</th>
                                     <th class="py-2 px-4 border-b text-left w-1/2">Aksi</th>
                                     <!-- Tambahkan header lainnya sesuai kebutuhan -->
                                 </tr>
@@ -302,7 +303,7 @@
                             </tbody>
                             <tfoot>
                                 <tr class="bg-dark ">
-                                    <th class="py-2 px-4 border-b text-center text-white" colspan="2">Tanggal Pengambilan</th>
+                                    <th class="py-2 px-4 border-b text-center text-white" colspan="3">Tanggal Pengambilan</th>
                                     <th class="py-2 px-4 border-b text-center ">
                                         <x-base.form-input class="w-full" id="tanggal_pengambilan" type="date"
                                             name="tanggal_pengambilan" value="{{ $data['header']->pick_up_date ?? date('Y-m-d') }}"
@@ -322,6 +323,35 @@
                             </x-base.button>
                         </div>
                     </form>
+                </div>
+                <!-- END: Form Layout -->
+        </div>
+    </div>
+
+    <div class="mt-5 grid grid-cols-12 gap-6">
+
+        <div class="intro-y col-span-12 lg:col-span-12">
+                <!-- BEGIN: Form Layout -->
+                <div class="intro-y box p-5" id="myForm">
+                        <table class="min-w-full bg-white border-gray-300" id="table_product">
+                            <thead>
+                                <tr >
+                                    <th class="py-2 px-4 border-b text-left w-1/2">Jumlah</th>
+                                    <th class="py-2 px-4 border-b text-left w-1/2">Tanggal pengambilan</th>
+                                    <!-- Tambahkan header lainnya sesuai kebutuhan -->
+                                </tr>
+                            </thead>
+                            <tbody id="products">
+                                @foreach ($data['payment_detail'] as $item)
+                                <tr >
+                                    <td class="py-2 px-4 border-b text-left w-1/2">{{ toThousand($item->amount) }}</td>
+                                    <td class="py-2 px-4 border-b text-left w-1/2">{{ $item->created_at ?? date('Y-m-d') }}</td>
+                                </tr>
+
+                                @endforeach
+                            </tbody>
+                            
+                        </table>
                 </div>
                 <!-- END: Form Layout -->
         </div>
@@ -358,6 +388,7 @@
                             <td class="py-2 px-4 produk_id" hidden>${produk[0]}<input type="hidden" name="produk_id[]" id="produk_id[]" value="${produk[0]}" /></td>
                             <td class="py-2 px-4 w-1/4">${produk[1]}</td>
                             <td class="py-2 px-4 jumlah_qty w-1/4">${qty}<input type="hidden" name="jumlah_qty[]" id="jumlah_qty[]" value="${qty}" /></td>
+                            <td class="py-2 px-4 hargaKG w-1/4">${toCurrency(qty * produk[2])  }<input type="hidden" class="subtotal" name="subtotal[]" id="subtotal[]" value="${qty * produk[2]}" /></td>
                             <td class="py-2 px-4 w-1/4"> 
                                 <button onclick="hapusRow(this)" class="flex items-center text-danger">
                                 Hapus</button>
