@@ -247,7 +247,7 @@ die(); ?> --}}
                                         class="w-3/3 text-center" id="grand_total" type="text" name="grand_total"
                                         value="{{ $data['header']->grand_total ?? 0 }}" /></th>
                             </tr>
-                            <tr class="bg-dark ">
+                            <tr class="bg-dark hidden">
                                 <th class="py-2 px-4 border-b text-center text-white" colspan="4">Total Bayar</th>
                                 <th class="py-2 px-4 border-b text-center">
                                     <x-base.form-input class="w-3/3 text-center" id="total_bayar" type="text"

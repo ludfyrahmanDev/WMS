@@ -338,17 +338,21 @@
                                 <tr >
                                     <th class="py-2 px-4 border-b text-left w-1/2">Jumlah</th>
                                     <th class="py-2 px-4 border-b text-left w-1/2">Tanggal pengambilan</th>
-                                    <!-- Tambahkan header lainnya sesuai kebutuhan -->
                                 </tr>
                             </thead>
                             <tbody id="products">
+                                
                                 @foreach ($data['payment_detail'] as $item)
                                 <tr >
-                                    <td class="py-2 px-4 border-b text-left w-1/2">{{ toThousand($item->amount) }}</td>
-                                    <td class="py-2 px-4 border-b text-left w-1/2">{{ $item->created_at ?? date('Y-m-d') }}</td>
+                                    <td class="py-2 px-4 border-b text-center w-1/2">{{ toThousand($item->amount) }}</td>
+                                    <td class="py-2 px-4 border-b text-center w-1/2">{{ $item->created_at ?? date('Y-m-d') }}</td>
                                 </tr>
-
                                 @endforeach
+                                @if(count($data['payment_detail']) < 1)
+                                <tr>
+                                    <td class="py-2 px-4 border-b text-center w-1/2" colspan="2"><i>data tidak ada</i></td>
+                                </tr>
+                                @endif
                             </tbody>
                             
                         </table>
