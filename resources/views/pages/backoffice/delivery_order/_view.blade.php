@@ -336,21 +336,25 @@
                         <table class="min-w-full bg-white border-gray-300" id="table_product">
                             <thead>
                                 <tr >
-                                    <th class="py-2 px-4 border-b text-left w-1/2">Jumlah</th>
-                                    <th class="py-2 px-4 border-b text-left w-1/2">Tanggal pengambilan</th>
+                                    <th class="py-2 px-4 border-b text-left w-1/4">Tanggal pengambilan</th>
+                                    <th class="py-2 px-4 border-b text-left w-1/4">Product</th>
+                                    <th class="py-2 px-4 border-b text-left w-1/4">Qty</th>
+                                    <th class="py-2 px-4 border-b text-left w-1/4">Total</th>
                                 </tr>
                             </thead>
                             <tbody id="products">
                                 
                                 @foreach ($data['payment_detail'] as $item)
                                 <tr >
-                                    <td class="py-2 px-4 border-b text-center w-1/2">{{ toThousand($item->amount) }}</td>
-                                    <td class="py-2 px-4 border-b text-center w-1/2">{{ $item->created_at ?? date('Y-m-d') }}</td>
+                                    <td class="py-2 px-4 border-b text-left w-1/4">{{ $item->stock->created_at->format('d, M Y') ?? date('d, M Y') }}</td>
+                                    <td class="py-2 px-4 border-b text-left w-1/4">{{ $item->stock->product->product }}</td>
+                                    <td class="py-2 px-4 border-b text-left w-1/4">{{ $item->purchase_amount }}</td>
+                                    <td class="py-2 px-4 border-b text-left w-1/4">{{ toThousand($item->purchase_amount * $item->stock->price_kg) }}</td>
                                 </tr>
                                 @endforeach
                                 @if(count($data['payment_detail']) < 1)
                                 <tr>
-                                    <td class="py-2 px-4 border-b text-center w-1/2" colspan="2"><i>data tidak ada</i></td>
+                                    <td class="py-2 px-4 border-b text-center w-1/2" colspan="2"><i>Data tidak ada</i></td>
                                 </tr>
                                 @endif
                             </tbody>
