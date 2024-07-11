@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use App\Models\DeliveryOrderQuota;
 use Illuminate\Support\Facades\DB;
+use App\Models\DeliveryOrderPayment;
 
 class DeliveryOrderController extends Controller
 {
@@ -26,7 +27,7 @@ class DeliveryOrderController extends Controller
             'status'
         ], [])
             ->with('supplier')
-            ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'));
+            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;
             $end_date = $request->end_date;
@@ -38,7 +39,6 @@ class DeliveryOrderController extends Controller
             return $item->grand_total - $item->total_payment;
         });
         $data = $all->paginate($request->get('per_page', 10));
-
         $title = 'Data Pembelian';
         $route = 'delivery_order';
         $request = $request->toArray();
@@ -85,13 +85,13 @@ class DeliveryOrderController extends Controller
 
             $cekSaldo = $saldo->saldo($request);
 
-            if (intval($request->total_bayar) > intval($cekSaldo)) {
-                return back()->with('failed', 'Gagal, saldo tidak cukup!');
-            }
+            // if (intval($request->total_bayar) > intval($cekSaldo)) {
+            //     return back()->with('failed', 'Gagal, saldo tidak cukup!');
+            // }
 
-            if (intval(curencyToInteger($request->total_bayar)) > intval(curencyToInteger($request->grand_total))) {
-                return back()->with('failed', 'Gagal, Total Bayar melebihi dari Grand Total!');
-            }
+            // if (intval(curencyToInteger($request->total_bayar)) > intval(curencyToInteger($request->grand_total))) {
+            //     return back()->with('failed', 'Gagal, Total Bayar melebihi dari Grand Total!');
+            // }
 
             // insert Table Delivery order 
             $delivery_order = new DeliveryOrder();
@@ -102,7 +102,8 @@ class DeliveryOrderController extends Controller
             $delivery_order->vehicle_id = $request->kendaraan;
             $delivery_order->grand_total = curencyToInteger($request->grand_total);
             $delivery_order->total_payment = curencyToInteger($request->total_bayar);
-            $delivery_order->status = 'In Progress';
+            // $delivery_order->status = 'In Progress';
+            $delivery_order->status = 'Completed'; // 'In Progress', 'On Progress', 'Completed
             $delivery_order->who_create = $user['name'];
             $delivery_order->who_update = $user['name'];
             $delivery_order->transaction_type = $request->tipe_pembelian;
@@ -288,30 +289,6 @@ class DeliveryOrderController extends Controller
             //insert Table Delivery Order Detail
             $totalDataProduk = COUNT($request->produk_id);
 
-            // for ($i = 0; $i < $totalDataProduk; $i++) {
-            //     $stock = new Stock();
-            //     $stock->product_id = $request->produk_id[$i];
-            //     $stock->purchase_date = $request->tanggal_pembelian;
-
-            //     if ($request->mode != null) {
-            //         $stock->is_active = 1;
-            //     } else {
-            //         $stock->is_active = 0;
-            //     }
-
-            //     $stock->price_kg = $request->hargaKG[$i];
-            //     $stock->first_stock = $request->jumlah_qty[$i];
-            //     $stock->stock_in_use = 0;
-            //     $stock->last_stock   = $request->jumlah_qty[$i];
-            //     $stock->save();
-
-            //     $delivery_order_detail = new DeliveryOrderDetail();
-            //     $delivery_order_detail->delivery_order_id = $delivery_order->id;
-            //     $delivery_order_detail->stock_id = $stock->id;
-            //     $delivery_order_detail->purchase_amount = $request->jumlah_qty[$i];
-            //     $delivery_order_detail->subtotal = curencyToInteger($request->subtotal_produk[$i]);
-            //     $delivery_order_detail->save();
-            // }
 
             if ($request->mode != null) {
                 return redirect(route('delivery_order.index'))->with('success', 'Berhasil konfirmasi data!');
@@ -335,15 +312,17 @@ class DeliveryOrderController extends Controller
         $deliveryOrder = new DeliveryOrder;
         $delivery_order->load('delivery_order_quota');
         $delivery_order->load('delivery_order_quota.product');
-        // $delivery_order->load('delivery_order_detail.stock');
-        // $delivery_order->load('delivery_order_detail.stock.product');
+        $delivery_order->load('delivery_order_payment');
+        $delivery_order->load('delivery_order_quota_detail');
+        // $delivery_order->load('delivery_order_quota_detail.product');
         $data['supplier'] = $deliveryOrder->getSupplier();
         $data['driver'] = $deliveryOrder->getDriver();
         $data['vehicle'] = $deliveryOrder->getVehicle();
         $data['product'] = $deliveryOrder->getProduct();
         $data['header'] = $delivery_order;
         $data['detail'] = $delivery_order->delivery_order_quota;
-
+        $data['payment'] = $delivery_order->delivery_order_payment->sum('amount');
+        $data['payment_detail'] = $delivery_order->delivery_order_payment;
         $title = 'Data Pembelian';
         $route = route('delivery_order.update', $delivery_order);
         $type = 'view';
@@ -371,12 +350,30 @@ class DeliveryOrderController extends Controller
                 $stock->last_stock   = $request->jumlah_qty[$i];
                 $stock->save();
 
+
+                $saldo = new SpendingController();
+                $cekSaldo = $saldo->saldo($request);
+                $total = array_sum($request->subtotal);
+                if (intval($total) > intval($cekSaldo)) {
+                    return back()->with('failed', 'Gagal, saldo tidak cukup!');
+                }
+
+                if (intval(curencyToInteger($total)) > intval(curencyToInteger($delivery_order->grand_total))) {
+                    return back()->with('failed', 'Gagal, Total Bayar melebihi dari Grand Total!');
+                }
+
                 $delivery_order_detail = new DeliveryOrderDetail();
                 $delivery_order_detail->delivery_order_id = $delivery_order->id;
                 $delivery_order_detail->stock_id = $stock->id;
                 $delivery_order_detail->purchase_amount = $request->jumlah_qty[$i];
                 $delivery_order_detail->subtotal = curencyToInteger($deliveryOrderQuota->subtotal);
                 $delivery_order_detail->save();
+
+                $deliveryOrderPayment = new DeliveryOrderPayment();
+                $deliveryOrderPayment->delivery_order_id = $delivery_order->id;
+                $deliveryOrderPayment->amount = $request->jumlah_qty[$i] * $deliveryOrderQuota->price_kg;
+                $deliveryOrderPayment->created_at = Carbon::now();
+                $deliveryOrderPayment->save();
             }
             DB::commit();
             return redirect(route('delivery_order.index'))->with('success', 'Berhasil Tambah data pengambilan!');

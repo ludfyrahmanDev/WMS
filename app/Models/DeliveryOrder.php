@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Vehicle;
 use App\Models\Supplier;
 use App\Models\DeliveryOrderQuota;
+use App\Models\DeliveryOrderDetail;
 use App\Models\Traits\Filterable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
@@ -34,10 +35,25 @@ class DeliveryOrder extends Model
     ];
 
     protected $dates = ['deleted_at'];
+    protected $appends = ['payment'];
 
     public function getSupplier()
     {
         return Supplier::select('id', 'name')->get();
+    }
+
+
+    public function getPaymentAttribute()
+    {
+        // get calculate amount from delivery_order_payment
+        $payment = $this->delivery_order_payment()->sum('amount');
+        return $payment;
+
+    }
+
+    public function delivery_order_payment()
+    {
+        return $this->hasMany(DeliveryOrderPayment::class);
     }
 
     public function getDriver()
@@ -48,6 +64,10 @@ class DeliveryOrder extends Model
     public function delivery_order_quota()
     {
         return $this->hasMany(DeliveryOrderQuota::class);
+    }
+    public function delivery_order_quota_detail()
+    {
+        return $this->hasMany(DeliveryOrderDetail::class);
     }
 
     public function getVehicle()
