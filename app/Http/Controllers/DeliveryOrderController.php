@@ -314,6 +314,8 @@ class DeliveryOrderController extends Controller
         $delivery_order->load('delivery_order_quota.product');
         $delivery_order->load('delivery_order_payment');
         $delivery_order->load('delivery_order_quota_detail');
+        $delivery_order->load('delivery_order_quota_detail.stock');
+        $delivery_order->load('delivery_order_quota_detail.stock.product');
         // $delivery_order->load('delivery_order_quota_detail.product');
         $data['supplier'] = $deliveryOrder->getSupplier();
         $data['driver'] = $deliveryOrder->getDriver();
@@ -322,7 +324,8 @@ class DeliveryOrderController extends Controller
         $data['header'] = $delivery_order;
         $data['detail'] = $delivery_order->delivery_order_quota;
         $data['payment'] = $delivery_order->delivery_order_payment->sum('amount');
-        $data['payment_detail'] = $delivery_order->delivery_order_payment;
+        $data['payment_detail'] = $delivery_order->delivery_order_quota_detail;
+        // dd($data['payment_detail']->toArray());
         $title = 'Data Pembelian';
         $route = route('delivery_order.update', $delivery_order);
         $type = 'view';
