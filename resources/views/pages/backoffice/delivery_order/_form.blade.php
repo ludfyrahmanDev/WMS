@@ -86,7 +86,7 @@ die(); ?> --}}
                         <div class="input-form col-span-4">
                             <x-base.form-label for="driver">Driver</x-base.form-label>
                             <x-base.tom-select name="driver" id="driver" class="w-full" data-placeholder="Pilih Driver"
-                                required>
+                                >
                                 <option value="">Pilih Driver</option>
                                 @foreach ($data['driver'] as $driver)
                                     <option value="{{ $driver->id }}"
@@ -103,7 +103,7 @@ die(); ?> --}}
                         <div class="input-form col-span-4">
                             <x-base.form-label for="kendaraan">Kendaraan</x-base.form-label>
                             <x-base.tom-select name="kendaraan" id="kendaraan" class="w-full"
-                                data-placeholder="Pilih Kendaraan" required>
+                                data-placeholder="Pilih Kendaraan" >
                                 <option value="">Pilih Kendaraan</option>
                                 @foreach ($data['vehicle'] as $vehicle)
                                     <option value="{{ $vehicle->id }}"

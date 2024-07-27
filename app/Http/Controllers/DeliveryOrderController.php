@@ -97,9 +97,9 @@ class DeliveryOrderController extends Controller
             $delivery_order = new DeliveryOrder();
             $delivery_order->purchase_date = $request->tanggal_pembelian;
             // $delivery_order->pick_up_date = $request->tanggal_pengambilan;
-            $delivery_order->supplier_id = $request->supplier;
-            $delivery_order->driver_id = $request->driver;
-            $delivery_order->vehicle_id = $request->kendaraan;
+            $delivery_order->supplier_id = $request->supplier ?? null;
+            $delivery_order->driver_id = $request->driver ?? null;
+            $delivery_order->vehicle_id = $request->kendaraan  ?? null;
             $delivery_order->grand_total = curencyToInteger($request->grand_total);
             $delivery_order->total_payment = curencyToInteger($request->total_bayar);
             // $delivery_order->status = 'In Progress';
