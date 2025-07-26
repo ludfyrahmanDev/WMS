@@ -15,14 +15,17 @@ class StockController extends Controller
     {
         $all = Stock::filterResource($request, [
             'product.product',
+            'dod.no_sj',
+            'dod.no_faktur',
             'purchase_date',
             'first_stock',
             'stock_in_use',
             'last_stock'
         ], [])
             ->with('product')
+            ->with('dod')
             ->where('is_active', 1)
-            ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'))
+            ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'asc'))
             ->orderBy($request->get('sort_by', 'last_stock'), $request->get('order', 'asc'));
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;

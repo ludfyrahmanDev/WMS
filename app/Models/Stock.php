@@ -23,10 +23,17 @@ class Stock extends Model
         'last_stock'
     ];
 
-    // protected $dates = ['deleted_at'];
+    protected $casts = [
+        'purchase_date' => 'datetime'
+    ];
 
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function dod()
+    {
+        return $this->hasOne(DeliveryOrderDetail::class, 'stock_id');
     }
 }
