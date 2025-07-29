@@ -352,11 +352,16 @@ class SellingController extends Controller
         $produk = $request->input('produk');
         $qty = $request->input('qty');
 
-        $stocks = Stock::select('id', 'last_stock', 'price_kg', 'product_id')
-            ->where('product_id', $produk)
-            ->where('is_active', 1)
-            ->where('last_stock', '>', 0)
-            ->orderBy('purchase_date', 'asc')
+        session(['cv_id' => 1]);
+
+        $stocks = Stock::select('stock.id', 'stock.last_stock', 'stock.price_kg', 'stock.product_id')
+            ->leftJoin('delivery_order_detail AS dod', 'stock.id', '=', 'dod.stock_id')
+            ->leftJoin('delivery_order AS do', 'do.id', '=', 'dod.delivery_order_id')
+            ->where('stock.product_id', $produk)
+            ->where('stock.is_active', 1)
+            ->where('stock.last_stock', '>', 0)
+            ->where('do.cv_id', session('cv_id'))
+            ->orderBy('stock.purchase_date', 'asc')
             ->get();
 
         $arr = [];

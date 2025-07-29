@@ -55,10 +55,15 @@ class Selling extends Model
 
     public function getProduct()
     {
+        session(['cv_id' => 1]);
+
         return DB::table('stock AS s')
             ->select('p.id', 'p.product', DB::raw('SUM(s.last_stock) AS last_stock'))
             ->leftJoin('product AS p', 's.product_id', '=', 'p.id')
+            ->leftJoin('delivery_order_detail AS dod', 's.id', '=', 'dod.stock_id')
+            ->leftJoin('delivery_order AS do', 'do.id', '=', 'dod.delivery_order_id')
             ->where('s.is_active', 1)
+            ->where('do.cv_id', session('cv_id'))
             ->groupBy('p.id', 'p.product') 
             ->get();
     }
