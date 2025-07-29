@@ -241,8 +241,6 @@
     <div class="mt-5 grid grid-cols-12 gap-6">
 
         <div class="intro-y col-span-12 lg:col-span-12">
-
-            
                 <!-- BEGIN: Form Layout -->
                 <div class="intro-y box p-5" id="myForm">
                     <form action="{{ $routeQuota }}" method="post" enctype="multipart/form-data">
@@ -291,10 +289,12 @@
                         <table class="min-w-full bg-white border-gray-300" id="table_product">
                             <thead>
                                 <tr class="bg-dark text-white">
-                                    <th class="py-2 px-4 border-b text-left w-1/2">Produk</th>
-                                    <th class="py-2 px-4 border-b text-left w-1/2">Qty</th>
-                                    <th class="py-2 px-4 border-b text-left w-1/2">Subtotal</th>
-                                    <th class="py-2 px-4 border-b text-left w-1/2">Aksi</th>
+                                    <th class="py-2 px-4 border-b text-center w-1/2">No. SJ</th>
+                                    <th class="py-2 px-4 border-b text-center w-1/2">No. Faktur</th>
+                                    <th class="py-2 px-4 border-b text-center w-1/2">Produk</th>
+                                    <th class="py-2 px-4 border-b text-center w-1/2">Qty</th>
+                                    <th class="py-2 px-4 border-b text-center w-1/2">Subtotal</th>
+                                    <th class="py-2 px-4 border-b text-center w-1/2">Aksi</th>
                                     <!-- Tambahkan header lainnya sesuai kebutuhan -->
                                 </tr>
                             </thead>
@@ -303,7 +303,7 @@
                             </tbody>
                             <tfoot>
                                 <tr class="bg-dark ">
-                                    <th class="py-2 px-4 border-b text-center text-white" colspan="3">Tanggal Pengambilan</th>
+                                    <th class="py-2 px-4 border-b text-center text-white" colspan="5">Tanggal Pengambilan</th>
                                     <th class="py-2 px-4 border-b text-center ">
                                         <x-base.form-input class="w-full" id="tanggal_pengambilan" type="date"
                                             name="tanggal_pengambilan" value="{{ $data['header']->pick_up_date ?? date('Y-m-d') }}"
@@ -336,17 +336,21 @@
                         <table class="min-w-full bg-white border-gray-300" id="table_product">
                             <thead>
                                 <tr >
+                                    <th class="py-2 px-4 border-b text-left w-1/4">No. SJ</th>
+                                    <th class="py-2 px-4 border-b text-left w-1/4">No. Faktur</th>
                                     <th class="py-2 px-4 border-b text-left w-1/4">Tanggal pengambilan</th>
                                     <th class="py-2 px-4 border-b text-left w-1/4">Product</th>
                                     <th class="py-2 px-4 border-b text-left w-1/4">Qty</th>
                                     <th class="py-2 px-4 border-b text-left w-1/4">Total</th>
                                 </tr>
                             </thead>
-                            <tbody id="products">
+                            <tbody id="products2">
                                 
                                 @foreach ($data['payment_detail'] as $item)
                                 <tr >
-                                    <td class="py-2 px-4 border-b text-left w-1/4">{{ $item->stock->created_at->format('d, M Y') ?? date('d, M Y') }}</td>
+                                    <td class="py-2 px-4 border-b text-left w-1/4">{{ $item->no_sj }}</td>
+                                    <td class="py-2 px-4 border-b text-left w-1/4">{{ $item->no_faktur }}</td>
+                                    <td class="py-2 px-4 border-b text-left w-1/4">{{ $item->stock->purchase_date->format('d, M Y') ?? date('d, M Y') }}</td>
                                     <td class="py-2 px-4 border-b text-left w-1/4">{{ $item->stock->product->product }}</td>
                                     <td class="py-2 px-4 border-b text-left w-1/4">{{ $item->purchase_amount }}</td>
                                     <td class="py-2 px-4 border-b text-left w-1/4">{{ toThousand($item->purchase_amount * $item->stock->price_kg) }}</td>
@@ -354,7 +358,7 @@
                                 @endforeach
                                 @if(count($data['payment_detail']) < 1)
                                 <tr>
-                                    <td class="py-2 px-4 border-b text-center w-1/2" colspan="2"><i>Data tidak ada</i></td>
+                                    <td class="py-2 px-4 border-b text-center w-1/2" colspan="6"><i>Data tidak ada</i></td>
                                 </tr>
                                 @endif
                             </tbody>
@@ -393,13 +397,18 @@
 
                 var products = `
                     <tr class="row-data">
-                            <td class="py-2 px-4 produk_id" hidden>${produk[0]}<input type="hidden" name="produk_id[]" id="produk_id[]" value="${produk[0]}" /></td>
-                            <td class="py-2 px-4 w-1/4">${produk[1]}</td>
-                            <td class="py-2 px-4 jumlah_qty w-1/4">${qty}<input type="hidden" name="jumlah_qty[]" id="jumlah_qty[]" value="${qty}" /></td>
-                            <td class="py-2 px-4 hargaKG w-1/4">${toCurrency(qty * produk[2])  }<input type="hidden" class="subtotal" name="subtotal[]" id="subtotal[]" value="${qty * produk[2]}" /></td>
-                            <td class="py-2 px-4 w-1/4"> 
-                                <button onclick="hapusRow(this)" class="flex items-center text-danger">
-                                Hapus</button>
+                            <td class="py-2 px-4 text-center produk_id" hidden>${produk[0]}<input type="hidden" name="produk_id[]" id="produk_id[]" value="${produk[0]}" /></td>
+                            <td class="py-2 px-4 text-center no_sj">
+                                <x-base.form-input class="w-full" id="no_sj[]" type="text" name="no_sj[]" required placeholder="Masukkan No. SJ" style="visibility: visible;"/>
+                            </td>
+                            <td class="py-2 px-4 text-center no_faktur">
+                                <x-base.form-input class="w-full" id="no_faktur[]" type="text" name="no_faktur[]" required placeholder="Masukkan No. Faktur" style="visibility: visible;"/>
+                            </td>
+                            <td class="py-2 px-4 text-center w-1/4">${produk[1]}</td>
+                            <td class="py-2 px-4 text-center jumlah_qty w-1/4">${qty}<input type="hidden" name="jumlah_qty[]" id="jumlah_qty[]" value="${qty}" /></td>
+                            <td class="py-2 px-4 text-center hargaKG w-1/4">${toCurrency(qty * produk[2])  }<input type="hidden" class="subtotal" name="subtotal[]" id="subtotal[]" value="${qty * produk[2]}" /></td>
+                            <td class="py-2 px-4 text-center w-1/4"> 
+                                <button onclick="hapusRow(this)" class="flex items-center justify-center mx-auto text-danger">Hapus</button>
                             </td>
                     </tr>
                 `;

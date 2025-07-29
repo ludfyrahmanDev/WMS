@@ -29,6 +29,16 @@
                 <!-- BEGIN: Form Layout -->
                 <div class="intro-y box p-5">
                     <div class="input-form">
+                        <x-base.form-label for="crud-form-1">NPWP</x-base.form-label>
+                        <x-base.form-input class="w-full" id="crud-form-1" type="text" name="npwp"
+                            value="{{ $data->npwp ?? old('npwp') }}" placeholder="Input NPWP" required />
+                        @error('name')
+                            <div class="pristine-error text-danger mt-2">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    <div class="mt-3 input-form">
                         <x-base.form-label for="crud-form-1">Nama</x-base.form-label>
                         <x-base.form-input class="w-full" id="crud-form-1" type="text" name="name"
                             value="{{ $data->name ?? old('name') }}" placeholder="Input Nama" required />

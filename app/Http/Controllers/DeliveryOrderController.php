@@ -353,7 +353,6 @@ class DeliveryOrderController extends Controller
                 $stock->last_stock   = $request->jumlah_qty[$i];
                 $stock->save();
 
-
                 $saldo = new SpendingController();
                 $cekSaldo = $saldo->saldo($request);
                 $total = array_sum($request->subtotal);
@@ -367,6 +366,8 @@ class DeliveryOrderController extends Controller
 
                 $delivery_order_detail = new DeliveryOrderDetail();
                 $delivery_order_detail->delivery_order_id = $delivery_order->id;
+                $delivery_order_detail->no_sj = $request->no_sj[$i];
+                $delivery_order_detail->no_faktur = $request->no_faktur[$i];
                 $delivery_order_detail->stock_id = $stock->id;
                 $delivery_order_detail->purchase_amount = $request->jumlah_qty[$i];
                 $delivery_order_detail->subtotal = curencyToInteger($deliveryOrderQuota->subtotal);

@@ -11,6 +11,7 @@ class SupplierController extends Controller
     public function index(Request $request)
     {
         $data = Supplier::filterResource($request, [
+            'npwp',
             'name',
             'address',
             'phone',
@@ -29,6 +30,7 @@ class SupplierController extends Controller
     public function create()
     {
         $data = (object)[
+            'npwp',
             'name' => '',
             'address' => '',
             'phone' => '',
@@ -46,6 +48,7 @@ class SupplierController extends Controller
     {
         try {
             $supplier = new Supplier();
+            $supplier->npwp = $request->npwp;
             $supplier->name = $request->name;
             $supplier->address = $request->address;
             $supplier->phone = $request->phone;
@@ -71,6 +74,7 @@ class SupplierController extends Controller
     public function update(SupplierStoreRequest $request, Supplier $supplier)
     {
         try {
+            $supplier->npwp = $request->npwp;
             $supplier->name = $request->name;
             $supplier->address = $request->address;
             $supplier->phone = $request->phone;

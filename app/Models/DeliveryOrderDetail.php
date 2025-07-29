@@ -17,6 +17,8 @@ class DeliveryOrderDetail extends Model
 
     protected $fillable = [
         'delivery_order_id',
+        'no_sj',
+        'no_faktur',
         'stock_id',
         'purchase_amount',
         'subtotal'
