@@ -114,6 +114,14 @@ class SideMenu
                             'layout' => 'side-menu'
                         ],
                         'title' => 'Kategori Transaksi Lain Lain'
+                    ],
+                    'users-layout-5' => [
+                        'icon' => 'folders',
+                        'route_name' => 'tax.index',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Pajak'
                     ]
                 ]
             ],

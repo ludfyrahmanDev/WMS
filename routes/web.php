@@ -22,6 +22,7 @@ use App\Http\Controllers\SpendingCategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\TransportController;
+use App\Http\Controllers\TaxController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +70,7 @@ Route::middleware('auth')->group(function () {
     // make route report send email
     Route::get('spending_send_email', [SpendingController::class, 'sendEmail'])->name('spending.send-email');
     Route::resource('product', ProductController::class);
+    Route::resource('tax', TaxController::class);
     Route::resource('category', ProductCategoryController::class);
     // end master data section
     // transaction
