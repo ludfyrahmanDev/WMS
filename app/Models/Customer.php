@@ -38,4 +38,16 @@ class Customer extends Authenticatable
     {
         return $this->hasMany(Selling::class, 'customer_id');
     }
+
+    public function alias()
+    {
+        return $this->hasMany(CustomerAlias::class);
+    }
+
+    public function getAliasByID($id)
+    {
+        return DB::table('customer_alias')
+            ->where('customer_id', $id)
+            ->get();
+    }
 }
