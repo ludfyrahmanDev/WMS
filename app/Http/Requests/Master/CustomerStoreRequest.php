@@ -15,6 +15,7 @@ class CustomerStoreRequest extends FormRequest
     {
         return [
             'name'      => ['required'],
+            'npwp'      => ['required'],
             'ongkosan'  => ['required'],
             'borongan'  => ['required']
         ];
@@ -24,6 +25,7 @@ class CustomerStoreRequest extends FormRequest
     {
         return [
             'name.required'     => 'Nama customer tidak boleh kosong',
+            'npwp'              => 'NPWP/NIK tidak boleh kosong',
             'ongkosan'          => 'Ongkosan tidak boleh kosong',
             'borongan'          => 'Borongan tidak boleh kosong'
         ];
