@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Master\TaxStoreRequest;
 use App\Models\Tax;
 use Illuminate\Http\Request;
-
+use App\Models\CV;
 class TaxController extends Controller
 {
     //
@@ -16,9 +16,9 @@ class TaxController extends Controller
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
             ->paginate($request->get('per_page', 10));
         $title = 'Data Pajak';
+        $cvs = CV::get();
         $route = 'tax';
-
-        return view('pages.backoffice.tax.index', compact('data', 'title', 'route'));
+        return view('pages.backoffice.tax.index', compact('data', 'title', 'route', 'cvs'));
     }
 
     public function create()
@@ -28,21 +28,19 @@ class TaxController extends Controller
         $data = (object)[
             'percentage' => ''
         ];
-
+        $cvs = CV::get();
         $title = 'Data Pajak';
         $route = route('tax.store');
         $type = 'create';
 
-        return view('pages.backoffice.tax._form', compact('data', 'title', 'route', 'type', 'tax'));
+        return view('pages.backoffice.tax._form', compact('data', 'title', 'route', 'type', 'tax', 'cvs'));
     }
 
     public function store(TaxStoreRequest $request)
     {
-        session(['cv_id' => 1]);
-
         try {
             $tax = new Tax();
-            $tax->cv_id = session('cv_id');
+            $tax->cv_id = $request->cv_id;
             $tax->percentage = $request->percentage;
             $tax->save();
 

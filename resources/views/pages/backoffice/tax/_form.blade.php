@@ -29,6 +29,18 @@
                 <!-- BEGIN: Form Layout -->
                 <div class="intro-y box p-5">
                     <div class="mt-3 input-form">
+                        <x-base.form-label for="crud-form-1">CV</x-base.form-label>
+                        {{-- use select --}}
+                        <x-base.form-select class="w-full" id="crud-form-1" name="cv_id">
+                            <option value="">Pilih CV</option>
+                            @foreach ($cvs as $cv)
+                                <option value="{{ $cv->id }}" {{ (isset($data->cv_id) && $data->cv_id == $cv->id) ? 'selected' : '' }}>
+                                    {{ $cv->name }}
+                                </option>
+                            @endforeach
+                        </x-base.form-select>
+                    </div>
+                    <div class="mt-3 input-form">
                         <x-base.form-label for="crud-form-1">Pajak</x-base.form-label>
                         <x-base.form-input class="w-full" id="crud-form-1" type="number" name="percentage"
                             value="{{ $data->percentage ?? old('percentage') }}" placeholder="Masukkan persentase pajak..."/>

@@ -27,7 +27,7 @@
     <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
             <a href="{{ route($route . '.create') }}">
-                <x-base.button class="mr-2 shadow-md" :disabled="$data->total() > 0" variant="primary">
+                <x-base.button class="mr-2 shadow-md" :disabled="$data->total() == $cvs->count()" variant="primary">
                     Add Data
                 </x-base.button>
             </a>
@@ -73,7 +73,7 @@
                             No
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            Persentase
+                            Nama CV(Pajak)
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             ACTIONS
@@ -90,7 +90,7 @@
                             <x-base.table.td
                                 class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
                                 <a class="whitespace-nowrap font-medium">
-                                    {{ $item['percentage'] ?? '-' }}
+                                    {{ $item->cv->name }} ({{ $item->percentage }}%)
                                 </a>
                             </x-base.table.td>
                             <x-base.table.td
