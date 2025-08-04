@@ -11,4 +11,11 @@ class CV extends Model
     use HasFactory, Filterable;
 
     protected $table = 'cv';
+
+    protected $fillable = [
+        'name',
+        'description',
+        'who_create',
+        'who_update',
+    ];
 }
