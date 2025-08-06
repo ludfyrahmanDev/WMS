@@ -290,7 +290,7 @@
             function tambahAlias() {
                 var alias = $('#name2').val();
                 var npwp = $('#npwp2').val();
-                var npwp = $('#nik2').val();
+                var nik = $('#nik2').val();
                 var phone = $('#phone2').val();
                 var ongkosan = $('#ongkosan2').val();
                 var borongan = $('#borongan2').val();
