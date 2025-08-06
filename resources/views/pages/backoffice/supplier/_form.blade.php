@@ -29,9 +29,35 @@
                 <!-- BEGIN: Form Layout -->
                 <div class="intro-y box p-5">
                     <div class="input-form">
-                        <x-base.form-label for="crud-form-1">NPWP</x-base.form-label>
-                        <x-base.form-input class="w-full" id="crud-form-1" type="text" name="npwp"
-                            value="{{ $data->npwp ?? old('npwp') }}" placeholder="Input NPWP" required />
+                        <x-base.form-label for="npwp">NPWP</x-base.form-label>
+                        <x-base.form-input class="w-full" id="npwp" type="text" name="npwp"
+                            value="{{ $data->npwp ?? old('npwp') }}" placeholder="Masukkan no NPWP 22 digit supplier..." required />
+                            <small style="padding-left: 0; margin-left: 0;" class="text-pending"
+                                    role="alert"><i>Kalau tidak ada NPWP supplier, harap isi dengan angka nol 16 digit
+                                        (0000000000000000)</i></small>
+                        @error('npwp')
+                            <div class="pristine-error text-danger mt-2">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    <div class="input-form">
+                        <x-base.form-label for="nik">NIK</x-base.form-label>
+                        <x-base.form-input class="w-full" id="nik" type="text" name="nik"
+                            value="{{ $data->nik ?? old('nik') }}" placeholder="Masukkan no NIK 16 digit supplier..." required />
+                            <small style="padding-left: 0; margin-left: 0;" class="text-pending"
+                                    role="alert"><i>Kalau tidak ada NIK supplier, harap isi dengan angka nol 16 digit
+                                        (0000000000000000)</i></small>
+                        @error('nik')
+                            <div class="pristine-error text-danger mt-2">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    <div class="mt-3 input-form">
+                        <x-base.form-label for="name">Nama</x-base.form-label>
+                        <x-base.form-input class="w-full" id="name" type="text" name="name"
+                            value="{{ $data->name ?? old('name') }}" placeholder="Masukkan nama supplier..." required />
                         @error('name')
                             <div class="pristine-error text-danger mt-2">
                                 {{ $message }}
@@ -39,19 +65,9 @@
                         @enderror
                     </div>
                     <div class="mt-3 input-form">
-                        <x-base.form-label for="crud-form-1">Nama</x-base.form-label>
-                        <x-base.form-input class="w-full" id="crud-form-1" type="text" name="name"
-                            value="{{ $data->name ?? old('name') }}" placeholder="Input Nama" required />
-                        @error('name')
-                            <div class="pristine-error text-danger mt-2">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                    <div class="mt-3 input-form">
-                        <x-base.form-label for="crud-form-1">Alamat</x-base.form-label>
-                        <x-base.form-textarea class="form-control" id="validation-form-6" name="address"
-                            placeholder="Input Alamat"
+                        <x-base.form-label for="alamat">Alamat</x-base.form-label>
+                        <x-base.form-textarea class="form-control" id="alamat" name="address"
+                            placeholder="Masukkan alamat supplier..." required rows="3"
                             value="{{ $data->address ?? old('address') }}"></x-base.form-textarea>
                         @error('address')
                             <div class="pristine-error text-danger mt-2">
@@ -60,9 +76,9 @@
                         @enderror
                     </div>
                     <div class="mt-3 input-form">
-                        <x-base.form-label for="crud-form-1">No Telp <sup>(optional)</sup></x-base.form-label>
-                        <x-base.form-input class="w-full" id="crud-form-1" type="text"
-                            value="{{ $data->phone ?? old('phone') }}" name="phone" placeholder="Input No Telp" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                        <x-base.form-label for="phone">No Telp <sup>(optional)</sup></x-base.form-label>
+                        <x-base.form-input class="w-full" id="phone" type="text"
+                            value="{{ $data->phone ?? old('phone') }}" name="phone" placeholder="Masukkan No Telp..." onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                         @error('phone')
                             <div class="pristine-error text-danger mt-2">
                                 {{ $message }}
@@ -70,9 +86,9 @@
                         @enderror
                     </div>
                     <div class="mt-3 input-form">
-                        <x-base.form-label for="crud-form-1">PIC (Penanggung Jawab)</x-base.form-label>
-                        <x-base.form-input class="w-full" id="crud-form-1" type="text" required
-                            value="{{ $data->pic ?? old('pic') }}" name="pic" placeholder="Input Penanggung Jawab" />
+                        <x-base.form-label for="pic">PIC (Penanggung Jawab)</x-base.form-label>
+                        <x-base.form-input class="w-full" id="pic" type="text" required
+                            value="{{ $data->pic ?? old('pic') }}" name="pic" placeholder="Masukkan Penanggung Jawab..." />
                         @error('pic')
                             <div class="pristine-error text-danger mt-2">
                                 {{ $message }}
