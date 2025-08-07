@@ -16,6 +16,7 @@ use App\Http\Requests\Transaksi\SellingStoreRequest;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Carbon\Carbon;
 
 class SellingController extends Controller
 {
@@ -48,6 +49,7 @@ class SellingController extends Controller
         $data['product']    = $selling->getProduct();
 
         $data['header'] = (object)[
+            'invoice_no'            => null,
             'date'                  => null,
             'customer_id'           => null,
             'vehicle_id'            => null,
@@ -76,10 +78,19 @@ class SellingController extends Controller
                 return back()->with('failed', 'Gagal, Total Bayar melebihi dari Grand Total!');
             }
 
+            session(['cv_name' => 'N1PBB']);
+
+            $tgl = Carbon::parse($request->tgl_jual)->format('d');
+
+            $max = Selling::maxInvoiceNo($tgl);
+            $lastNumber = $max[0]->max ?? 0;
+            $newNumber = str_pad((int)$lastNumber + 1, 3, '0', STR_PAD_LEFT);
+
             // insert Table Selling
             $selling                        = new Selling();
+            $selling->invoice_no            = session('cv_name') . $tgl. $newNumber;
             $selling->date                  = $request->tgl_jual;
-            $selling->customer_id           = $request->customer;
+            $selling->customer_id           = str_replace(['cust-', 'alias-'], '', $request->customer);
             $selling->vehicle_id            = $request->supplier;
             $selling->driver_id             = $request->driver;
             $selling->vehicle_id            = $request->kendaraan;
@@ -217,7 +228,7 @@ class SellingController extends Controller
 
             // insert Table Selling
             $selling->date                  = $request->tgl_jual;
-            $selling->customer_id           = $request->customer;
+            $selling->customer_id           = str_replace(['cust-', 'alias-'], '', $request->customer);
             $selling->vehicle_id            = $request->supplier;
             $selling->driver_id             = $request->driver;
             $selling->vehicle_id            = $request->kendaraan;
@@ -403,6 +414,81 @@ class SellingController extends Controller
         $name = 'Laporan Penjualan';
         // show preview pdf
         return $pdf->download("$name.pdf");
+    }
+
+    public function exportXML(Request $request)
+    {
+        $header = Selling::getHeaderXML();
+
+        $detail = Selling::getHeaderXMLDetail();
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $detail = $detail->whereBetween('date', [$start_date, $end_date]);
+        }
+        $detail = $detail->get();
+
+        $detail2 = Selling::getHeaderXMLDetail2();
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $detail2 = $detail2->whereBetween('date', [$start_date, $end_date]);
+        }
+        $detail2 = $detail2->get();
+
+        $xml = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><TaxInvoiceBulk xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="TaxInvoice.xsd"/>');
+
+        $TIN = $xml->addChild('TIN', $header->npwp);
+        $ListOfTaxInvoice = $xml->addChild('ListOfTaxInvoice');
+
+        foreach ($detail as $item) {
+            $TaxInvoice = $ListOfTaxInvoice->addChild('TaxInvoice');
+            $TaxInvoice->addChild('TaxInvoiceDate', $item->TaxInvoiceDate);
+            $TaxInvoice->addChild('TaxInvoiceOpt', 'Normal');
+            $TaxInvoice->addChild('TrxCode', '080');
+            $TaxInvoice->addChild('AddInfo');
+            $TaxInvoice->addChild('CustomDoc');
+            $TaxInvoice->addChild('CustomDocMonthYear');
+            $TaxInvoice->addChild('RefDesc', $item->RefDesc);
+            $TaxInvoice->addChild('FacilityStamp');
+            $TaxInvoice->addChild('SellerIDTKU', '0' . $header->npwp . '000000');
+            $TaxInvoice->addChild('BuyerTin', $item->BuyerTin);
+            $TaxInvoice->addChild('BuyerDocument', $item->BuyerDocument);
+            $TaxInvoice->addChild('BuyerCountry', 'IDN');
+            $TaxInvoice->addChild('BuyerDocumentNumber');
+            $TaxInvoice->addChild('BuyerName', $item->BuyerName);
+            $TaxInvoice->addChild('BuyerAdress', $item->BuyerAdress);
+            $TaxInvoice->addChild('BuyerEmail');
+            $TaxInvoice->addChild('BuyerIDTKU', $item->BuyerIDTKU);
+
+            $ListOfGoodService = $TaxInvoice->addChild('ListOfGoodService');
+
+            $GoodService = $ListOfGoodService->addChild('GoodService');
+            foreach ($detail2 as $item2) {
+                if ($item->id == $item2->id) {
+                    $GoodService->addChild('Opt', 'A');
+                    $GoodService->addChild('Code', '000000');
+                    $GoodService->addChild('Name', $item2->Name);
+                    $GoodService->addChild('Unit', 'UM.0003');
+                    $GoodService->addChild('Price', $item2->Price);
+                    $GoodService->addChild('Qty', $item2->Qty);
+                    $GoodService->addChild('TotalDiscount', '0');
+                    $GoodService->addChild('TaxBase', $item2->TaxBase);
+                    $GoodService->addChild('OtherTaxBase', $item2->OtherTaxBase);
+                    $GoodService->addChild('VATRate', '12');
+                    $GoodService->addChild('VAT', $item2->VAT);
+                    $GoodService->addChild('STLGRate', '0');
+                    $GoodService->addChild('STLG', '0');
+                }
+            }
+        }
+
+        // Output XML dengan nama file
+        header('Content-Type: application/xml');
+        header('Content-Disposition: attachment; filename="tax_invoice.xml"');
+
+        // Cetak isi XML
+        echo $xml->asXML();
     }
 
     public function exportPdfSingle(Request $request)

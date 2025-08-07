@@ -38,6 +38,17 @@
                 <!-- BEGIN: Form Layout -->
                 <div class="intro-y box p-5">
                     <div class="grid grid-cols-12 gap-2">
+                         <div class="input-form col-span-4">
+                            <x-base.form-label for="crud-form-1">Invoice</x-base.form-label>
+                            <x-base.form-input disabled class="w-full" id="crud-form-1" type="text" name="invoice_no"
+                                value="{{ $data['header']->invoice_no ?? old('invoice_no') }}"
+                                placeholder="Auto Generate" />
+                            @error('invoice')
+                                <div class="pristine-error text-danger mt-2">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
                         <div class="input-form col-span-4">
                             <x-base.form-label for="crud-form-1">Tanggal Penjualan</x-base.form-label>
                             <x-base.form-input class="w-full" id="crud-form-1" type="date" name="tgl_jual"
@@ -56,7 +67,7 @@
                                 <option value="">Pilih Pelanggan</option>
                                 @foreach ($data['customer'] as $row)
                                     <option value="{{ $row->id }}"
-                                        {{ $data['header']->customer_id == $row->id ? 'selected' : '' }}>
+                                        {{ $data['header']->customer_id == str_replace(['cust-', 'alias-'], '', $row->id) ? 'selected' : '' }}>
                                         {{ $row->name }}</option>
                                 @endforeach
                             </x-base.tom-select>
@@ -66,6 +77,8 @@
                                 </div>
                             @enderror
                         </div>
+                    </div>
+                    <div class="mt-2 grid grid-cols-12 gap-2">
                         <div class="input-form col-span-4">
                             <x-base.form-label for="crud-form-1">Pengemudi</x-base.form-label>
                             <x-base.tom-select name="driver" class="w-full" data-placeholder="Pilih driver" id="driver">
@@ -82,8 +95,6 @@
                                 </div>
                             @enderror
                         </div>
-                    </div>
-                    <div class="mt-2 grid grid-cols-12 gap-2">
                         <div class="input-form col-span-4">
                             <x-base.form-label for="crud-form-1">Kendaraan</x-base.form-label>
                             <x-base.tom-select name="kendaraan" class="w-full" data-placeholder="Pilih Kendaraan"
@@ -143,7 +154,7 @@
                                 </div>
                             @enderror
                         </div>
-                        <div class="input-form col-span-8">
+                        <div class="input-form col-span-4">
                             <x-base.form-label for="catatan">Catatan</x-base.form-label>
                             <x-base.form-textarea class="form-control" id="catatan" name="catatan"
                                 placeholder="Masukkan catatan (Optional)..."

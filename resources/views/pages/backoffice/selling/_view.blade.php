@@ -30,6 +30,17 @@
                 <div class="intro-y box p-5">
                     <div class="grid grid-cols-12 gap-2">
                         <div class="input-form col-span-4">
+                            <x-base.form-label for="crud-form-1">Invoice</x-base.form-label>
+                            <x-base.form-input disabled class="w-full" id="crud-form-1" type="text" name="invoice_no"
+                                value="{{ $data['header']->invoice_no ?? old('invoice_no') }}"
+                                placeholder="Auto Generate" />
+                            @error('invoice')
+                                <div class="pristine-error text-danger mt-2">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                        <div class="input-form col-span-4">
                             <x-base.form-label for="crud-form-1">Tanggal Penjualan</x-base.form-label>
                             <x-base.form-input disabled class="w-full" id="crud-form-1" type="date" name="tgl_jual"
                                 value="{{ $data['header']->date ?? date('Y-m-d') }}"
@@ -47,7 +58,7 @@
                                 <option value="">Pilih Pelanggan</option>
                                 @foreach ($data['customer'] as $row)
                                     <option value="{{ $row->id }}"
-                                        {{ $data['header']->customer_id == $row->id ? 'selected' : '' }}>
+                                        {{ $data['header']->customer_id == str_replace(['cust-', 'alias-'], '', $row->id) ? 'selected' : '' }}>
                                         {{ $row->name }}</option>
                                 @endforeach
                             </x-base.tom-select>
@@ -57,6 +68,8 @@
                                 </div>
                             @enderror
                         </div>
+                    </div>
+                    <div class="mt-2 grid grid-cols-12 gap-2">
                         <div class="input-form col-span-4">
                             <x-base.form-label for="crud-form-1">Pengemudi</x-base.form-label>
                             <x-base.tom-select disabled name="driver" class="w-full" data-placeholder="Pilih driver"
@@ -74,8 +87,6 @@
                                 </div>
                             @enderror
                         </div>
-                    </div>
-                    <div class="mt-2 grid grid-cols-12 gap-2">
                         <div class="input-form col-span-4">
                             <x-base.form-label for="crud-form-1">Kendaraan</x-base.form-label>
                             <x-base.tom-select disabled name="kendaraan" class="w-full" data-placeholder="Pilih Kendaraan"
@@ -135,7 +146,7 @@
                                 </div>
                             @enderror
                         </div>
-                        <div class="input-form col-span-8">
+                        <div class="input-form col-span-4">
                             @if ($data['header']->status != 'On Progress')
                                 <x-base.form-label for="catatan">Catatan</x-base.form-label>
                                 <x-base.form-textarea disabled class="form-control" id="catatan" name="catatan"
@@ -181,12 +192,12 @@
                                         <td class="py-2 px-4 jumlah_qty w-1/4">{{ $item['total_qty'] }}<input
                                                 type="hidden" name="jumlah_qty[]" id="jumlah_qty[]"
                                                 value="{{ $item['total_qty'] }}" /></td>
-                                        <td class="py-2 px-4 harga_jual">{{ toThousand($item['price_sell']) }}<input type="hidden"
-                                                name="harga_jual[]" id="harga_jual[]"
+                                        <td class="py-2 px-4 harga_jual">{{ toThousand($item['price_sell']) }}<input
+                                                type="hidden" name="harga_jual[]" id="harga_jual[]"
                                                 value="{{ $item['price_sell'] }}" /></td>
-                                        <td class="py-2 px-4 subtotal w-1/4">{{ toThousand($item['subtotal']) }}<input type="hidden"
-                                                class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]"
-                                                value="{{ $item['subtotal'] }}" /></td>
+                                        <td class="py-2 px-4 subtotal w-1/4">{{ toThousand($item['subtotal']) }}<input
+                                                type="hidden" class="column_subtotal" name="subtotal_produk[]"
+                                                id="subtotal_produk[]" value="{{ $item['subtotal'] }}" /></td>
                                     </tr>
                                 @endforeach
                             @endif
@@ -213,8 +224,8 @@
                                     <th class="py-2 px-4 border-b text-center text-white" colspan="3">Angsuran</th>
                                     <th class="py-2 px-4 border-b text-center">
                                         <x-base.form-input class="w-3/5 text-center" id="angsuran" type="text"
-                                            name="angsuran" value="" price="true" placeholder="Input Angsuran" required
-                                            onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                                            name="angsuran" value="" price="true" placeholder="Input Angsuran"
+                                            required onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                                     </th>
                                 </tr>
                             @else

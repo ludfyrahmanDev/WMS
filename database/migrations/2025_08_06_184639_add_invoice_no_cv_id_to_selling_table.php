@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('delivery_order', function (Blueprint $table) {
-            $table->unsignedBigInteger('cv_id')->nullable(); // atau ->notNullable() kalau wajib
+        Schema::table('selling', function (Blueprint $table) {
+            $table->string('invoice_no')->nullable()->after('id');
+            $table->unsignedBigInteger('cv_id')->nullable()->after('invoice_no'); // atau ->notNullable() kalau wajib
             $table->foreign('cv_id')->references('id')->on('cv')->onDelete('restrict');
+
         });
     }
 
@@ -22,9 +24,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('delivery_order', function (Blueprint $table) {
+        Schema::table('selling', function (Blueprint $table) {
             $table->dropForeign(['cv_id']);  // Hapus foreign key dulu
-            $table->dropColumn('cv_id');     // Lalu hapus kolomnya
+            $table->dropColumn(['cv_id', 'invoice_no']);
         });
     }
 };

@@ -84,6 +84,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('selling', SellingController::class);
     Route::get('selling_export', [SellingController::class, 'export'])->name('selling.export');
     Route::get('selling_export_pdf', [SellingController::class, 'exportPdf'])->name('selling.export-pdf');
+    Route::get('selling_export_xml', [SellingController::class, 'exportXML'])->name('selling.export-xml');
     Route::get('transport_export', [TransportController::class, 'export'])->name('transport.export');
     Route::get('transport_export_pdf', [TransportController::class, 'exportPdf'])->name('transport.export-pdf');
     Route::get('selling_export_one/{id}', [SellingController::class, 'exportPdfSingle'])->name('selling.export-one');
