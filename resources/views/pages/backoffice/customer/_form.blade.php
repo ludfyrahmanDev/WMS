@@ -45,17 +45,37 @@
                         </div>
                         <div class="input-form col-span-4">
                             <div class="input-form">
-                                <x-base.form-label for="npwp">NPWP/NIK</x-base.form-label>
-                                <x-base.form-input class="w-full mb-3" id="npwp" type="text" name="npwp"
+                                <x-base.form-label for="npwp">NPWP</x-base.form-label>
+                                <x-base.form-input class="w-full" id="npwp" type="text" name="npwp"
                                     value="{{ $data->npwp ?? old('npwp') }}"
-                                    placeholder="Masukkan no NPWP 22 digit / NIK 16 digit customer..."
+                                    placeholder="Masukkan no NPWP 22 digit customer..."
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
+                                <small style="padding-left: 0; margin-left: 0;" class="text-pending"
+                                    role="alert"><i>Kalau tidak ada NPWP customer, harap isi dengan angka nol 16 digit
+                                        (0000000000000000)</i></small>
                                 @if ($errors->has('npwp'))
                                     <small style="padding-left: 0; margin-left: 0;" class="text-danger mb-3"
                                         role="alert">{{ $errors->first('npwp') }}</small>
                                 @endif
                             </div>
                         </div>
+                        <div class="input-form col-span-4">
+                            <div class="input-form">
+                                <x-base.form-label for="nik">NIK</x-base.form-label>
+                                <x-base.form-input class="w-full" id="nik" type="text" name="nik"
+                                    value="{{ $data->nik ?? old('nik') }}" placeholder="Masukkan NIK 16 digit customer..."
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
+                                <small style="padding-left: 0; margin-left: 0;" class="text-pending"
+                                    role="alert"><i>Kalau tidak ada NIK customer, harap isi dengan angka nol 16 digit
+                                        (0000000000000000)</i></small>
+                                @if ($errors->has('nik'))
+                                    <small style="padding-left: 0; margin-left: 0;" class="text-danger mb-3"
+                                        role="alert">{{ $errors->first('nik') }}</small>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4 grid grid-cols-12 gap-2">
                         <div class="input-form col-span-4">
                             <div class="input-form">
                                 <x-base.form-label for="phone">No. Handphone <sup>(optional)</sup></x-base.form-label>
@@ -69,8 +89,6 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
-                    <div class="mb-4 grid grid-cols-12 gap-2">
                         <div class="input-form col-span-4">
                             <div class="input-form">
                                 <x-base.form-label for="ongkosan">Ongkosan (Rp)</x-base.form-label>
@@ -97,7 +115,9 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="input-form col-span-4">
+                    </div>
+                    <div class="mb-4 grid grid-cols-12 gap-2">
+                        <div class="input-form col-span-12">
                             <div class="input-form">
                                 <x-base.form-label for="address">Alamat <sup>(optional)</sup></x-base.form-label>
                                 <x-base.form-textarea class="form-control" id="address" name="address"
@@ -129,12 +149,28 @@
                         </div>
                         <div class="input-form col-span-4">
                             <div class="input-form">
-                                <x-base.form-label for="npwp2">NPWP/NIK Alias</x-base.form-label>
-                                <x-base.form-input class="w-full mb-3" id="npwp2" type="text" name="npwp2"
-                                    placeholder="Masukkan no NPWP 22 digit / NIK 16 digit alias..."
+                                <x-base.form-label for="npwp2">NPWP</x-base.form-label>
+                                <x-base.form-input class="w-full" id="npwp2" type="text" name="npwp2"
+                                    placeholder="Masukkan no NPWP 22 digit customer..."
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
+                                <small style="padding-left: 0; margin-left: 0;" class="text-pending"
+                                    role="alert"><i>Kalau tidak ada NPWP customer, harap isi dengan angka nol 16 digit
+                                        (0000000000000000)</i></small>
                             </div>
                         </div>
+                        <div class="input-form col-span-4">
+                            <div class="input-form">
+                                <x-base.form-label for="nik2">NIK</x-base.form-label>
+                                <x-base.form-input class="w-full" id="nik2" type="text" name="nik2"
+                                    placeholder="Masukkan NIK 16 digit customer..."
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
+                                <small style="padding-left: 0; margin-left: 0;" class="text-pending"
+                                    role="alert"><i>Kalau tidak ada NIK customer, harap isi dengan angka nol 16 digit
+                                        (0000000000000000)</i></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-12 gap-2">
                         <div class="input-form col-span-4">
                             <div class="input-form">
                                 <x-base.form-label for="phone2">No. Handphone Alias
@@ -144,8 +180,6 @@
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
                             </div>
                         </div>
-                    </div>
-                    <div class="grid grid-cols-12 gap-2">
                         <div class="input-form col-span-4">
                             <div class="input-form">
                                 <x-base.form-label for="ongkosan2">Ongkosan (Rp)</x-base.form-label>
@@ -162,7 +196,9 @@
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
                             </div>
                         </div>
-                        <div class="input-form col-span-4">
+                    </div>
+                    <div class="mt-4 grid grid-cols-12 gap-2">
+                        <div class="input-form col-span-12">
                             <div class="input-form">
                                 <x-base.form-label for="address2">Alamat Alias <sup>(optional)</sup></x-base.form-label>
                                 <x-base.form-textarea class="form-control" id="address2" name="address2"
@@ -188,6 +224,7 @@
                             <tr class="bg-dark text-white">
                                 <th class="py-2 px-4 border-b text-left w-1/4">Alias</th>
                                 <th class="py-2 px-4 border-b text-left w-1/4">NPWP</th>
+                                <th class="py-2 px-4 border-b text-left w-1/4">NIK</th>
                                 <th class="py-2 px-4 border-b text-left w-1/4">No. Handphone</th>
                                 <th class="py-2 px-4 border-b text-left w-1/4">Ongkosan</th>
                                 <th class="py-2 px-4 border-b text-left w-1/4">Borongan</th>
@@ -196,7 +233,7 @@
                             </tr>
                         </thead>
                         <tbody id="listAlias">
-                            @if (isset($data) && $data->alias)
+                            @if (isset($data) && isset($data->alias))
                                 @foreach ($data->alias as $alias)
                                     <tr class="row-data">
                                         <td class="py-2 px-4">{{ $alias->name }}
@@ -204,6 +241,9 @@
                                         </td>
                                         <td class="py-2 px-4">{{ $alias->npwp }}
                                             <input type="hidden" name="npwp_alias[]" value="{{ $alias->npwp }}" />
+                                        </td>
+                                        <td class="py-2 px-4">{{ $alias->nik }}
+                                            <input type="hidden" name="nik_alias[]" value="{{ $alias->nik }}" />
                                         </td>
                                         <td class="py-2 px-4">{{ $alias->phone }}
                                             <input type="hidden" name="phone_alias[]" value="{{ $alias->phone }}" />
@@ -250,12 +290,13 @@
             function tambahAlias() {
                 var alias = $('#name2').val();
                 var npwp = $('#npwp2').val();
+                var nik = $('#nik2').val();
                 var phone = $('#phone2').val();
                 var ongkosan = $('#ongkosan2').val();
                 var borongan = $('#borongan2').val();
                 var address = $('#address2').val();
 
-                if (alias === '' || npwp === '' || ongkosan === '' || borongan === '') {
+                if (alias === '' || npwp === '' || nik == '' || ongkosan === '' || borongan === '') {
                     alert('Harap lengkapi form alias untuk menambahkan data alias!');
                     return;
                 }
@@ -263,6 +304,7 @@
                 var row = `<tr class="row-data">
                     <td class="py-2 px-4">${alias}<input type="hidden" name="alias[]" value="${alias}" /></td>
                     <td class="py-2 px-4">${npwp}<input type="hidden" name="npwp_alias[]" value="${npwp}" /></td>
+                    <td class="py-2 px-4">${nik}<input type="hidden" name="nik_alias[]" value="${nik}" /></td>
                     <td class="py-2 px-4">${phone}<input type="hidden" name="phone_alias[]" value="${phone}" /></td>
                     <td class="py-2 px-4">${ongkosan}<input type="hidden" name="ongkosan_alias[]" value="${ongkosan}" /></td>
                     <td class="py-2 px-4">${borongan}<input type="hidden" name="borongan_alias[]" value="${borongan}" /></td>
@@ -276,6 +318,7 @@
 
                 $('#name2').val('');
                 $('#npwp2').val('');
+                $('#nik2').val('');
                 $('#phone2').val('');
                 $('#ongkosan2').val('');
                 $('#borongan2').val('');
