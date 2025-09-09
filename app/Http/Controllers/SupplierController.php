@@ -30,11 +30,12 @@ class SupplierController extends Controller
     public function create()
     {
         $data = (object)[
-            'npwp',
-            'name' => '',
-            'address' => '',
-            'phone' => '',
-            'pic' => ''
+            'npwp'      => '',
+            'nik'       => '',
+            'name'      => '',
+            'address'   => '',
+            'phone'     => '',
+            'pic'       => ''
         ];
 
         $title = 'Data Supplier';
@@ -47,12 +48,13 @@ class SupplierController extends Controller
     public function store(SupplierStoreRequest $request)
     {
         try {
-            $supplier = new Supplier();
-            $supplier->npwp = $request->npwp;
-            $supplier->name = $request->name;
-            $supplier->address = $request->address;
-            $supplier->phone = $request->phone;
-            $supplier->pic = $request->pic;
+            $supplier           = new Supplier();
+            $supplier->npwp     = $request->npwp;
+            $supplier->nik      = $request->nik;
+            $supplier->name     = $request->name;
+            $supplier->address  = $request->address;
+            $supplier->phone    = $request->phone;
+            $supplier->pic      = $request->pic;
             $supplier->save();
 
             return redirect('supplier')->with('success', 'Berhasil menambah data!');
@@ -63,10 +65,10 @@ class SupplierController extends Controller
 
     public function edit(Supplier $supplier)
     {
-        $data = $supplier;
-        $title = 'Data Supplier';
-        $route = route('supplier.update', $supplier);
-        $type = 'edit';
+        $data   = $supplier;
+        $title  = 'Data Supplier';
+        $route  = route('supplier.update', $supplier);
+        $type   = 'edit';
 
         return view('pages.backoffice.supplier._form', compact('data', 'title', 'route', 'type'));
     }
@@ -74,11 +76,12 @@ class SupplierController extends Controller
     public function update(SupplierStoreRequest $request, Supplier $supplier)
     {
         try {
-            $supplier->npwp = $request->npwp;
-            $supplier->name = $request->name;
-            $supplier->address = $request->address;
-            $supplier->phone = $request->phone;
-            $supplier->pic = $request->pic;
+            $supplier->npwp     = $request->npwp;
+            $supplier->nik      = $request->nik;
+            $supplier->name     = $request->name;
+            $supplier->address  = $request->address;
+            $supplier->phone    = $request->phone;
+            $supplier->pic      = $request->pic;
             $supplier->save();
 
             return redirect('supplier')->with('success', 'Berhasil mengubah data!');

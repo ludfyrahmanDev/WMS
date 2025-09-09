@@ -44,6 +44,7 @@ class CustomerController extends Controller
         $data = (object)[
             'name'      => '',
             'npwp'      => '',
+            'nik'       => '',
             'nohp'      => '',
             'ongkosan'  => '',
             'borongan'  => '',
@@ -67,6 +68,7 @@ class CustomerController extends Controller
             $cust = new Customer();
             $cust->name     = $request->name;
             $cust->npwp     = $request->npwp;
+            $cust->nik      = $request->nik;
             $cust->phone    = $request->phone;
             $cust->ongkosan = curencyToInteger($request->ongkosan);
             $cust->borongan = curencyToInteger($request->borongan);
@@ -81,6 +83,7 @@ class CustomerController extends Controller
                 $custAlias->customer_id = $cust->id;
                 $custAlias->name        = $request->alias[$i];
                 $custAlias->npwp        = $request->npwp_alias[$i];
+                $custAlias->nik         = $request->nik_alias[$i];
                 $custAlias->phone       = $request->phone_alias[$i];
                 $custAlias->ongkosan    = curencyToInteger($request->ongkosan_alias[$i]);
                 $custAlias->borongan    = curencyToInteger($request->borongan_alias[$i]);
@@ -126,6 +129,7 @@ class CustomerController extends Controller
         try {
             $customer->name     = $request->name;
             $customer->npwp     = $request->npwp;
+            $customer->nik      = $request->nik;
             $customer->phone    = $request->phone;
             $customer->ongkosan = curencyToInteger($request->ongkosan);
             $customer->borongan = curencyToInteger($request->borongan);
@@ -140,6 +144,7 @@ class CustomerController extends Controller
                 $custAlias->customer_id = $customer->id;
                 $custAlias->name        = $request->alias[$i];
                 $custAlias->npwp        = $request->npwp_alias[$i];
+                $custAlias->nik         = $request->nik_alias[$i];
                 $custAlias->phone       = $request->phone_alias[$i];
                 $custAlias->ongkosan    = curencyToInteger($request->ongkosan_alias[$i]);
                 $custAlias->borongan    = curencyToInteger($request->borongan_alias[$i]);
