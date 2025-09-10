@@ -352,7 +352,6 @@ class SellingController extends Controller
         $produk = $request->input('produk');
         $qty = $request->input('qty');
 
-        session(['cv_id' => 1]);
 
         $stocks = Stock::select('stock.id', 'stock.last_stock', 'stock.price_kg', 'stock.product_id')
             ->leftJoin('delivery_order_detail AS dod', 'stock.id', '=', 'dod.stock_id')

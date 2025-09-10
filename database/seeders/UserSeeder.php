@@ -27,8 +27,5 @@ class UserSeeder extends Seeder
                 'remember_token' => Str::random(10)
             ]
         ]);
-
-        // Fake users
-        User::factory()->times(900)->create();
     }
 }

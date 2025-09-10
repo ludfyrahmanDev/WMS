@@ -17,3 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::get('change-cv/{cv_id}',function($cv_id){
+    session(['cv_id' => $cv_id]);
+    return response()->json(['status' => 'success', 'cv_id' => $cv_id]);
+});

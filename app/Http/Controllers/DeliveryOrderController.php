@@ -108,6 +108,7 @@ class DeliveryOrderController extends Controller
             $delivery_order->who_update = $user['name'];
             $delivery_order->transaction_type = $request->tipe_pembelian;
             $delivery_order->notes = $request->catatan;
+            $delivery_order->cv_id = session('cv_id');
             $delivery_order->save();
 
             //insert Table Delivery Order Detail

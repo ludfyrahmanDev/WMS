@@ -31,7 +31,8 @@ class DeliveryOrder extends Model
         'total_payment',
         'status',
         'who_create',
-        'who_update'
+        'who_update',
+        'cv_id'
     ];
 
     protected $dates = ['deleted_at'];
