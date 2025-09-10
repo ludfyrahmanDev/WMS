@@ -61,8 +61,8 @@ class TaxController extends Controller
         $title = 'Data Pajak';
         $route = route('tax.update', $tax);
         $type = 'edit';
-
-        return view('pages.backoffice.tax._form', compact('data', 'title', 'route', 'type'));
+        $cvs = CV::get();
+        return view('pages.backoffice.tax._form', compact('data', 'title', 'route', 'type', 'cvs'));
     }
 
     public function update(TaxStoreRequest $request, tax $tax)

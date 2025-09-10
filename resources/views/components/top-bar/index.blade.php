@@ -11,18 +11,33 @@
         </x-base.breadcrumb.link>
     </x-base.breadcrumb>
     <!-- END: Breadcrumb -->
+    @php
+        $cvs = \App\Models\Cv::all();
+        // set first cv as selected
+        $selectedCv = $cvs->first();
+        
+        if(request()->has('cv_id')){
+            session(['cv_id' => request()->get('cv_id')]);
+        }
+        $cv_id = session('cv_id');
+        if($selectedCv && !$cv_id){
+            // share selected cv to all views
+            session(['cv_id' => $selectedCv->id]);
+        }
+    @endphp
     <!-- BEGIN: Search -->
     <div class="search intro-x relative mr-3 sm:mr-6">
         <div class="relative hidden sm:block">
-            <x-base.form-input
-                class="w-56 rounded-full border-transparent bg-slate-300/50 pr-8 shadow-none transition-[width] duration-300 ease-in-out focus:w-72 focus:border-transparent dark:bg-darkmode-400/70"
-                type="text"
+            <x-base.form-select
+                formSelectSize="sm"
+                class="search__input form-control w-56 box pr-10"
                 placeholder="Search..."
-            />
-            <x-base.lucide
-                class="absolute inset-y-0 right-0 my-auto mr-3 h-5 w-5 text-slate-600 dark:text-slate-500"
-                icon="Search"
-            />
+                id="select-cv"
+            >
+                @foreach ($cvs as $cv)
+                    <option value="{{ $cv->id }}" {{ $cv->id == $cv_id ? 'selected' : 's' }}>{{ $cv->name }}</option>
+                @endforeach
+            </x-base.form-select>
         </div>
         <a
             class="relative text-slate-600 sm:hidden"
@@ -188,9 +203,6 @@
         <x-base.menu.items class="mt-px w-56 bg-primary text-white">
             <x-base.menu.header class="font-normal">
                 <div class="font-medium">{{ $fakers[0]['users'][0]['name'] }}</div>
-                <div class="mt-0.5 text-xs text-white/70 dark:text-slate-500">
-                    {{ $fakers[0]['jobs'][0] }}
-                </div>
             </x-base.menu.header>
             <x-base.menu.divider class="bg-white/[0.08]" />
             {{-- <x-base.menu.item class="hover:bg-white/5" href="{{route('profile')}}">
@@ -218,7 +230,23 @@
     <!-- END: Account Menu -->
 </div>
 <!-- END: Top Bar -->
-
+<script>
+    // change session on change select
+    document.getElementById('select-cv').addEventListener('change', function() {
+        var cvId = this.value;
+        // send ajax request to server to change session
+        fetch('/api/change-cv/' + cvId)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if(data.status === 'success'){
+                    // reload page
+                    // location reload add cv_id param
+                    window.location.href = window.location.pathname + '?cv_id=' + cvId;
+                }
+            });
+    });
+</script>
 @once
     @push('scripts')
         @vite('resources/js/components/top-bar/index.js')

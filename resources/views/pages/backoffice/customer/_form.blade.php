@@ -219,56 +219,58 @@
                         </div>
                     </div>
                     <br>
-                    <table class="min-w-full bg-white border-gray-300" id="aliasTable">
-                        <thead>
-                            <tr class="bg-dark text-white">
-                                <th class="py-2 px-4 border-b text-left w-1/4">Alias</th>
-                                <th class="py-2 px-4 border-b text-left w-1/4">NPWP</th>
-                                <th class="py-2 px-4 border-b text-left w-1/4">NIK</th>
-                                <th class="py-2 px-4 border-b text-left w-1/4">No. Handphone</th>
-                                <th class="py-2 px-4 border-b text-left w-1/4">Ongkosan</th>
-                                <th class="py-2 px-4 border-b text-left w-1/4">Borongan</th>
-                                <th class="py-2 px-4 border-b text-left w-1/4">Alamat</th>
-                                <th class="py-2 px-4 border-b text-left w-1/4">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="listAlias">
-                            @if (isset($data) && isset($data->alias))
-                                @foreach ($data->alias as $alias)
-                                    <tr class="row-data">
-                                        <td class="py-2 px-4">{{ $alias->name }}
-                                            <input type="hidden" name="alias[]" value="{{ $alias->name }}" />
-                                        </td>
-                                        <td class="py-2 px-4">{{ $alias->npwp }}
-                                            <input type="hidden" name="npwp_alias[]" value="{{ $alias->npwp }}" />
-                                        </td>
-                                        <td class="py-2 px-4">{{ $alias->nik }}
-                                            <input type="hidden" name="nik_alias[]" value="{{ $alias->nik }}" />
-                                        </td>
-                                        <td class="py-2 px-4">{{ $alias->phone }}
-                                            <input type="hidden" name="phone_alias[]" value="{{ $alias->phone }}" />
-                                        </td>
-                                        <td class="py-2 px-4">{{ toThousand($alias->ongkosan) }}
-                                            <input type="hidden" name="ongkosan_alias[]"
-                                                value="{{ toThousand($alias->ongkosan) }}" />
-                                        </td>
-                                        <td class="py-2 px-4">{{ toThousand($alias->borongan) }}
-                                            <input type="hidden" name="borongan_alias[]"
-                                                value="{{ toThousand($alias->borongan) }}" />
-                                        </td>
-                                        <td class="py-2 px-4">{{ $alias->address }}
-                                            <input type="hidden" name="address_alias[]"
-                                                value="{{ $alias->address }}" />
-                                        </td>
-                                        <td class="py-2 px-4">
-                                            <button onclick="hapusRow(this)"
-                                                class="flex items-center text-danger">Hapus</button>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @endif
-                        </tbody>
-                    </table>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border-gray-300" id="aliasTable">
+                            <thead>
+                                <tr class="bg-dark text-white">
+                                    <th class="py-2 px-4 border-b text-left w-1/4">Alias</th>
+                                    <th class="py-2 px-4 border-b text-left w-1/4">NPWP</th>
+                                    <th class="py-2 px-4 border-b text-left w-1/4">NIK</th>
+                                    <th class="py-2 px-4 border-b text-left w-1/4">No. Handphone</th>
+                                    <th class="py-2 px-4 border-b text-left w-1/4">Ongkosan</th>
+                                    <th class="py-2 px-4 border-b text-left w-1/4">Borongan</th>
+                                    <th class="py-2 px-4 border-b text-left w-1/4">Alamat</th>
+                                    <th class="py-2 px-4 border-b text-left w-1/4">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="listAlias">
+                                @if (isset($data) && isset($data->alias))
+                                    @foreach ($data->alias as $alias)
+                                        <tr class="row-data">
+                                            <td class="py-2 px-4">{{ $alias->name }}
+                                                <input type="hidden" name="alias[]" value="{{ $alias->name }}" />
+                                            </td>
+                                            <td class="py-2 px-4">{{ $alias->npwp }}
+                                                <input type="hidden" name="npwp_alias[]" value="{{ $alias->npwp }}" />
+                                            </td>
+                                            <td class="py-2 px-4">{{ $alias->nik }}
+                                                <input type="hidden" name="nik_alias[]" value="{{ $alias->nik }}" />
+                                            </td>
+                                            <td class="py-2 px-4">{{ $alias->phone }}
+                                                <input type="hidden" name="phone_alias[]" value="{{ $alias->phone }}" />
+                                            </td>
+                                            <td class="py-2 px-4">{{ toThousand($alias->ongkosan) }}
+                                                <input type="hidden" name="ongkosan_alias[]"
+                                                    value="{{ toThousand($alias->ongkosan) }}" />
+                                            </td>
+                                            <td class="py-2 px-4">{{ toThousand($alias->borongan) }}
+                                                <input type="hidden" name="borongan_alias[]"
+                                                    value="{{ toThousand($alias->borongan) }}" />
+                                            </td>
+                                            <td class="py-2 px-4">{{ $alias->address }}
+                                                <input type="hidden" name="address_alias[]"
+                                                    value="{{ $alias->address }}" />
+                                            </td>
+                                            <td class="py-2 px-4">
+                                                <button onclick="hapusRow(this)"
+                                                    class="flex items-center text-danger">Hapus</button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
 
                     <div class="mt-5 text-right">
                         <x-base.button onclick="location.href='{{ route('customer.index') }}'" class="mr-1 w-24"
