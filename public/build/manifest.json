@@ -30,7 +30,7 @@
     "src": "node_modules/leaflet/dist/images/marker-icon.png"
   },
   "resources/css/app.css": {
-    "file": "assets/app-beff1e81.css",
+    "file": "assets/app-5941aa24.css",
     "isEntry": true,
     "src": "resources/css/app.css"
   },
@@ -259,7 +259,7 @@
     "src": "resources/images/woman-illustration.svg"
   },
   "resources/js/app.js": {
-    "file": "assets/app-45a21ab1.js",
+    "file": "assets/app-42f2269f.js",
     "imports": [
       "__commonjsHelpers-725317a4.js",
       "resources/js/vendor/dom/index.js",

@@ -174,7 +174,7 @@ class SideMenu
                         'params' => [
                             'layout' => 'side-menu'
                         ],
-                        'title' => 'Laporan Pengeluaran'
+                        'title' => 'Laporan Transaksi'
                     ],
                     'delivery_order' => [
                         'icon' => 'file-box',
