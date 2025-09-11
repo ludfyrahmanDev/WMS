@@ -17,7 +17,7 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 // import delivery order
 use Maatwebsite\Excel\Facades\Excel;
-// import vehicle service
+use App\Models\CV;
 use App\Http\Requests\Transaksi\SpendingStoreRequest;
 class SpendingController extends Controller
 {
@@ -49,13 +49,19 @@ class SpendingController extends Controller
         $purchaseCompleted = DeliveryOrder::get()->sum('payment');
         $inCompleted = DeliveryOrder::get()->sum('grand_total');
         $purchaseInCompleted = $purchaseCompleted - $inCompleted;
+        
+        // Hitung nilai persediaan
+        $inventoryValue = \App\Models\Stock::join('product', 'stock.product_id', '=', 'product.id')
+            ->selectRaw('SUM(stock.last_stock * stock.price_kg) as total_value')
+            ->value('total_value') ?? 0;
+        
         $saldo =( $income + $sellingCompleted) - ($outcome + $purchaseCompleted);
         $data = $all->paginate($request->get('per_page', 10));
         $title = 'Data Transaksi Lain Lain';
         $route = 'spending';
         $request = $request->toArray();
 
-        return view('pages.backoffice.spending.index', compact('data', 'request','title', 'route', 'request', 'saldo', 'income', 'outcome', 'sellingCompleted', 'sellingInCompleted', 'purchaseCompleted', 'purchaseInCompleted'));
+        return view('pages.backoffice.spending.index', compact('data', 'request','title', 'route', 'request', 'saldo', 'income', 'outcome', 'sellingCompleted', 'sellingInCompleted', 'purchaseCompleted', 'purchaseInCompleted', 'inventoryValue'));
     }
 
     public function saldo(Request $request){
@@ -118,7 +124,9 @@ class SpendingController extends Controller
             'nominal' => null
         ];
 
-        $title = 'Data Transaksi Lain Lain';
+        $cv_id = session('cv_id');
+        $cv = CV::find($cv_id);
+        $title = 'Tambah Transaksi ('.$cv->name.')';
         $route = route('spending.store');
         $type = 'create';
 
