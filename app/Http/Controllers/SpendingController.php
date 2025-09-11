@@ -30,6 +30,9 @@ class SpendingController extends Controller
             'payment_method',
             'who_update',
         ], [])
+        ->when($request->has('search'), function ($query) use ($request) {
+            $query->where('description', 'like', '%' . $request->search . '%');
+        })
         ->with('spendingCategory')
         ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
         if($request->has('start_date') && $request->has('end_date')){
@@ -46,7 +49,6 @@ class SpendingController extends Controller
         $purchaseCompleted = DeliveryOrder::get()->sum('payment');
         $inCompleted = DeliveryOrder::get()->sum('grand_total');
         $purchaseInCompleted = $purchaseCompleted - $inCompleted;
-        
         $saldo =( $income + $sellingCompleted) - ($outcome + $purchaseCompleted);
         $data = $all->paginate($request->get('per_page', 10));
         $title = 'Data Transaksi Lain Lain';
@@ -149,7 +151,6 @@ class SpendingController extends Controller
     {
         $kategori = $spending->getSpendingCategory();
         $enum = PaymentMethod::asOptions();
-
         $data = $spending;
         $title = 'Data Transaksi Lain Lain';
         $route = route('spending.update', $spending);
@@ -163,11 +164,12 @@ class SpendingController extends Controller
         $user = auth()->user();
 
         try {
+            $description = str_replace('&quot;', '"', $request->description);
             $spending->date = $request->tanggal;
             $spending->mutation = $request->mutasi;
             $spending->spending_category_id = $request->spending_category;
             $spending->who_update = $user['name'];
-            $spending->description = $request->description;
+            $spending->description = $description;
             $spending->payment_method = $request->payment_method;
             $spending->nominal = curencyToInteger($request->nominal);
             $spending->save();

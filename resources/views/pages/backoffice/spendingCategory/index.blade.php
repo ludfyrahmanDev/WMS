@@ -71,7 +71,7 @@
                             No
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">
-                            Kategori pengeluaran
+                            Kategori transaksi
                         </x-base.table.th>
                         {{-- <x-base.table.th class="whitespace-nowrap border-b-0">
                             Tipe pengeluaran

@@ -37,7 +37,7 @@
                             <th scope="col">Tanggal</th>
                             <th scope="col">Driver</th>
                             <th scope="col">Nopol</th>
-                            <th scope="col">Kategori pengeluaran</th>
+                            <th scope="col">Kategori transaksi</th>
                             <th scope="col">Subtotal</th>
                             <th scope="col">Keterangan</th>
                             <th scope="col">Total</th>

@@ -55,7 +55,6 @@ class Selling extends Model
 
     public function getProduct()
     {
-        session(['cv_id' => 1]);
 
         return DB::table('stock AS s')
             ->select('p.id', 'p.product', DB::raw('SUM(s.last_stock) AS last_stock'))

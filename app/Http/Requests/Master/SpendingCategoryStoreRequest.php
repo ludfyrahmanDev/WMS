@@ -17,7 +17,7 @@ class SpendingCategoryStoreRequest extends FormRequest
     public function messages()
     {
         return [
-            'spending_category.required' => 'Kategori pengeluaran tidak boleh kosong'
+            'spending_category.required' => 'Kategori Transaksi tidak boleh kosong'
             // 'spending_types.required'    => 'Tipe pengeluaran tidak boleh kosong'
         ];
     }

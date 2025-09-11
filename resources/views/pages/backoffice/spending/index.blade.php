@@ -181,127 +181,131 @@
                     </x-base.table.tbody>
                 </x-base.table>
             </div>
-
-            <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
-                <x-base.table.thead>
-                    <x-base.table.tr>
-                        <x-base.table.th class="whitespace-nowrap border-b-0">
-                            No
-                        </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0">
-                            Tanggal
-                        </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            Pembuat
-                        </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            Kategori Pengeluaran
-                        </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            Metode Pembayaran
-                        </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            Mutasi
-                        </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            ACTIONS
-                        </x-base.table.th>
-                    </x-base.table.tr>
-                </x-base.table.thead>
-                <x-base.table.tbody>
-                    @foreach ($data as $item)
-                        <x-base.table.tr class="intro-x">
-                            <x-base.table.td
-                                class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ ($data->currentpage() - 1) * $data->perpage() + $loop->index + 1 }}
-                            </x-base.table.td>
-                            <x-base.table.td
-                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                <a class="whitespace-nowrap font-medium">
-                                    {{ $item['date'] }}
-                                </a>
-                            </x-base.table.td>
-                            <x-base.table.td
-                                class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                <a class="whitespace-nowrap font-medium">
-                                    {{ $item['who_update'] }}
-                                </a>
-                            </x-base.table.td>
-                            <x-base.table.td
-                                class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['spendingCategory']['spending_category'] }}
-                            </x-base.table.td>
-                            <x-base.table.td
-                                class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['payment_method'] }}
-                            </x-base.table.td>
-                            <x-base.table.td
-                                class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ toThousand($item->nominal) }} <br />{{ $item['mutation'] }}
-                            </x-base.table.td>
-                            <x-base.table.td
-                                class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
-                                <div class="flex items-center justify-center">
-                                    @if (
-                                        $item['spendingCategory']['spending_category'] != 'Saldo Utama' &&
-                                            $item['spendingCategory']['spending_category'] != 'Saldo Kendaraan')
-                                        <a class="mr-3 flex items-center" href="{{ route('spending.edit', $item->id) }}">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
-                                            Edit
-                                        </a>
-                                        <a class="flex items-center text-danger" data-tw-toggle="modal"
-                                            data-tw-target="#delete-confirmation-modal-{{ $item->id }}" href="#">
-                                            <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                        </a>
-                                    @endif
-                                    <x-base.dialog id="delete-confirmation-modal-{{ $item->id }}">
-                                        <x-base.dialog.panel>
-                                            <div class="p-5 text-center">
-                                                <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger" icon="XCircle" />
-                                                <div class="mt-5 text-3xl">Apakah anda yakin?</div>
-                                                <div class="mt-2 text-slate-500">
-                                                    Proses ini tidak dapat dibatalkan.
-                                                </div>
-                                            </div>
-                                            <div class="px-5 pb-8 text-center flex justify-center">
-                                                <x-base.button class="mr-1 w-24" data-tw-dismiss="modal" type="button"
-                                                    variant="outline-secondary">
-                                                    Cancel
-                                                </x-base.button>
-                                                <form action="{{ route('spending.destroy', $item->id) }}" method="post"
-                                                    class="w-24">
-                                                    @method('delete')
-                                                    @csrf
-                                                    <x-base.button class="w-24" type="submit" variant="danger">
-                                                        Delete
-                                                    </x-base.button>
-                                                </form>
-                                            </div>
-                                        </x-base.dialog.panel>
-                                    </x-base.dialog>
-
-                                </div>
-                            </x-base.table.td>
-                        </x-base.table.tr>
-                    @endforeach
-                </x-base.table.tbody>
-                @if ($data->isEmpty())
-                    <x-base.table.tbody>
+            <div class="mt-3 text-xl text-primary font-bold">
+                <h3>Laporan Kas/ Bank Harian</h3>
+            </div>
+            <div class="overflow-x-auto overflow-y-hidden mt-5">
+                <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
+                    <x-base.table.thead>
                         <x-base.table.tr>
-                            <x-base.table.td
-                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600"
-                                colspan="7">
-                                <div class="flex justify-center items-center">
-                                    <x-base.lucide class="h-16 w-16 text-slate-500" icon="Inbox" />
-                                    <div class="ml-2 text-slate-500">
-                                        Data not found
-                                    </div>
-                                </div>
-                            </x-base.table.td>
+                            <x-base.table.th class="whitespace-nowrap border-b-0">
+                                No
+                            </x-base.table.th>
+                            <x-base.table.th class="whitespace-nowrap border-b-0">
+                                Tanggal
+                            </x-base.table.th>
+                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                                Uraian
+                            </x-base.table.th>
+                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                                Kategori Transaksi
+                            </x-base.table.th>
+                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                                Metode Pembayaran
+                            </x-base.table.th>
+                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                                Mutasi
+                            </x-base.table.th>
+                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                                ACTIONS
+                            </x-base.table.th>
                         </x-base.table.tr>
+                    </x-base.table.thead>
+                    <x-base.table.tbody>
+                        @foreach ($data as $item)
+                            <x-base.table.tr class="intro-x">
+                                <x-base.table.td
+                                    class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                    {{ ($data->currentpage() - 1) * $data->perpage() + $loop->index + 1 }}
+                                </x-base.table.td>
+                                <x-base.table.td
+                                    class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 ">
+                                    <a class="whitespace-nowrap font-medium">
+                                        {{ $item['date'] }}
+                                    </a>
+                                </x-base.table.td>
+                                <x-base.table.td
+                                    class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 w-1/4">
+                                    <a class="whitespace font-medium">
+                                        {{ $item['description'] }}
+                                    </a>
+                                </x-base.table.td>
+                                <x-base.table.td
+                                    class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                    {{ $item['spendingCategory']['spending_category'] }}
+                                </x-base.table.td>
+                                <x-base.table.td
+                                    class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                    {{ $item['payment_method'] }}
+                                </x-base.table.td>
+                                <x-base.table.td
+                                    class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 font-bold {{ $item['mutation'] == 'Uang Masuk' ? 'text-green-800' : 'text-danger' }}" >
+                                    {{ toThousand($item->nominal) }} <br />{{ $item['mutation'] }}
+                                </x-base.table.td>
+                                <x-base.table.td
+                                    class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
+                                    <div class="flex items-center justify-center">
+                                        @if (
+                                            $item['spendingCategory']['spending_category'] != 'Saldo Utama' &&
+                                                $item['spendingCategory']['spending_category'] != 'Saldo Kendaraan')
+                                            <a class="mr-3 flex items-center" href="{{ route('spending.edit', $item->id) }}">
+                                                <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
+                                                Edit
+                                            </a>
+                                            <a class="flex items-center text-danger" data-tw-toggle="modal"
+                                                data-tw-target="#delete-confirmation-modal-{{ $item->id }}" href="#">
+                                                <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                            </a>
+                                        @endif
+                                        <x-base.dialog id="delete-confirmation-modal-{{ $item->id }}">
+                                            <x-base.dialog.panel>
+                                                <div class="p-5 text-center">
+                                                    <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger" icon="XCircle" />
+                                                    <div class="mt-5 text-3xl">Apakah anda yakin?</div>
+                                                    <div class="mt-2 text-slate-500">
+                                                        Proses ini tidak dapat dibatalkan.
+                                                    </div>
+                                                </div>
+                                                <div class="px-5 pb-8 text-center flex justify-center">
+                                                    <x-base.button class="mr-1 w-24" data-tw-dismiss="modal" type="button"
+                                                        variant="outline-secondary">
+                                                        Cancel
+                                                    </x-base.button>
+                                                    <form action="{{ route('spending.destroy', $item->id) }}" method="post"
+                                                        class="w-24">
+                                                        @method('delete')
+                                                        @csrf
+                                                        <x-base.button class="w-24" type="submit" variant="danger">
+                                                            Delete
+                                                        </x-base.button>
+                                                    </form>
+                                                </div>
+                                            </x-base.dialog.panel>
+                                        </x-base.dialog>
+
+                                    </div>
+                                </x-base.table.td>
+                            </x-base.table.tr>
+                        @endforeach
                     </x-base.table.tbody>
-                @endif
-            </x-base.table>
+                    @if ($data->isEmpty())
+                        <x-base.table.tbody>
+                            <x-base.table.tr>
+                                <x-base.table.td
+                                    class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600"
+                                    colspan="7">
+                                    <div class="flex justify-center items-center">
+                                        <x-base.lucide class="h-16 w-16 text-slate-500" icon="Inbox" />
+                                        <div class="ml-2 text-slate-500">
+                                            Data not found
+                                        </div>
+                                    </div>
+                                </x-base.table.td>
+                            </x-base.table.tr>
+                        </x-base.table.tbody>
+                    @endif
+                </x-base.table>
+            </div>
         </div>
         <!-- END: Data List -->
         <!-- BEGIN: Pagination -->

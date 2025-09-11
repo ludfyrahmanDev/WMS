@@ -7,6 +7,13 @@
 @section('subcontent')
     <div class="intro-y mt-8 flex items-center">
         <h2 class="mr-auto text-lg font-medium">Form Penjualan</h2>
+         <div class="flex justify-end mb-2">
+                <a href="#">
+                    <x-base.button class="mr-1 w-36" type="button" variant="primary">
+                        Export to Coretax
+                    </x-base.button>
+                </a>
+            </div>
     </div>
     @if (session('failed'))
         <x-base.alert class="mb-2 flex items-center" variant="outline-danger">
@@ -20,7 +27,7 @@
     <div class="mt-5 grid grid-cols-12 gap-6">
 
         <div class="intro-y col-span-12 lg:col-span-12">
-
+            {{-- make button to export to coretax --}}
             <form action="{{ $route }}" method="post" enctype="multipart/form-data">
                 @csrf
                 @if ($type != 'create')

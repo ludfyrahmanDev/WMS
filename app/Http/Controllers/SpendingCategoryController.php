@@ -17,14 +17,14 @@ class SpendingCategoryController extends Controller
         ->withCount('spending')
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
             ->paginate($request->get('per_page', 10));
-        $title = 'Data Kategori Pengeluaran';
+        $title = 'Kategori Transaksi Lain lain';
         $route = 'spendingCategory';
         return view('pages.backoffice.spendingCategory.index', compact('data', 'title','route'));
     }
 
     public function create()
     {
-        $title = 'Data Kategori Pengeluaran';
+        $title = 'Kategori Transaksi Lain lain';
         $data = (object)[
             'spending_category' => '',
             // 'spending_types' => ''
@@ -55,7 +55,7 @@ class SpendingCategoryController extends Controller
     public function edit(SpendingCategory $spendingCategory)
     {
         $data = $spendingCategory;
-        $title = 'Data Kategori Pengeluaran';
+        $title = 'Kategori Transaksi Lain lain';
         $route = route('spendingCategory.update', $spendingCategory->id);
         $type = 'edit';
         return view('pages.backoffice.spendingCategory._form', compact('title', 'data', 'route','type'));

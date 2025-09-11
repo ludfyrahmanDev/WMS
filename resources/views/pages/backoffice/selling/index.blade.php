@@ -114,6 +114,9 @@
                     <x-base.menu.item href="{{ route($route . '.export-pdf', $request) }}">
                         <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to PDF
                     </x-base.menu.item>
+                    <x-base.menu.item href="{{ route($route . '.export-coretax', $request) }}">
+                        <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to Coretax
+                    </x-base.menu.item>
                 </x-base.menu.items>
             </x-base.menu>
             <div class="mx-auto hidden text-slate-500 md:block">
