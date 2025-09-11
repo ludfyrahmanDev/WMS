@@ -404,6 +404,67 @@ class SellingController extends Controller
         return $pdf->download("$name.pdf");
     }
 
+    public function exportCoreTax(Request $request){
+        // make xml file from data
+        $all = Selling::with(['customer', 'driver', 'selling_detail', 'selling_detail.stock', 'selling_detail.stock.product'])
+            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $start_date = $request->start_date;
+            $end_date = $request->end_date;
+            $all = $all->whereBetween('date', [$start_date, $end_date]);
+        }  
+        $data = $all->get();
+        $title = 'Data Penjualan';
+        $xml = new \SimpleXMLElement('<TaxInvoiceBulk xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="TaxInvoice.xsd"/>');
+        // add ListOfTaxInvoice
+        $list = $xml->addChild('ListOfTaxInvoice');
+        foreach($data as $item){
+            $list->addChild('Sale');
+            $list->addChild('TaxInvoiceDate', $item->date);
+            $list->addChild('TaxInvoiceOpt', 'Normal');
+            $list->addChild('TrxCode', $item->id);
+            $list->addChild('AddInfo');
+            $list->addChild('CustomDoc');
+            $list->addChild('CustomDocMonthYear');
+            $list->addChild('RefDesc', $item->id);
+            $list->addChild('SellerIDTKU', $item->customer ? ($item->customer->npwp == null ? $item->customer->nik : $item->customer->npwp) : '');
+            $list->addChild("BuyerTin", $item->customer ? ($item->customer->npwp == null ? $item->customer->nik : $item->customer->npwp) : '');
+            $list->addChild("BuyerDocument", $item->customer ? ($item->customer->npwp == null ? 'NIK' : 'NPWP') : '');
+            $list->addChild("BuyerCountry", "IDN");
+            $list->addChild("BuyerDocumentNumber", $item->customer ? ($item->customer->npwp == null ? $item->customer->nik : $item->customer->npwp) : '');
+            $list->addChild("BuyerName", $item->customer ? $item->customer->name : '');
+            $list->addChild("BuyerAddress", $item->customer ? $item->customer->address : '');
+            $list->addChild("BuyerEmail", $item->customer ? $item->customer->email : '');
+            $list->addChild("BuyerIDTKU", $item->customer ? ($item->customer->npwp == null ? $item->customer->nik : $item->customer->npwp) : '');
+            // add ListOfGoodService
+            $listOfGoodService = $list->addChild("ListOfGoodService");
+            foreach($item->selling_detail as $detail){
+                $goodService = $listOfGoodService->addChild("GoodService");
+                $goodService->addChild("Opt", "A");
+                $goodService->addChild("Code", str_pad($detail->stock->product->id, 6, '0', STR_PAD_LEFT));
+                $goodService->addChild("Name", $detail->stock->product->name);
+                $goodService->addChild("Unit", "UM.0021");
+                $goodService->addChild("Price", $detail->price_sell);
+                $goodService->addChild("Qty", $detail->qty * 1000);
+                $goodService->addChild("TotalDiscount", 0);
+                $goodService->addChild("TaxBase", $detail->subtotal);
+                $goodService->addChild("OtherTaxBase", round($detail->subtotal / 1.12, 2));
+                $goodService->addChild("VATRate", 11);
+                $goodService->addChild("VAT", round($detail->subtotal - ($detail->subtotal / 1.11), 2));
+                $goodService->addChild("STLGRate", 0);
+                $goodService->addChild("STLG", 0);
+            }
+        }
+        $name = 'Data Penjualan - ' . date('Y-m-d');
+        $fileName = $name . '.xml';
+        // check dir if not exist then create
+        if(!file_exists(public_path('coretax'))){
+            mkdir(public_path('coretax'), 0777, true);
+        }
+        $xml->asXML(public_path('coretax/' . $fileName));
+        return response()->download(public_path('coretax/' . $fileName));
+    }
+
     public function exportPdfSingle(Request $request)
     {
         $data = Selling::with(['customer', 'vehicle', 'driver', 'selling_detail', 'selling_detail.stock', 'selling_detail.stock.product'])

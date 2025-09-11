@@ -19,6 +19,7 @@ class DeliveryOrderController extends Controller
 {
     public function index(Request $request)
     {
+        $cv_id = session('cv_id');
         $all = DeliveryOrder::filterResource($request, [
             'purchase_date',
             'pick_up_date',
@@ -27,6 +28,9 @@ class DeliveryOrderController extends Controller
             'status'
         ], [])
             ->with('supplier')
+            ->when($request->has('cv_id'), function ($query) use ($cv_id, $request) {
+                $query->where('cv_id', $request->cv_id  ?? $cv_id);
+            })
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;
@@ -115,16 +119,6 @@ class DeliveryOrderController extends Controller
             $totalDataProduk = COUNT($request->produk_id);
 
             for ($i = 0; $i < $totalDataProduk; $i++) {
-                // 'delivery_order_id',
-                // 'purchase_amount',
-                // 'subtotal',
-                // 'product_id',
-                // 'purchase_date',
-                // 'price_kg',
-                // 'first_stock',
-                // 'stock_in_use',
-                // 'last_stock'
-                
 
                 $orderQuota                      = new DeliveryOrderQuota();
                 $orderQuota->delivery_order_id   = $delivery_order->id;

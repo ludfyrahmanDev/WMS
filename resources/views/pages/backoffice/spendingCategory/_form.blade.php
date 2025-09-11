@@ -32,10 +32,10 @@
                 <!-- BEGIN: Form Layout -->
                 <div class="intro-y box p-5">
                     <div class="input-form">
-                        <x-base.form-label for="spending_category">Kategori pengeluaran</x-base.form-label>
+                        <x-base.form-label for="spending_category">Kategori Transaksi</x-base.form-label>
                         <x-base.form-input class="w-full" id="spending_category" type="text" name="spending_category"
                             value="{{ $data->spending_category ?? old('spending_category') }}"
-                            placeholder="Masukkan kategori pengeluaran..." />
+                            placeholder="Masukkan kategori Transaksi..." />
                         @error('spending_category')
                             <div class="pristine-error text-danger mt-2">
                                 {{ $message }}
