@@ -68,120 +68,191 @@
 
         <!-- BEGIN: Data List -->
         <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
-            <div class="overflow-x-auto">
-                <x-base.table>
-
-                    <x-base.table.tbody>
-                        <x-base.table.tr>
-                            <x-base.table.td class="border-b dark:border-darkmode-400">
-                                <div class="whitespace-nowrap font-medium">
-                                    Pemasukan Penjualan
-                                </div>
-                                <div class="mt-0.5 whitespace-nowrap text-sm text-slate-500">
-                                    data penjualan telah dibayar
-                                </div>
-                            </x-base.table.td>
-                            <x-base.table.td class="w-32 border-b text-right dark:border-darkmode-400 text-green-800">
-                                {{ toThousand($sellingCompleted ?? 0) }}
-                            </x-base.table.td>
-
-                        </x-base.table.tr>
-                        <x-base.table.tr>
-                            <x-base.table.td class="border-b dark:border-darkmode-400">
-                                <div class="whitespace-nowrap font-medium">
-                                    Penjualan Belum Lunas(Piutang)
-                                </div>
-                                <div class="mt-0.5 whitespace-nowrap text-sm text-slate-500">
-                                    data penjualan belum dibayar
-                                </div>
-                            </x-base.table.td>
-                            <x-base.table.td class="w-32 border-b text-right dark:border-darkmode-400 text-danger">
-                                {{ toThousand($sellingInCompleted ?? 0) }}
-                            </x-base.table.td>
-
-                        </x-base.table.tr>
-                        <x-base.table.tr>
-                            <x-base.table.td class="border-b dark:border-darkmode-400">
-                                <div class="whitespace-nowrap font-medium">
-                                    Pemasukan Pembelian
-                                </div>
-                                <div class="mt-0.5 whitespace-nowrap text-sm text-slate-500">
-                                    data pembelian telah dibayar
-                                </div>
-                            </x-base.table.td>
-                            <x-base.table.td class="w-32 border-b text-right dark:border-darkmode-400 text-green-800">
-                                {{ toThousand($purchaseCompleted ?? 0) }}
-                            </x-base.table.td>
-
-                        </x-base.table.tr>
-                        <x-base.table.tr>
-                            <x-base.table.td>
-                                <div class="whitespace-nowrap font-medium">
-                                    Pembelian Belum Lunas(Hutang)
-                                </div>
-                                <div class="mt-0.5 whitespace-nowrap text-sm text-slate-500">
-                                    data pembelian belum dibayar
-                                </div>
-                            </x-base.table.td>
-                            <x-base.table.td class="w-32 text-right text-danger">
-                                {{ toThousand($purchaseInCompleted ?? 0) }}
-                            </x-base.table.td>
-
-                        </x-base.table.tr>
-                        <x-base.table.tr>
-                            <x-base.table.td>
-                                <div class="whitespace-nowrap font-medium">
-                                    Mutasi Masuk
-                                </div>
-                                <div class="mt-0.5 whitespace-nowrap text-sm text-slate-500">
-                                    data transaksi lain lain mutasi masuk
-                                </div>
-                            </x-base.table.td>
-                            <x-base.table.td class="w-32 text-right text-green-800">
-                                {{ toThousand($income ?? 0) }}
-                            </x-base.table.td>
-                        </x-base.table.tr>
-                        <x-base.table.tr>
-                            <x-base.table.td>
-                                <div class="whitespace-nowrap font-medium">
-                                    Mutasi Keluar
-                                </div>
-                                <div class="mt-0.5 whitespace-nowrap text-sm text-slate-500">
-                                    data transaksi lain lain mutasi keluar
-                                </div>
-                            </x-base.table.td>
-                            <x-base.table.td class="w-32 text-right text-danger">
-                                {{ toThousand($outcome ?? 0) }}
-                            </x-base.table.td>
-
-                        </x-base.table.tr>
-                        {{-- <x-base.table.tr>
-                            <x-base.table.td>
-                                <div class="whitespace-nowrap font-medium">
-                                    Service Kendaraan
-                                </div>
-                                <div class="mt-0.5 whitespace-nowrap text-sm text-slate-500">
-                                    data service kendaraan
-                                </div>
-                            </x-base.table.td>
-                            <x-base.table.td class="w-32 text-right text-danger">
-                                {{ toThousand($total ?? 0) }}
-                            </x-base.table.td>
-
-                        </x-base.table.tr> --}}
-                        <x-base.table.tr class="text-xl text-primary font-bold">
-                            <x-base.table.td>
-                                <h1>Saldo Utama</h1>
-                            </x-base.table.td>
-                            <x-base.table.td class="w-52 text-right">
-                                {{ toThousand($saldo ?? 0) }}
-                            </x-base.table.td>
-
-                        </x-base.table.tr>
-                    </x-base.table.tbody>
-                </x-base.table>
+            
+            <!-- BEGIN: Neraca -->
+            <div class="mt-8">
+                <div class="text-xl text-primary font-bold mb-5">
+                    <h3>NERACA</h3>
+                    <p class="text-sm text-slate-500 font-normal">Per {{ date('d F Y') }}</p>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- AKTIVA -->
+                    <div class="intro-y">
+                        <x-base.table class="border-separate border-spacing-y-[2px]">
+                            <x-base.table.thead>
+                                <x-base.table.tr>
+                                    <x-base.table.th class="bg-primary text-white text-center font-bold text-lg" colspan="2">
+                                        AKTIVA
+                                    </x-base.table.th>
+                                </x-base.table.tr>
+                            </x-base.table.thead>
+                            <x-base.table.tbody>
+                                <!-- Aktiva Lancar -->
+                                <x-base.table.tr>
+                                    <x-base.table.td class="bg-slate-100 font-bold text-center" colspan="2">
+                                        AKTIVA LANCAR
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                <x-base.table.tr>
+                                    <x-base.table.td class="border-b bg-white pl-6">
+                                        Kas & Bank
+                                    </x-base.table.td>
+                                    <x-base.table.td class="border-b bg-white text-right font-medium">
+                                        {{ toThousand($saldo ?? 0) }}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                <x-base.table.tr>
+                                    <x-base.table.td class="border-b bg-white pl-6">
+                                        Piutang Dagang
+                                    </x-base.table.td>
+                                    <x-base.table.td class="border-b bg-white text-right font-medium">
+                                        {{ toThousand($sellingInCompleted ?? 0) }}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                <x-base.table.tr>
+                                    <x-base.table.td class="border-b bg-white pl-6">
+                                        Persediaan Barang
+                                    </x-base.table.td>
+                                    <x-base.table.td class="border-b bg-white text-right font-medium">
+                                        {{ toThousand($inventoryValue ?? 0) }}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                <x-base.table.tr class="border-t-2 border-primary">
+                                    <x-base.table.td class="bg-slate-50 font-bold">
+                                        Total Aktiva Lancar
+                                    </x-base.table.td>
+                                    <x-base.table.td class="bg-slate-50 text-right font-bold">
+                                        {{ toThousand(($saldo ?? 0) + ($sellingInCompleted ?? 0) + ($inventoryValue ?? 0)) }}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                
+                                <!-- Aktiva Tetap -->
+                                <x-base.table.tr>
+                                    <x-base.table.td class="bg-slate-100 font-bold text-center" colspan="2">
+                                        AKTIVA TETAP
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                <x-base.table.tr>
+                                    <x-base.table.td class="border-b bg-white pl-6">
+                                        Kendaraan & Peralatan
+                                    </x-base.table.td>
+                                    <x-base.table.td class="border-b bg-white text-right font-medium">
+                                        {{ toThousand(0) }} {{-- Nilai aset tetap perlu dihitung --}}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                <x-base.table.tr class="border-t-2 border-primary">
+                                    <x-base.table.td class="bg-slate-50 font-bold">
+                                        Total Aktiva Tetap
+                                    </x-base.table.td>
+                                    <x-base.table.td class="bg-slate-50 text-right font-bold">
+                                        {{ toThousand(0) }}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                
+                                <!-- Total Aktiva -->
+                                <x-base.table.tr class="border-t-4 border-primary">
+                                    <x-base.table.td class="bg-primary text-white font-bold text-lg">
+                                        TOTAL AKTIVA
+                                    </x-base.table.td>
+                                    <x-base.table.td class="bg-primary text-white text-right font-bold text-lg">
+                                        {{ toThousand(($saldo ?? 0) + ($sellingInCompleted ?? 0) + ($inventoryValue ?? 0)) }}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                            </x-base.table.tbody>
+                        </x-base.table>
+                    </div>
+                    
+                    <!-- PASSIVA -->
+                    <div class="intro-y">
+                        <x-base.table class="border-separate border-spacing-y-[2px]">
+                            <x-base.table.thead>
+                                <x-base.table.tr>
+                                    <x-base.table.th class="bg-danger text-white text-center font-bold text-lg" colspan="2">
+                                        PASSIVA
+                                    </x-base.table.th>
+                                </x-base.table.tr>
+                            </x-base.table.thead>
+                            <x-base.table.tbody>
+                                <!-- Kewajiban -->
+                                <x-base.table.tr>
+                                    <x-base.table.td class="bg-slate-100 font-bold text-center" colspan="2">
+                                        KEWAJIBAN
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                <x-base.table.tr>
+                                    <x-base.table.td class="border-b bg-white pl-6">
+                                        Hutang Dagang
+                                    </x-base.table.td>
+                                    <x-base.table.td class="border-b bg-white text-right font-medium">
+                                        {{ toThousand(abs($purchaseInCompleted ?? 0)) }}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                <x-base.table.tr>
+                                    <x-base.table.td class="border-b bg-white pl-6">
+                                        Hutang Lain-lain
+                                    </x-base.table.td>
+                                    <x-base.table.td class="border-b bg-white text-right font-medium">
+                                        {{ toThousand(0) }}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                <x-base.table.tr class="border-t-2 border-danger">
+                                    <x-base.table.td class="bg-slate-50 font-bold">
+                                        Total Kewajiban
+                                    </x-base.table.td>
+                                    <x-base.table.td class="bg-slate-50 text-right font-bold">
+                                        {{ toThousand(abs($purchaseInCompleted ?? 0)) }}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                
+                                <!-- Modal -->
+                                <x-base.table.tr>
+                                    <x-base.table.td class="bg-slate-100 font-bold text-center" colspan="2">
+                                        MODAL
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                <x-base.table.tr>
+                                    <x-base.table.td class="border-b bg-white pl-6">
+                                        Modal Pemilik
+                                    </x-base.table.td>
+                                    <x-base.table.td class="border-b bg-white text-right font-medium">
+                                        {{ toThousand((($saldo ?? 0) + ($sellingInCompleted ?? 0) + ($inventoryValue ?? 0)) - abs($purchaseInCompleted ?? 0)) }}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                <x-base.table.tr>
+                                    <x-base.table.td class="border-b bg-white pl-6">
+                                        Laba Ditahan
+                                    </x-base.table.td>
+                                    <x-base.table.td class="border-b bg-white text-right font-medium">
+                                        {{ toThousand(0) }}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                <x-base.table.tr class="border-t-2 border-danger">
+                                    <x-base.table.td class="bg-slate-50 font-bold">
+                                        Total Modal
+                                    </x-base.table.td>
+                                    <x-base.table.td class="bg-slate-50 text-right font-bold">
+                                        {{ toThousand((($saldo ?? 0) + ($sellingInCompleted ?? 0) + ($inventoryValue ?? 0)) - abs($purchaseInCompleted ?? 0)) }}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                
+                                <!-- Total Passiva -->
+                                <x-base.table.tr class="border-t-4 border-danger">
+                                    <x-base.table.td class="bg-danger text-white font-bold text-lg">
+                                        TOTAL PASSIVA
+                                    </x-base.table.td>
+                                    <x-base.table.td class="bg-danger text-white text-right font-bold text-lg">
+                                        {{ toThousand((abs($purchaseInCompleted ?? 0)) + (($saldo ?? 0) + ($sellingInCompleted ?? 0) + ($inventoryValue ?? 0) - abs($purchaseInCompleted ?? 0))) }}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                            </x-base.table.tbody>
+                        </x-base.table>
+                    </div>
+                </div>
             </div>
-            <div class="mt-3 text-xl text-primary font-bold">
+            <!-- END: Neraca -->
+            
+            <div class="mt-8 text-xl text-primary font-bold">
                 <h3>Laporan Kas/ Bank Harian</h3>
             </div>
             <div class="overflow-x-auto overflow-y-hidden mt-5">
