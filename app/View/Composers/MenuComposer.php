@@ -6,6 +6,7 @@ use Illuminate\View\View;
 use App\Main\TopMenu;
 use App\Main\SideMenu;
 use App\Main\SimpleMenu;
+use App\Services\MenuService;
 
 class MenuComposer
 {
@@ -20,7 +21,7 @@ class MenuComposer
             $activeMenu = $this->activeMenu($pageName, $layout);
 
             $view->with('topMenu', TopMenu::menu());
-            $view->with('sideMenu', SideMenu::menu());
+            $view->with('sideMenu', MenuService::getFilteredMenu());
             $view->with('simpleMenu', SimpleMenu::menu());
             $view->with('firstLevelActiveIndex', $activeMenu['first_level_active_index']);
             $view->with('secondLevelActiveIndex', $activeMenu['second_level_active_index']);
@@ -105,7 +106,7 @@ class MenuComposer
                 }
             }
         } else {
-            foreach (SideMenu::menu() as $menuKey => $menu) {
+            foreach (MenuService::getFilteredMenu() as $menuKey => $menu) {
                 if ($menu !== 'divider' && isset($menu['route_name']) && $menu['route_name'] == $pageName && empty($firstPageName)) {
                     $firstLevelActiveIndex = $menuKey;
                 }

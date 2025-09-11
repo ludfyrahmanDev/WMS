@@ -28,7 +28,8 @@
         <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
             <a href="{{ route($route . '.create') }}">
                 <x-base.button class="mr-2 shadow-md" variant="primary">
-                    Add Data
+                    <x-base.lucide class="mr-2 h-4 w-4" icon="Plus" />
+                    Add New Role
                 </x-base.button>
             </a>
             <x-base.menu class="hidden">
@@ -70,7 +71,19 @@
                             No
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0">
-                            Jabatan
+                            Role Name
+                        </x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0">
+                            Description
+                        </x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                            Permissions
+                        </x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                            Users
+                        </x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                            Status
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             ACTIONS
@@ -81,26 +94,72 @@
                     @foreach ($data as $item)
                         <x-base.table.tr class="intro-x">
                             <x-base.table.td
-                                class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $loop->iteration }}
+                                class="w-16 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                {{ $loop->iteration + ($data->currentPage() - 1) * $data->perPage() }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                <a class="whitespace-nowrap font-medium" href="">
-                                    {{ $item['role'] }}
-                                </a>
+                                <div>
+                                    <div class="whitespace-nowrap font-medium text-slate-800 dark:text-slate-200">
+                                        {{ $item->display_name }}
+                                    </div>
+                                    <div class="mt-0.5 whitespace-nowrap text-xs text-slate-500">
+                                        {{ $item->name }}
+                                    </div>
+                                </div>
+                            </x-base.table.td>
+                            <x-base.table.td
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                                <div class="text-slate-600 dark:text-slate-400 text-sm">
+                                    {{ Str::limit($item->description ?? 'No description', 50) }}
+                                </div>
+                            </x-base.table.td>
+                            <x-base.table.td
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 text-center">
+                                <span class="rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-1 text-xs font-medium text-blue-800 dark:text-blue-400">
+                                    {{ $item->permissions->count() }} permissions
+                                </span>
+                            </x-base.table.td>
+                            <x-base.table.td
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 text-center">
+                                <span class="rounded-full bg-green-100 dark:bg-green-900/30 px-2 py-1 text-xs font-medium text-green-800 dark:text-green-400">
+                                    {{ $item->users->count() }} users
+                                </span>
+                            </x-base.table.td>
+                            <x-base.table.td
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 text-center">
+                                @if($item->is_active)
+                                    <span class="rounded-full bg-success/20 px-2 py-1 text-xs font-medium text-success">
+                                        Active
+                                    </span>
+                                @else
+                                    <span class="rounded-full bg-danger/20 px-2 py-1 text-xs font-medium text-danger">
+                                        Inactive
+                                    </span>
+                                @endif
                             </x-base.table.td>
                             <x-base.table.td
                                 class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
-                                <div class="flex items-center justify-center">
-                                    <a class="mr-3 flex items-center" href="{{ route('role.edit', $item->id) }}">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
-                                        Edit
+                                <div class="flex items-center justify-center space-x-2">
+                                    <a class="flex items-center text-primary hover:text-primary/80 transition-colors" 
+                                       href="{{ route('role.show', $item->id) }}"
+                                       title="View Details">
+                                        <x-base.lucide class="h-4 w-4" icon="Eye" />
                                     </a>
-                                    <a class="flex items-center text-danger" data-tw-toggle="modal"
-                                        data-tw-target="#delete-confirmation-modal-{{ $item->id }}" href="#">
-                                        <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
+                                    <a class="flex items-center text-warning hover:text-warning/80 transition-colors" 
+                                       href="{{ route('role.edit', $item->id) }}"
+                                       title="Edit Role">
+                                        <x-base.lucide class="h-4 w-4" icon="Edit" />
                                     </a>
+                                    @if(!in_array($item->name, ['super_admin', 'admin']))
+                                        <a class="flex items-center text-danger hover:text-danger/80 transition-colors" 
+                                           data-tw-toggle="modal"
+                                           data-tw-target="#delete-confirmation-modal-{{ $item->id }}" 
+                                           href="#"
+                                           title="Delete Role">
+                                            <x-base.lucide class="h-4 w-4" icon="Trash2" />
+                                        </a>
+                                    @endif
                                     <x-base.dialog id="delete-confirmation-modal-{{ $item->id }}">
                                         <x-base.dialog.panel>
                                             <div class="p-5 text-center">
@@ -136,14 +195,15 @@
                 @if ($data->isEmpty())
                     <x-base.table.tbody>
                         <x-base.table.tr>
-                            <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600" colspan="6">
-                                <div class="flex justify-center items-center">
-                                    <x-base.lucide
-                                        class="h-16 w-16 text-slate-500"
-                                        icon="Inbox"
-                                    />
-                                    <div class="ml-2 text-slate-500">
-                                        Data not found
+                            <x-base.table.td class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600" colspan="7">
+                                <div class="flex justify-center items-center py-8">
+                                    <div class="text-center">
+                                        <x-base.lucide
+                                            class="h-16 w-16 text-slate-400 mx-auto mb-4"
+                                            icon="Shield"
+                                        />
+                                        <div class="text-slate-500 text-lg font-medium">No roles found</div>
+                                        <div class="text-slate-400 text-sm mt-1">Create your first role to get started</div>
                                     </div>
                                 </div>
                             </x-base.table.td>

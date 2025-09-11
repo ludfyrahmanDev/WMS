@@ -5,143 +5,213 @@
 @endsection
 
 @section('subcontent')
-    <h2 class="intro-y mt-10 text-lg font-medium">{{ $title }}</h2>
-    <div class="mt-5 grid grid-cols-12 gap-6">
-        <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
-            <x-base.menu>
-                <x-base.menu.button
-                    class="!box px-2"
-                    as="x-base.button"
-                >
-                    <span class="flex h-5 w-5 items-center justify-center">
-                        <x-base.lucide
-                            class="h-4 w-4"
-                            icon="file"
-                        />
-                    </span>
-                </x-base.menu.button>
-                <x-base.menu.items class="w-40">
-                    <x-base.menu.item href="{{ route($route . '.export', $request) }}" target="_blank">
-                        <x-base.lucide
-                            class="mr-2 h-4 w-4"
-                            icon="sheet"
-                        /> Export to Excel
-                    </x-base.menu.item>
-                    <x-base.menu.item href="{{ route($route . '.export-pdf', $request) }}">
-                        <x-base.lucide
-                            class="mr-2 h-4 w-4"
-                            icon="FileText"
-                        /> Export to PDF
-                    </x-base.menu.item>
-                </x-base.menu.items>
-            </x-base.menu>
-            <div class="mx-auto hidden text-slate-500 md:block">
-                Showing 1 to {{ $data->total() < 10 ? $data->total() : 10 }} of {{ $data->total() }} entries
-            </div>
-            <div class="mt-3 w-full sm:mt-0 flex sm:ml-auto sm:w-auto md:ml-0">
-                <div class=" flex w-72">
-                    <x-base.form-input  class="datepicker !box mr-4 sm:w-56" id="start_date" type="date"
-                        value="{{ $request['start_date'] ?? old('start_date') }}" required placeholder="Tanggal Mulai" />
-                    <x-base.form-input  class="datepicker !box mr-4 sm:w-56" id="end_date" type="date"
-                        value="{{ $request['end_date'] ?? old('end_date') }}" required placeholder="Tanggal Mulai" />
+    <div class="mt-8">
+        <h2 class="text-2xl font-bold">Data Transport</h2>
+        <p class="text-slate-500 mt-1">Kelola data transport dan pengiriman</p>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="mt-5 grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="intro-y box p-5">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                    <x-base.lucide class="h-5 w-5 text-blue-600" icon="Truck" />
                 </div>
-                {{-- make live search --}}
-                <div class="relative w-56 text-slate-500">
-                    <x-base.form-input class="!box w-56 pr-10" type="text" id="search"
-                        value="{{ request()->get('search') }}" placeholder="Search..." />
-                    <x-base.lucide class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4" icon="Search" />
+                <div>
+                    <div class="text-slate-500 text-sm">Total Transport</div>
+                    <div class="text-xl font-semibold">{{ $data->total() }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="intro-y box p-5">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                    <x-base.lucide class="h-5 w-5 text-green-600" icon="Banknote" />
+                </div>
+                <div>
+                    <div class="text-slate-500 text-sm">Total Ongkos</div>
+                    <div class="text-xl font-semibold text-green-600">
+                        @php
+                            $totalOngkos = $data->sum(function($item) {
+                                return $item['customer']['ongkosan'] ?? 0;
+                            });
+                        @endphp
+                        {{ toThousand($totalOngkos) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="intro-y box p-5">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                    <x-base.lucide class="h-5 w-5 text-orange-600" icon="Wallet" />
+                </div>
+                <div>
+                    <div class="text-slate-500 text-sm">Total Saku Sopir</div>
+                    <div class="text-xl font-semibold text-orange-600">
+                        @php
+                            $totalSakuSopir = $data->sum('drivers_pocket_money');
+                        @endphp
+                        {{ toThousand($totalSakuSopir) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="intro-y box p-5">
+            <div class="flex items-center">
+                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                    <x-base.lucide class="h-5 w-5 text-purple-600" icon="PiggyBank" />
+                </div>
+                <div>
+                    <div class="text-slate-500 text-sm">Total Setoran</div>
+                    <div class="text-xl font-semibold text-purple-600">
+                        @php
+                            $totalSetoran = $totalOngkos - $totalSakuSopir;
+                        @endphp
+                        {{ toThousand($totalSetoran) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Actions & Filters -->
+    <div class="mt-8 grid grid-cols-12 gap-6">
+        <div class="intro-y col-span-12">
+            <div class="box p-5">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <!-- Actions -->
+                    <div class="flex items-center gap-3">
+                        <x-base.menu>
+                            <x-base.menu.button as="x-base.button" variant="outline-secondary">
+                                Export Data
+                            </x-base.menu.button>
+                            <x-base.menu.items class="w-48">
+                                <x-base.menu.item href="{{ route($route . '.export', $request) }}" target="_blank">
+                                    Export ke Excel
+                                </x-base.menu.item>
+                                <x-base.menu.item href="{{ route($route . '.export-pdf', $request) }}">
+                                    Export ke PDF
+                                </x-base.menu.item>
+                            </x-base.menu.items>
+                        </x-base.menu>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="flex flex-col sm:flex-row gap-3 lg:w-auto w-full">
+                        <x-base.form-input 
+                            class="!box w-full sm:w-56" 
+                            type="text" 
+                            id="search"
+                            value="{{ request()->get('search') }}" 
+                            placeholder="Cari transport..." 
+                        />
+                        <x-base.form-input 
+                            class="!box" 
+                            id="start_date" 
+                            type="date"
+                            value="{{ $request['start_date'] ?? old('start_date') }}" 
+                        />
+                        <x-base.form-input 
+                            class="!box" 
+                            id="end_date" 
+                            type="date"
+                            value="{{ $request['end_date'] ?? old('end_date') }}" 
+                        />
+                    </div>
+                </div>
+                
+                <!-- Data Info -->
+                <div class="text-slate-500 text-sm mt-3 pt-3 border-t">
+                    Menampilkan 1 hingga {{ $data->total() < 10 ? $data->total() : 10 }} dari {{ $data->total() }} data
                 </div>
             </div>
         </div>
         <!-- BEGIN: Data List -->
-        <div class="intro-y col-span-12 overflow-auto lg:overflow-visible">
-            <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
-                <x-base.table.thead>
-                    <x-base.table.tr>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            No
-                        </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            Tanggal
-                        </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            Nopol
-                        </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            Pengemudi
-                        </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            Penerima
-                        </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            Ongkosan
-                        </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            Saku Sopir
-                        </x-base.table.th>
-                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                            Setoran
-                        </x-base.table.th>
-                    </x-base.table.tr>
-                </x-base.table.thead>
-                <x-base.table.tbody>
-                    @foreach ($data as $item)
-                        <x-base.table.tr class="intro-x">
-                            <x-base.table.td
-                                class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ ($data->currentpage() - 1) * $data->perpage() + $loop->index + 1 }}
-                            </x-base.table.td>
-                            <x-base.table.td
-                                class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                <a class="whitespace-nowrap font-medium" href="">
-                                    {{ $item['date'] }}
-                                </a>
-                            </x-base.table.td>
-                            <x-base.table.td
-                                class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['vehicle']['license_plate'] }}
-                            </x-base.table.td>
-                            <x-base.table.td
-                                class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['driver']['name'] }}
-                            </x-base.table.td>
-                            <x-base.table.td
-                                class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['customer']['name'] }}
-                            </x-base.table.td>
-                            <x-base.table.td
-                                class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ toThousand($item['customer']['ongkosan']) }}
-                            </x-base.table.td>
-                            <x-base.table.td
-                                class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ toThousand($item['drivers_pocket_money']) }}
-                            </x-base.table.td>
-                            <x-base.table.td
-                                class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ toThousand($item['customer']['ongkosan'] - $item['drivers_pocket_money']) }}
-                            </x-base.table.td>
-                        </x-base.table.tr>
-                    @endforeach
-                </x-base.table.tbody>
-                {{-- make if empty data --}}
-                @if ($data->isEmpty())
-                    <x-base.table.tbody>
-                        <x-base.table.tr>
-                            <x-base.table.td
-                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600"
-                                colspan="8">
-                                <div class="flex justify-center items-center">
-                                    <x-base.lucide class="h-16 w-16 text-slate-500" icon="Inbox" />
-                                    <div class="ml-2 text-slate-500">
-                                        Data not found
-                                    </div>
-                                </div>
-                            </x-base.table.td>
-                        </x-base.table.tr>
-                    </x-base.table.tbody>
-                @endif
-            </x-base.table>
+        <div class="intro-y col-span-12">
+            <div class="box">
+                <!-- Table Header -->
+                <div class="p-5 border-b">
+                    <h3 class="text-lg font-semibold">Daftar Transport</h3>
+                </div>
+
+                <!-- Table Content -->
+                <div class="overflow-auto">
+                    <x-base.table class="border-spacing-y-[10px] border-separate">
+                        <x-base.table.thead>
+                            <x-base.table.tr>
+                                <x-base.table.th class="border-b-0 font-semibold text-center">
+                                    No
+                                </x-base.table.th>
+                                <x-base.table.th class="border-b-0 font-semibold text-center">
+                                    Tanggal
+                                </x-base.table.th>
+                                <x-base.table.th class="border-b-0 font-semibold text-center">
+                                    Nopol
+                                </x-base.table.th>
+                                <x-base.table.th class="border-b-0 font-semibold text-center">
+                                    Pengemudi
+                                </x-base.table.th>
+                                <x-base.table.th class="border-b-0 font-semibold text-center">
+                                    Penerima
+                                </x-base.table.th>
+                                <x-base.table.th class="border-b-0 font-semibold text-center">
+                                    Ongkosan
+                                </x-base.table.th>
+                                <x-base.table.th class="border-b-0 font-semibold text-center">
+                                    Saku Sopir
+                                </x-base.table.th>
+                                <x-base.table.th class="border-b-0 font-semibold text-center">
+                                    Setoran
+                                </x-base.table.th>
+                            </x-base.table.tr>
+                        </x-base.table.thead>
+                        <x-base.table.tbody>
+                            @foreach ($data as $item)
+                                <x-base.table.tr class="intro-x hover:bg-slate-50 transition-colors">
+                                    <x-base.table.td class="text-center py-4">
+                                        {{ ($data->currentpage() - 1) * $data->perpage() + $loop->index + 1 }}
+                                    </x-base.table.td>
+                                    <x-base.table.td class="text-center py-4">
+                                        {{ date('d M Y', strtotime($item['date'])) }}
+                                    </x-base.table.td>
+                                    <x-base.table.td class="text-center py-4 font-semibold">
+                                        {{ $item['vehicle']['license_plate'] }}
+                                    </x-base.table.td>
+                                    <x-base.table.td class="text-center py-4">
+                                        {{ $item['driver']['name'] }}
+                                    </x-base.table.td>
+                                    <x-base.table.td class="text-center py-4">
+                                        {{ $item['customer']['name'] }}
+                                    </x-base.table.td>
+                                    <x-base.table.td class="text-center py-4 font-semibold text-green-600">
+                                        {{ toThousand($item['customer']['ongkosan']) }}
+                                    </x-base.table.td>
+                                    <x-base.table.td class="text-center py-4 font-semibold text-orange-600">
+                                        {{ toThousand($item['drivers_pocket_money']) }}
+                                    </x-base.table.td>
+                                    <x-base.table.td class="text-center py-4 font-semibold text-blue-600">
+                                        {{ toThousand($item['customer']['ongkosan'] - $item['drivers_pocket_money']) }}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                            @endforeach
+                            <!-- Empty State -->
+                            @if ($data->isEmpty())
+                                <x-base.table.tr>
+                                    <x-base.table.td colspan="8" class="py-16 text-center">
+                                        <div>
+                                            <h3 class="text-lg font-semibold mb-2">Belum Ada Data Transport</h3>
+                                            <p class="text-slate-500 mb-4">
+                                                Belum ada data transport yang tercatat.
+                                            </p>
+                                        </div>
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                            @endif
+                        </x-base.table.tbody>
+                    </x-base.table>
+                </div>
+            </div>
         </div>
         <!-- END: Data List -->
         <!-- BEGIN: Pagination -->

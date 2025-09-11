@@ -30,21 +30,13 @@ class SideMenu
                         ],
                         'title' => 'User'
                     ],
-                    // 'users-layout-2' => [
-                    //     'icon' => 'activity',
-                    //     'route_name' => 'role.index',
-                    //     'params' => [
-                    //         'layout' => 'side-menu'
-                    //     ],
-                    //     'title' => 'Jabatan'
-                    // ],
-                    'users-layout-3' => [
-                        'icon' => 'car',
-                        'route_name' => 'driver.index',
+                    'users-layout-2' => [
+                        'icon' => 'shield',
+                        'route_name' => 'role.index',
                         'params' => [
                             'layout' => 'side-menu'
                         ],
-                        'title' => 'Driver'
+                        'title' => 'Role'
                     ]
                 ]
             ],
@@ -83,7 +75,7 @@ class SideMenu
                 'icon' => 'book',
                 'title' => 'Master Data',
                 'sub_menu' => [
-                    'users-layout-1' => [
+                    'master-layout-1' => [
                         'icon' => 'car',
                         'route_name' => 'vehicle.index',
                         'params' => [
@@ -91,7 +83,15 @@ class SideMenu
                         ],
                         'title' => 'Kendaraan'
                     ],
-                    'users-layout-2' => [
+                    'master-layout-2' => [
+                        'icon' => 'user-check',
+                        'route_name' => 'driver.index',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Driver'
+                    ],
+                    'master-layout-3' => [
                         'icon' => 'truck',
                         'route_name' => 'supplier.index',
                         'params' => [
@@ -99,7 +99,7 @@ class SideMenu
                         ],
                         'title' => 'Supplier'
                     ],
-                    'users-layout-3' => [
+                    'master-layout-4' => [
                         'icon' => 'user',
                         'route_name' => 'customer.index',
                         'params' => [
@@ -107,7 +107,7 @@ class SideMenu
                         ],
                         'title' => 'Customer'
                     ],
-                    'users-layout-4' => [
+                    'master-layout-5' => [
                         'icon' => 'folders',
                         'route_name' => 'spendingCategory.index',
                         'params' => [
@@ -115,7 +115,7 @@ class SideMenu
                         ],
                         'title' => 'Kategori Transaksi Lain Lain'
                     ],
-                    'users-layout-5' => [
+                    'master-layout-6' => [
                         'icon' => 'folders',
                         'route_name' => 'tax.index',
                         'params' => [

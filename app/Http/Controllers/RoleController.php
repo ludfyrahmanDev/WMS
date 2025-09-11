@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Role;
+use App\Models\Permission;
 use App\Http\Requests\User\RoleStoreRequest;
+use Illuminate\Support\Str;
 
 class RoleController extends Controller
 {
@@ -16,12 +18,14 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
-        $data = Role::filterResource($request, [
-            'role',
-        ], [])
+        $data = Role::with(['permissions', 'users'])
+            ->filterResource($request, [
+                'name', 'display_name', 'description'
+            ], [])
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
             ->paginate($request->get('per_page', 10));
-        $title = 'Data Jabatan';
+            
+        $title = 'Role Management';
         $route = 'role';
         return view('pages.backoffice.role.index', compact('data', 'title','route'));
     }
@@ -33,13 +37,21 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $title = 'Data Jabatan';
+        $title = 'Create New Role';
         $data = (object)[
-            'role' => ''
+            'name' => '',
+            'display_name' => '',
+            'description' => '',
+            'is_active' => true,
+            'permissions' => collect()
         ];
+        
+        // Get all permissions grouped by module
+        $permissions = Permission::orderBy('group')->orderBy('display_name')->get()->groupBy('group');
+        
         $route = route('role.store');
         $type = 'create';
-        return view('pages.backoffice.role._form', compact('title', 'data', 'route','type'));
+        return view('pages.backoffice.role._form', compact('title', 'data', 'route', 'type', 'permissions'));
     }
 
     /**
@@ -48,16 +60,46 @@ class RoleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(RoleStoreRequest $request)
+    public function store(Request $request)
     {
+        $request->validate([
+            'display_name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'is_active' => 'boolean',
+            'permissions' => 'array',
+            'permissions.*' => 'exists:permissions,id'
+        ]);
+
         try {
             $role = new Role();
-            $role->role = $request->role;
+            $role->name = Str::slug($request->display_name, '_');
+            $role->display_name = $request->display_name;
+            $role->description = $request->description;
+            $role->is_active = $request->has('is_active');
             $role->save();
-            return redirect('role')->with('success', 'Berhasil menambah data!');
+
+            // Assign permissions
+            if ($request->has('permissions')) {
+                $role->permissions()->attach($request->permissions);
+            }
+
+            return redirect('role')->with('success', 'Role berhasil dibuat!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menambah data!');
+            return back()->with('failed', 'Gagal membuat role! ' . $th->getMessage())->withInput();
         }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Role  $role
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Role $role)
+    {
+        $role->load(['permissions', 'users']);
+        $title = 'Role Details';
+        return view('pages.backoffice.role.show', compact('role', 'title'));
     }
 
     /**
@@ -68,11 +110,15 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
-        $data = $role;
-        $title = 'Data Role';
+        $data = $role->load('permissions');
+        $title = 'Edit Role';
+        
+        // Get all permissions grouped by module
+        $permissions = Permission::orderBy('group')->orderBy('display_name')->get()->groupBy('group');
+        
         $route = route('role.update', $role->id);
         $type = 'edit';
-        return view('pages.backoffice.role._form', compact('title', 'data', 'route','type'));
+        return view('pages.backoffice.role._form', compact('title', 'data', 'route', 'type', 'permissions'));
     }
 
     /**
@@ -84,12 +130,26 @@ class RoleController extends Controller
      */
     public function update(Request $request, Role $role)
     {
+        $request->validate([
+            'display_name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'permissions' => 'array',
+            'permissions.*' => 'exists:permissions,id'
+        ]);
+
         try {
-            $role->role = $request->role;
+            $role->name = Str::slug($request->display_name, '_');
+            $role->display_name = $request->display_name;
+            $role->description = $request->description;
+            $role->is_active = $request->has('is_active');
             $role->save();
-            return redirect('role')->with('success', 'Berhasil mengubah data!');
+
+            // Sync permissions
+            $role->permissions()->sync($request->permissions ?? []);
+
+            return redirect('role')->with('success', 'Role berhasil diupdate!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal mengubah data!'.$th->getMessage());
+            return back()->with('failed', 'Gagal mengupdate role! ' . $th->getMessage())->withInput();
         }
     }
 
@@ -102,10 +162,20 @@ class RoleController extends Controller
     public function destroy(Role $role)
     {
         try {
+            // Check if role has users
+            if ($role->users()->count() > 0) {
+                return back()->with('failed', 'Tidak dapat menghapus role yang masih digunakan oleh user!');
+            }
+
+            // Check if it's a system role
+            if (in_array($role->name, ['super_admin', 'admin'])) {
+                return back()->with('failed', 'Tidak dapat menghapus system role!');
+            }
+
             $role->delete();
-            return redirect('role')->with('success', 'Berhasil menghapus data!');
+            return redirect('role')->with('success', 'Role berhasil dihapus!');
         } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menghapus data!');
+            return back()->with('failed', 'Gagal menghapus role! ' . $th->getMessage());
         }
     }
 }

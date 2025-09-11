@@ -111,12 +111,17 @@
                             </x-base.table.td>
                             <x-base.table.td
                                 class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                {{ $item['role'] }}
+                                {{ $item->role->display_name ?? 'N/A' }}
                             </x-base.table.td>
                             <x-base.table.td
                                 class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
                                 <div class="flex items-center justify-center">
-                                    <a class="mr-3 flex items-center" href="{{ route('users.edit', $item->id) }}">
+                                    <a class="mr-2 flex items-center text-primary" href="#" data-tw-toggle="modal"
+                                        data-tw-target="#change-role-modal-{{ $item->id }}">
+                                        <x-base.lucide class="mr-1 h-4 w-4" icon="Shield" />
+                                        Ubah Role
+                                    </a>
+                                    <a class="mr-2 flex items-center" href="{{ route('users.edit', $item->id) }}">
                                         <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
                                         Edit
                                     </a>
@@ -145,6 +150,53 @@
                                                     <x-base.button class="w-24" type="submit" variant="danger">
                                                         Delete
                                                     </x-base.button>
+                                                </form>
+                                            </div>
+                                        </x-base.dialog.panel>
+                                    </x-base.dialog>
+
+                                    <!-- Change Role Modal -->
+                                    <x-base.dialog id="change-role-modal-{{ $item->id }}">
+                                        <x-base.dialog.panel>
+                                            <div class="p-8 text-center">
+                                                <div class="w-16 h-16 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                                                    <x-base.lucide class="h-8 w-8 text-blue-600" icon="Shield" />
+                                                </div>
+                                                <h3 class="text-xl font-semibold mb-4">Ubah Role User</h3>
+                                                <p class="text-slate-500 mb-4">
+                                                    Pilih role baru untuk user <br><strong>{{ $item['name'] }}</strong>
+                                                </p>
+                                                <div class="bg-slate-50 p-3 rounded mb-4">
+                                                    <div class="text-sm text-slate-600">
+                                                        <strong>Email:</strong> {{ $item['email'] }}<br>
+                                                        <strong>Role Saat Ini:</strong> <span class="text-blue-600 font-semibold">{{ $item->role->display_name ?? 'N/A' }}</span>
+                                                    </div>
+                                                </div>
+                                                <form action="{{ route('users.change-role', $item->id) }}" method="POST" class="mb-4">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <div class="mb-4">
+                                                        <x-base.form-select class="!box w-full" name="role_id" required>
+                                                            <option value="">Pilih Role Baru</option>
+                                                            @php
+                                                                $roles = \App\Models\Role::where('is_active', true)->get();
+                                                            @endphp
+                                                            @foreach($roles as $role)
+                                                                <option value="{{ $role->id }}" 
+                                                                    {{ $item->role_id == $role->id ? 'selected' : '' }}>
+                                                                    {{ $role->display_name }}
+                                                                </option>
+                                                            @endforeach
+                                                        </x-base.form-select>
+                                                    </div>
+                                                    <div class="flex justify-center gap-3">
+                                                        <x-base.button data-tw-dismiss="modal" type="button" variant="outline-secondary">
+                                                            Batal
+                                                        </x-base.button>
+                                                        <x-base.button type="submit" variant="primary">
+                                                            Ubah Role
+                                                        </x-base.button>
+                                                    </div>
                                                 </form>
                                             </div>
                                         </x-base.dialog.panel>
@@ -200,7 +252,6 @@
             </div>
         </x-base.dialog.panel>
     </x-base.dialog>
-    <button id="click">Click</button>
     <!-- END: Delete Confirmation Modal -->
     @push('scripts')
         <script>
