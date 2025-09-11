@@ -458,10 +458,11 @@ class SellingController extends Controller
         $name = 'Data Penjualan - ' . date('Y-m-d');
         $fileName = $name . '.xml';
         // check dir if not exist then create
-        if(!file_exists(public_path('coretax'))){
-            mkdir(public_path('coretax'), 0777, true);
+        // save to storage app public coretax
+        if(!file_exists(storage_path('app/public/coretax'))){
+            mkdir(storage_path('app/public/coretax'), 0777, true);
         }
-        $xml->asXML(public_path('coretax/' . $fileName));
+        $xml->asXML(storage_path('app/public/coretax/' . $fileName));
         return response()->download(public_path('coretax/' . $fileName));
     }
 
