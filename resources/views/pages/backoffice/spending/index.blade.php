@@ -118,12 +118,20 @@
                                         {{ toThousand($inventoryValue ?? 0) }}
                                     </x-base.table.td>
                                 </x-base.table.tr>
+                                <x-base.table.tr>
+                                    <x-base.table.td class="border-b bg-white pl-6">
+                                        Piutang Ongkos Kirim
+                                    </x-base.table.td>
+                                    <x-base.table.td class="border-b bg-white text-right font-medium">
+                                        {{ toThousand($transportRevenue ?? 0) }}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
                                 <x-base.table.tr class="border-t-2 border-primary">
                                     <x-base.table.td class="bg-slate-50 font-bold">
                                         Total Aktiva Lancar
                                     </x-base.table.td>
                                     <x-base.table.td class="bg-slate-50 text-right font-bold">
-                                        {{ toThousand(($saldo ?? 0) + ($sellingInCompleted ?? 0) + ($inventoryValue ?? 0)) }}
+                                        {{ toThousand(($saldo ?? 0) + ($sellingInCompleted ?? 0) + ($inventoryValue ?? 0) + ($transportRevenue ?? 0)) }}
                                     </x-base.table.td>
                                 </x-base.table.tr>
                                 
@@ -156,7 +164,7 @@
                                         TOTAL AKTIVA
                                     </x-base.table.td>
                                     <x-base.table.td class="bg-primary text-white text-right font-bold text-lg">
-                                        {{ toThousand(($saldo ?? 0) + ($sellingInCompleted ?? 0) + ($inventoryValue ?? 0)) }}
+                                        {{ toThousand(($saldo ?? 0) + ($sellingInCompleted ?? 0) + ($inventoryValue ?? 0) + ($transportRevenue ?? 0)) }}
                                     </x-base.table.td>
                                 </x-base.table.tr>
                             </x-base.table.tbody>
@@ -190,6 +198,22 @@
                                 </x-base.table.tr>
                                 <x-base.table.tr>
                                     <x-base.table.td class="border-b bg-white pl-6">
+                                        Biaya Servis Kendaraan
+                                    </x-base.table.td>
+                                    <x-base.table.td class="border-b bg-white text-right font-medium">
+                                        {{ toThousand($vehicleServiceExpense ?? 0) }}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                <x-base.table.tr>
+                                    <x-base.table.td class="border-b bg-white pl-6">
+                                        Biaya Saku Sopir
+                                    </x-base.table.td>
+                                    <x-base.table.td class="border-b bg-white text-right font-medium">
+                                        {{ toThousand($driversPocketMoney ?? 0) }}
+                                    </x-base.table.td>
+                                </x-base.table.tr>
+                                <x-base.table.tr>
+                                    <x-base.table.td class="border-b bg-white pl-6">
                                         Hutang Lain-lain
                                     </x-base.table.td>
                                     <x-base.table.td class="border-b bg-white text-right font-medium">
@@ -201,7 +225,7 @@
                                         Total Kewajiban
                                     </x-base.table.td>
                                     <x-base.table.td class="bg-slate-50 text-right font-bold">
-                                        {{ toThousand(abs($purchaseInCompleted ?? 0)) }}
+                                        {{ toThousand(abs($purchaseInCompleted ?? 0) + ($vehicleServiceExpense ?? 0) + ($driversPocketMoney ?? 0)) }}
                                     </x-base.table.td>
                                 </x-base.table.tr>
                                 
@@ -216,7 +240,7 @@
                                         Modal Pemilik
                                     </x-base.table.td>
                                     <x-base.table.td class="border-b bg-white text-right font-medium">
-                                        {{ toThousand((($saldo ?? 0) + ($sellingInCompleted ?? 0) + ($inventoryValue ?? 0)) - abs($purchaseInCompleted ?? 0)) }}
+                                        {{ toThousand((($saldo ?? 0) + ($sellingInCompleted ?? 0) + ($inventoryValue ?? 0) + ($transportRevenue ?? 0)) - (abs($purchaseInCompleted ?? 0) + ($vehicleServiceExpense ?? 0) + ($driversPocketMoney ?? 0))) }}
                                     </x-base.table.td>
                                 </x-base.table.tr>
                                 <x-base.table.tr>
@@ -232,7 +256,7 @@
                                         Total Modal
                                     </x-base.table.td>
                                     <x-base.table.td class="bg-slate-50 text-right font-bold">
-                                        {{ toThousand((($saldo ?? 0) + ($sellingInCompleted ?? 0) + ($inventoryValue ?? 0)) - abs($purchaseInCompleted ?? 0)) }}
+                                        {{ toThousand((($saldo ?? 0) + ($sellingInCompleted ?? 0) + ($inventoryValue ?? 0) + ($transportRevenue ?? 0)) - (abs($purchaseInCompleted ?? 0) + ($vehicleServiceExpense ?? 0) + ($driversPocketMoney ?? 0))) }}
                                     </x-base.table.td>
                                 </x-base.table.tr>
                                 
@@ -242,7 +266,7 @@
                                         TOTAL PASSIVA
                                     </x-base.table.td>
                                     <x-base.table.td class="bg-danger text-white text-right font-bold text-lg">
-                                        {{ toThousand((abs($purchaseInCompleted ?? 0)) + (($saldo ?? 0) + ($sellingInCompleted ?? 0) + ($inventoryValue ?? 0) - abs($purchaseInCompleted ?? 0))) }}
+                                        {{ toThousand((abs($purchaseInCompleted ?? 0) + ($vehicleServiceExpense ?? 0) + ($driversPocketMoney ?? 0)) + ((($saldo ?? 0) + ($sellingInCompleted ?? 0) + ($inventoryValue ?? 0) + ($transportRevenue ?? 0)) - (abs($purchaseInCompleted ?? 0) + ($vehicleServiceExpense ?? 0) + ($driversPocketMoney ?? 0)))) }}
                                     </x-base.table.td>
                                 </x-base.table.tr>
                             </x-base.table.tbody>
@@ -252,83 +276,251 @@
             </div>
             <!-- END: Neraca -->
             
-            <div class="mt-8 text-xl text-primary font-bold">
-                <h3>Laporan Kas/ Bank Harian</h3>
+            <div class="mt-8">
+                <div class="text-xl text-primary font-bold mb-2">
+                    <h3>Laporan Kas/ Bank Harian</h3>
+                </div>
+                <div class="bg-slate-50 rounded-lg p-4 mb-6">
+                    <p class="text-slate-700 font-medium mb-3">Keterangan Warna Laporan Kas:</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <!-- Debit -->
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 bg-green-600 rounded-full mr-3"></div>
+                            <div>
+                                <span class="font-semibold text-green-700">DEBIT (Pemasukan)</span>
+                                <p class="text-xs text-slate-500">Semua jenis pemasukan</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Kredit -->
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 bg-red-600 rounded-full mr-3"></div>
+                            <div>
+                                <span class="font-semibold text-red-700">KREDIT (Pengeluaran)</span>
+                                <p class="text-xs text-slate-500">Semua jenis pengeluaran</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Saldo -->
+                        <div class="flex items-center">
+                            <div class="w-4 h-4 bg-blue-600 rounded-full mr-3"></div>
+                            <div>
+                                <span class="font-semibold text-blue-700">SALDO BERJALAN</span>
+                                <p class="text-xs text-slate-500">Saldo setelah setiap transaksi</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Card Pemasukan -->
+                    <div class="relative overflow-hidden bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-xl">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -translate-y-16 translate-x-16"></div>
+                        <div class="relative p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="p-3 bg-white bg-opacity-20 rounded-xl">
+                                    <x-base.lucide class="h-8 w-8 text-white" icon="TrendingUp" />
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-white text-lg font-bold">Total Pemasukan</h3>
+                                    <p class="text-green-100 text-sm">Debet</p>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <p class="text-3xl font-bold text-white mb-2">
+                                    {{ toThousand(($income ?? 0) + ($sellingCompleted ?? 0) + ($transportRevenue ?? 0)) }}
+                                </p>
+                            </div>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between text-green-100">
+                                    <span>• Penjualan & Lainnya</span>
+                                    <span class="font-medium">{{ toThousand(($income ?? 0) + ($sellingCompleted ?? 0)) }}</span>
+                                </div>
+                                <div class="flex justify-between text-green-100">
+                                    <span>• Ongkos Kirim</span>
+                                    <span class="font-medium">{{ toThousand($transportRevenue ?? 0) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Pengeluaran -->
+                    <div class="relative overflow-hidden bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl shadow-xl">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -translate-y-16 translate-x-16"></div>
+                        <div class="relative p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="p-3 bg-white bg-opacity-20 rounded-xl">
+                                    <x-base.lucide class="h-8 w-8 text-white" icon="TrendingDown" />
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-white text-lg font-bold">Total Pengeluaran</h3>
+                                    <p class="text-red-100 text-sm">Kredit</p>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <p class="text-3xl font-bold text-white mb-2">
+                                    {{ toThousand(($outcome ?? 0) + ($purchaseCompleted ?? 0) + ($vehicleServiceExpense ?? 0) + ($driversPocketMoney ?? 0)) }}
+                                </p>
+                            </div>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between text-red-100">
+                                    <span>• Operasional & Pembelian</span>
+                                    <span class="font-medium">{{ toThousand(($outcome ?? 0) + ($purchaseCompleted ?? 0)) }}</span>
+                                </div>
+                                <div class="flex justify-between text-red-100">
+                                    <span>• Servis & Saku Sopir</span>
+                                    <span class="font-medium">{{ toThousand(($vehicleServiceExpense ?? 0) + ($driversPocketMoney ?? 0)) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <!-- Card Saldo Kas -->
+                    <div class="relative overflow-hidden bg-gradient-to-br {{ ($saldo ?? 0) >= 0 ? 'from-blue-500 to-cyan-600' : 'from-orange-500 to-red-600' }} rounded-2xl shadow-xl">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -translate-y-16 translate-x-16"></div>
+                        <div class="relative p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="p-3 bg-white bg-opacity-20 rounded-xl">
+                                    <x-base.lucide class="h-8 w-8 text-white" icon="Wallet" />
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-white text-lg font-bold">Saldo Kas</h3>
+                                    <p class="{{ ($saldo ?? 0) >= 0 ? 'text-blue-100' : 'text-orange-100' }} text-sm">
+                                        {{ ($saldo ?? 0) >= 0 ? 'Kondisi Sehat' : 'Perlu Perhatian' }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <p class="text-3xl font-bold text-white mb-2">
+                                    {{ toThousand($saldo ?? 0) }}
+                                </p>
+                            </div>
+                            <div class="text-sm {{ ($saldo ?? 0) >= 0 ? 'text-blue-100' : 'text-orange-100' }}">
+                                <div class="flex justify-between">
+                                    <span>Status:</span>
+                                    <span class="font-medium">{{ ($saldo ?? 0) >= 0 ? '✓ Positif' : '⚠ Negatif' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="overflow-x-auto overflow-y-hidden mt-5">
-                <x-base.table class="-mt-2 border-separate border-spacing-y-[10px]">
+            <div class="overflow-x-auto overflow-y-hidden">
+                <x-base.table class="border border-slate-200 bg-white rounded-lg shadow-sm mb-[190px]">
                     <x-base.table.thead>
-                        <x-base.table.tr>
-                            <x-base.table.th class="whitespace-nowrap border-b-0">
+                        <x-base.table.tr class="bg-slate-50">
+                            <x-base.table.th class="text-center border-b border-slate-200 py-3 px-4 font-semibold">
                                 No
                             </x-base.table.th>
-                            <x-base.table.th class="whitespace-nowrap border-b-0">
+                            <x-base.table.th class="text-center border-b border-slate-200 py-3 px-4 font-semibold">
                                 Tanggal
                             </x-base.table.th>
-                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                                Uraian
+                            <x-base.table.th class="text-center border-b border-slate-200 py-3 px-4 font-semibold">
+                                Keterangan
                             </x-base.table.th>
-                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                                Kategori Transaksi
+                            <x-base.table.th class="text-center border-b border-slate-200 py-3 px-4 font-semibold">
+                                Debet (Masuk)
                             </x-base.table.th>
-                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                                Metode Pembayaran
+                            <x-base.table.th class="text-center border-b border-slate-200 py-3 px-4 font-semibold">
+                                Kredit (Keluar)
                             </x-base.table.th>
-                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                                Mutasi
+                            <x-base.table.th class="text-center border-b border-slate-200 py-3 px-4 font-semibold">
+                                Saldo
                             </x-base.table.th>
-                            <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
-                                ACTIONS
+                            <x-base.table.th class="text-center border-b border-slate-200 py-3 px-4 font-semibold">
+                                Aksi
                             </x-base.table.th>
                         </x-base.table.tr>
                     </x-base.table.thead>
                     <x-base.table.tbody>
-                        @foreach ($data as $item)
-                            <x-base.table.tr class="intro-x">
-                                <x-base.table.td
-                                    class="w-40 border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
+                        @php $runningBalance = 0; @endphp
+                        @foreach ($data as $index=> $item)
+                            @php 
+                                if(is_object($item)) {
+                                    // check item has toArray method
+                                    if(method_exists($item, 'toArray')) {
+                                        $item = $item->toArray();
+                                    } else {
+                                        $item = (array) $item;
+                                    }
+                                }
+                                
+                                if($item['mutation'] == 'Uang Masuk') {
+                                    $runningBalance += $item['nominal'];
+                                } else {
+                                    $runningBalance -= $item['nominal'];
+                                }
+                            @endphp
+                            <x-base.table.tr class="hover:bg-slate-50">
+                                <x-base.table.td class="text-center border-b border-slate-100 py-3 px-4">
                                     {{ ($data->currentpage() - 1) * $data->perpage() + $loop->index + 1 }}
                                 </x-base.table.td>
-                                <x-base.table.td
-                                    class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 ">
-                                    <a class="whitespace-nowrap font-medium">
-                                        {{ $item['date'] }}
-                                    </a>
+                                <x-base.table.td class="text-center border-b border-slate-100 py-3 px-4">
+                                    {{ \Carbon\Carbon::parse($item['date'])->format('d/m/Y') }}
                                 </x-base.table.td>
-                                <x-base.table.td
-                                    class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 w-1/4">
-                                    <a class="whitespace font-medium">
-                                        {{ $item['description'] }}
-                                    </a>
-                                </x-base.table.td>
-                                <x-base.table.td
-                                    class="border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                    {{ $item['spendingCategory']['spending_category'] }}
-                                </x-base.table.td>
-                                <x-base.table.td
-                                    class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600">
-                                    {{ $item['payment_method'] }}
-                                </x-base.table.td>
-                                <x-base.table.td
-                                    class="w-40 border-b-0 bg-white text-center shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 font-bold {{ $item['mutation'] == 'Uang Masuk' ? 'text-green-800' : 'text-danger' }}" >
-                                    {{ toThousand($item->nominal) }} <br />{{ $item['mutation'] }}
-                                </x-base.table.td>
-                                <x-base.table.td
-                                    class="relative w-56 border-b-0 bg-white py-0 shadow-[20px_3px_20px_#0000000b] before:absolute before:inset-y-0 before:left-0 before:my-auto before:block before:h-8 before:w-px before:bg-slate-200 first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 before:dark:bg-darkmode-400">
-                                    <div class="flex items-center justify-center">
-                                        @if (
-                                            $item['spendingCategory']['spending_category'] != 'Saldo Utama' &&
-                                                $item['spendingCategory']['spending_category'] != 'Saldo Kendaraan')
-                                            <a class="mr-3 flex items-center" href="{{ route('spending.edit', $item->id) }}">
-                                                <x-base.lucide class="mr-1 h-4 w-4" icon="CheckSquare" />
-                                                Edit
-                                            </a>
-                                            <a class="flex items-center text-danger" data-tw-toggle="modal"
-                                                data-tw-target="#delete-confirmation-modal-{{ $item->id }}" href="#">
-                                                <x-base.lucide class="mr-1 h-4 w-4" icon="Trash" /> Delete
-                                            </a>
+                                <x-base.table.td class="border-b border-slate-100 py-3 px-4">
+                                    <div class="font-medium">{{ $item['description'] }}</div>
+                                    <div class="text-sm text-slate-500">
+                                        @if(isset($item['spendingCategory']) && is_array($item['spendingCategory']))
+                                            {{ $item['spendingCategory']['spending_category'] }}
+                                        @elseif(isset($item['spendingCategory']) && is_object($item['spendingCategory']))
+                                            {{ $item['spendingCategory']->spending_category }}
+                                        @else
+                                            {{ $item['spendingCategory']['spending_category'] ?? 'N/A' }}
                                         @endif
-                                        <x-base.dialog id="delete-confirmation-modal-{{ $item->id }}">
+                                        @if(isset($item['payment_method']))
+                                         | {{ $item['payment_method'] }}
+                                        @endif
+                                    </div>
+                                </x-base.table.td>
+                                <x-base.table.td class="text-right border-b border-slate-100 py-3 px-4">
+                                    @if($item['mutation'] == 'Uang Masuk')
+                                        <span class="font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                                            {{ toThousand($item['nominal']) }}
+                                        </span>
+                                    @else
+                                        <span class="text-slate-400">-</span>
+                                    @endif
+                                </x-base.table.td>
+                                <x-base.table.td class="text-right border-b border-slate-100 py-3 px-4">
+                                    @if($item['mutation'] == 'Uang Keluar')
+                                        <span class="font-bold text-red-600 bg-red-50 px-3 py-1 rounded-full">
+                                            {{ toThousand($item['nominal']) }}
+                                        </span>
+                                    @else
+                                        <span class="text-slate-400">-</span>
+                                    @endif
+                                </x-base.table.td>
+                                <x-base.table.td class="text-right border-b border-slate-100 py-3 px-4">
+                                    <span class="font-bold {{ $runningBalance >= 0 ? 'text-blue-600 bg-blue-50' : 'text-red-600 bg-red-50' }} px-3 py-1 rounded-full">
+                                        {{ toThousand($runningBalance) }}
+                                    </span>
+                                </x-base.table.td>
+                                <x-base.table.td class="text-center border-b border-slate-100 py-3 px-4">
+                                    @if (
+                                        isset($item['type']) && in_array($item['type'], ['vehicle_service', 'transport_income', 'drivers_pocket'])
+                                    )
+                                        <span class="text-slate-400 text-sm">Auto</span>
+                                    @elseif (
+                                        isset($item['spendingCategory']) &&
+                                        (
+                                            (is_array($item['spendingCategory']) && $item['spendingCategory']['spending_category'] != 'Saldo Utama' && $item['spendingCategory']['spending_category'] != 'Saldo Kendaraan') ||
+                                            (is_object($item['spendingCategory']) && $item['spendingCategory']->spending_category != 'Saldo Utama' && $item['spendingCategory']->spending_category != 'Saldo Kendaraan')
+                                        )
+                                    )
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <a class="text-blue-600 hover:text-blue-800 text-sm" href="{{ route('spending.edit', $item['id']) }}">
+                                                <x-base.lucide class="h-4 w-4" icon="Edit" />
+                                            </a>
+                                            <a class="text-red-600 hover:text-red-800 text-sm" data-tw-toggle="modal"
+                                                data-tw-target="#delete-confirmation-modal-{{ $item['id'] }}" href="#">
+                                                <x-base.lucide class="h-4 w-4" icon="Trash2" />
+                                            </a>
+                                        </div>
+                                        <x-base.dialog id="delete-confirmation-modal-{{ $item['id'] }}">
                                             <x-base.dialog.panel>
                                                 <div class="p-5 text-center">
                                                     <x-base.lucide class="mx-auto mt-3 h-16 w-16 text-danger" icon="XCircle" />
@@ -342,7 +534,7 @@
                                                         variant="outline-secondary">
                                                         Cancel
                                                     </x-base.button>
-                                                    <form action="{{ route('spending.destroy', $item->id) }}" method="post"
+                                                    <form action="{{ route('spending.destroy', $item['id']) }}" method="post"
                                                         class="w-24">
                                                         @method('delete')
                                                         @csrf
@@ -353,22 +545,62 @@
                                                 </div>
                                             </x-base.dialog.panel>
                                         </x-base.dialog>
-
-                                    </div>
+                                    @else
+                                        <span class="text-slate-400 text-sm">-</span>
+                                    @endif
                                 </x-base.table.td>
                             </x-base.table.tr>
                         @endforeach
+                        
+                        <!-- Total Row -->
+                        @if($data->isNotEmpty()):
+                            <x-base.table.tr class="bg-slate-100 font-bold ">
+                                <x-base.table.td class="text-center border-t-2 border-slate-300 py-4 px-4" colspan="3">
+                                    <strong>TOTAL</strong>
+                                </x-base.table.td>
+                                <x-base.table.td class="text-right border-t-2 border-slate-300 py-4 px-4">
+                                    @php
+                                        $totalIncome = $data->filter(function($item) { 
+                                            return isset($item->mutation) && $item->mutation == 'Uang Masuk'; 
+                                        })->sum(function($item) {
+                                            return isset($item->nominal) ? $item->nominal : 0;
+                                        });
+                                    @endphp
+                                    <strong class="text-green-600 bg-green-50 px-3 py-1 rounded-full">{{ toThousand($totalIncome) }}</strong>
+                                </x-base.table.td>
+                                <x-base.table.td class="text-right border-t-2 border-slate-300 py-4 px-4">
+                                    @php
+                                        $totalOutcome = $data->filter(function($item) { 
+                                            return isset($item->mutation) && $item->mutation == 'Uang Keluar'; 
+                                        })->sum(function($item) {
+                                            return isset($item->nominal) ? $item->nominal : 0;
+                                        });
+                                    @endphp
+                                    <strong class="text-red-600 bg-red-50 px-3 py-1 rounded-full">{{ toThousand($totalOutcome) }}</strong>
+                                </x-base.table.td>
+                                <x-base.table.td class="text-right border-t-2 border-slate-300 py-4 px-4">
+                                    @php
+                                        $finalBalance = $totalIncome - $totalOutcome;
+                                    @endphp
+                                    <strong class="{{ $finalBalance >= 0 ? 'text-blue-600 bg-blue-50' : 'text-red-600 bg-red-50' }} px-3 py-1 rounded-full">
+                                        {{ toThousand($finalBalance) }}
+                                    </strong>
+                                </x-base.table.td>
+                                <x-base.table.td class="border-t-2 border-slate-300 py-4 px-4"></x-base.table.td>
+                            </x-base.table.tr>
+                        @endif
                     </x-base.table.tbody>
                     @if ($data->isEmpty())
                         <x-base.table.tbody>
                             <x-base.table.tr>
-                                <x-base.table.td
-                                    class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600"
-                                    colspan="7">
-                                    <div class="flex justify-center items-center">
-                                        <x-base.lucide class="h-16 w-16 text-slate-500" icon="Inbox" />
-                                        <div class="ml-2 text-slate-500">
-                                            Data not found
+                                <x-base.table.td class="text-center py-8 border-b border-slate-100" colspan="7">
+                                    <div class="flex flex-col justify-center items-center">
+                                        <x-base.lucide class="h-16 w-16 text-slate-400 mb-3" icon="Inbox" />
+                                        <div class="text-slate-500 text-lg font-medium">
+                                            Tidak ada data transaksi
+                                        </div>
+                                        <div class="text-slate-400 text-sm mt-1">
+                                            Silakan tambah transaksi baru untuk melihat laporan kas
                                         </div>
                                     </div>
                                 </x-base.table.td>

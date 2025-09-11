@@ -19,6 +19,7 @@ use Dompdf\Options;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\CV;
 use App\Http\Requests\Transaksi\SpendingStoreRequest;
+use Illuminate\Pagination\LengthAwarePaginator;
 class SpendingController extends Controller
 {
     public function index(Request $request)
@@ -55,13 +56,112 @@ class SpendingController extends Controller
             ->selectRaw('SUM(stock.last_stock * stock.price_kg) as total_value')
             ->value('total_value') ?? 0;
         
-        $saldo =( $income + $sellingCompleted) - ($outcome + $purchaseCompleted);
-        $data = $all->paginate($request->get('per_page', 10));
+        // Hitung pengeluaran servis kendaraan
+        $vehicleServiceExpense = VehicleService::join('vehicle_service_detail', 'vehicle_service.id', '=', 'vehicle_service_detail.vehicle_service_id')
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                return $query->whereBetween('vehicle_service.date', [$request->start_date, $request->end_date]);
+            })
+            ->sum('vehicle_service_detail.amount_of_expenditure') ?? 0;
+        
+        // Hitung ongkos pengiriman (Transport)
+        $transportRevenue = \App\Models\Selling::join('customer', 'selling.customer_id', '=', 'customer.id')
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                return $query->whereBetween('selling.date', [$request->start_date, $request->end_date]);
+            })
+            ->sum('customer.ongkosan') ?? 0;
+            
+        // Hitung saku sopir (pengeluaran dari ongkos)
+        $driversPocketMoney = \App\Models\Selling::when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                return $query->whereBetween('date', [$request->start_date, $request->end_date]);
+            })
+            ->sum('drivers_pocket_money') ?? 0;
+        
+        // Gabungkan data servis kendaraan ke dalam laporan kas
+        $vehicleServiceData = VehicleService::with(['vehicleServiceDetail.spendingCategory', 'vehicle', 'driver'])
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                return $query->whereBetween('date', [$request->start_date, $request->end_date]);
+            })
+            ->get()
+            ->map(function ($service) {
+                $totalCost = $service->vehicleServiceDetail->sum('amount_of_expenditure');
+                return (object) [
+                    'id' => 'vs_' . $service->id,
+                    'date' => $service->date,
+                    'description' => 'Servis Kendaraan ' . $service->vehicle->license_plate . ' (' . $service->driver->name . ')',
+                    'spendingCategory' => (object) ['spending_category' => 'Servis Kendaraan'],
+                    'payment_method' => 'Cash',
+                    'mutation' => 'Uang Keluar',
+                    'nominal' => $totalCost,
+                    'type' => 'vehicle_service'
+                ];
+            });
+
+        // Gabungkan data transport ke dalam laporan kas
+        $transportData = \App\Models\Selling::with(['customer', 'vehicle', 'driver'])
+            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                return $query->whereBetween('date', [$request->start_date, $request->end_date]);
+            })
+            ->get()
+            ->flatMap(function ($transport) {
+                $data = [];
+                
+                // Pemasukan dari ongkos kirim
+                if ($transport->customer->ongkosan > 0) {
+                    $data[] = (object) [
+                        'id' => 'tr_in_' . $transport->id,
+                        'date' => $transport->date,
+                        'description' => 'Ongkos Kirim ke ' . $transport->customer->name . ' (Nopol: ' . $transport->vehicle->license_plate . ')',
+                        'spendingCategory' => (object) ['spending_category' => 'Ongkos Kirim'],
+                        'payment_method' => 'Cash',
+                        'mutation' => 'Uang Masuk',
+                        'nominal' => $transport->customer->ongkosan,
+                        'type' => 'transport_income'
+                    ];
+                }
+                
+                // Pengeluaran saku sopir
+                if ($transport->drivers_pocket_money > 0) {
+                    $data[] = (object) [
+                        'id' => 'tr_out_' . $transport->id,
+                        'date' => $transport->date,
+                        'description' => 'Saku Sopir ' . $transport->driver->name . ' (Nopol: ' . $transport->vehicle->license_plate . ')',
+                        'spendingCategory' => (object) ['spending_category' => 'Saku Sopir'],
+                        'payment_method' => 'Cash',
+                        'mutation' => 'Uang Keluar',
+                        'nominal' => $transport->drivers_pocket_money,
+                        'type' => 'drivers_pocket'
+                    ];
+                }
+                
+                return $data;
+            });
+
+        // Gabungkan semua data
+        $allTransactions = $all->get()
+            ->concat($vehicleServiceData)
+            ->concat($transportData)
+            ->sortByDesc('date')
+            ->values();
+
+        // Buat pagination manual
+        $perPage = $request->get('per_page', 10);
+        $currentPage = request()->get('page', 1);
+        $pagedData = $allTransactions->forPage($currentPage, $perPage);
+        
+        $data = new \Illuminate\Pagination\LengthAwarePaginator(
+            $pagedData,
+            $allTransactions->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        $saldo =( $income + $sellingCompleted + $transportRevenue) - ($outcome + $purchaseCompleted + $vehicleServiceExpense + $driversPocketMoney);
         $title = 'Data Transaksi Lain Lain';
         $route = 'spending';
         $request = $request->toArray();
 
-        return view('pages.backoffice.spending.index', compact('data', 'request','title', 'route', 'request', 'saldo', 'income', 'outcome', 'sellingCompleted', 'sellingInCompleted', 'purchaseCompleted', 'purchaseInCompleted', 'inventoryValue'));
+        return view('pages.backoffice.spending.index', compact('data', 'request','title', 'route', 'request', 'saldo', 'income', 'outcome', 'sellingCompleted', 'sellingInCompleted', 'purchaseCompleted', 'purchaseInCompleted', 'inventoryValue', 'vehicleServiceExpense', 'transportRevenue', 'driversPocketMoney'));
     }
 
     public function saldo(Request $request){
