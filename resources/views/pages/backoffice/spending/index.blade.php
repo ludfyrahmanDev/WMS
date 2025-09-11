@@ -409,7 +409,7 @@
                 </div>
             </div>
             <div class="overflow-x-auto overflow-y-hidden">
-                <x-base.table class="border border-slate-200 bg-white rounded-lg shadow-sm">
+                <x-base.table class="border border-slate-200 bg-white rounded-lg shadow-sm mb-[190px]">
                     <x-base.table.thead>
                         <x-base.table.tr class="bg-slate-50">
                             <x-base.table.th class="text-center border-b border-slate-200 py-3 px-4 font-semibold">
@@ -554,7 +554,7 @@
                         
                         <!-- Total Row -->
                         @if($data->isNotEmpty()):
-                            <x-base.table.tr class="bg-slate-100 font-bold">
+                            <x-base.table.tr class="bg-slate-100 font-bold ">
                                 <x-base.table.td class="text-center border-t-2 border-slate-300 py-4 px-4" colspan="3">
                                     <strong>TOTAL</strong>
                                 </x-base.table.td>
