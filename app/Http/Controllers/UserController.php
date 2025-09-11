@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 // import gender
 use App\Enums\Gender;
-use App\Enums\RoleType;
+use App\Models\Role;
 // import user store
 use App\Http\Requests\User\UserStoreRequest;
 class UserController extends Controller
@@ -20,7 +20,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
 
-        $data = User::filterResource($request, [
+        $data = User::with('role')->filterResource($request, [
             'name',
             'email',
         ], [])
@@ -40,11 +40,11 @@ class UserController extends Controller
     {
         $title = 'Data User Akun';
         $gender = Gender::asOptions();
-        $role = RoleType::asOptions();
+        $roles = Role::where('is_active', true)->pluck('display_name', 'id');
         $data = (object)[
             'name' => '',
             'email' => '',
-            'role' => '',
+            'role_id' => '',
             'password' => '',
             'gender' => '',
             'active' => '',
@@ -52,7 +52,7 @@ class UserController extends Controller
         ];
         $route = route('users.store');
         $type = 'create';
-        return view('pages.backoffice.user._form', compact('title', 'gender', 'role', 'data', 'route','type'));
+        return view('pages.backoffice.user._form', compact('title', 'gender', 'roles', 'data', 'route','type'));
     }
 
     /**
@@ -68,7 +68,7 @@ class UserController extends Controller
             $user = new User();
             $user->name = $request->name;
             $user->email = $request->email;
-            $user->role = 'admin';
+            $user->role_id = $request->role_id;
             $user->gender = $request->gender;
             $user->password = bcrypt($request->password);
             $user->photo = $request->hasFile('file') ?
@@ -104,10 +104,10 @@ class UserController extends Controller
         $data = $user;
         $title = 'Data User Akun';
         $gender = Gender::asOptions();
-        $role = RoleType::asOptions();
+        $roles = Role::where('is_active', true)->pluck('display_name', 'id');
         $route = route('users.update', $user->id);
         $type = 'edit';
-        return view('pages.backoffice.user._form', compact('title', 'gender', 'role', 'data', 'route','type'));
+        return view('pages.backoffice.user._form', compact('title', 'gender', 'roles', 'data', 'route','type'));
     }
 
     /**
@@ -122,7 +122,7 @@ class UserController extends Controller
         try {
             $user->name = $request->name;
             $user->email = $request->email;
-            $user->role = 'admin';
+            $user->role_id = $request->role_id ?? $user->role_id;
             $user->gender = $request->gender;
             $user->password = $request->password ? bcrypt($request->password) : $user->password;
             $user->photo = $request->hasFile('file') ?
@@ -179,6 +179,32 @@ class UserController extends Controller
             return back()->with('success', 'Berhasil mengubah data!');
         } catch (\Throwable $th) {
             return back()->with('failed', 'Gagal mengubah data!'.$th->getMessage());
+        }
+    }
+
+    /**
+     * Change user role.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  User  $user
+     * @return \Illuminate\Http\Response
+     */
+    public function changeRole(Request $request, User $user)
+    {
+        $request->validate([
+            'role_id' => 'required|exists:roles,id',
+        ]);
+
+        try {
+            $oldRole = $user->role ? $user->role->display_name : 'Tidak ada role';
+            $newRole = Role::find($request->role_id);
+            
+            $user->role_id = $request->role_id;
+            $user->save();
+
+            return back()->with('success', "Berhasil mengubah role {$user->name} dari {$oldRole} menjadi {$newRole->display_name}!");
+        } catch (\Throwable $th) {
+            return back()->with('failed', 'Gagal mengubah role: ' . $th->getMessage());
         }
     }
 }

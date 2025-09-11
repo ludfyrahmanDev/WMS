@@ -27,4 +27,19 @@ class Handler extends ExceptionHandler
             //
         });
     }
+
+    /**
+     * Render an exception into an HTTP response.
+     */
+    public function render($request, Throwable $e)
+    {
+        // Handle 403 Forbidden exceptions
+        if ($this->isHttpException($e) && $e->getStatusCode() == 403) {
+            return response()->view('pages.errors.403', [
+                'message' => 'Halaman tidak tersedia untuk Anda'
+            ], 403);
+        }
+
+        return parent::render($request, $e);
+    }
 }
