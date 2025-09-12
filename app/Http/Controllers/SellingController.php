@@ -463,7 +463,7 @@ class SellingController extends Controller
             mkdir(storage_path('app/public/coretax'), 0777, true);
         }
         $xml->asXML(storage_path('app/public/coretax/' . $fileName));
-        return response()->download(public_path('coretax/' . $fileName));
+        return response()->download(storage_path('app/public/coretax/' . $fileName));
     }
 
     public function exportPdfSingle(Request $request)
