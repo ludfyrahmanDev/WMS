@@ -76,23 +76,33 @@
                                 </div>
                             @enderror
                         </div>
+                        @if (count($data['cvs']) > 1)
+                            <div class="input-form col-span-4">
+                                <x-base.form-label for="cv_id">Perusahaan</x-base.form-label>
+                                <x-base.tom-select name="cv_id" id="cv_id" class="w-full"
+                                    data-placeholder="Pilih Perusahaan" required>
+                                    <option value="">Pilih Perusahaan</option>
+                                    @foreach ($data['cvs'] as $cv)
+                                        <option value="{{ $cv->id }}"
+                                            {{ ($data['header']->cv_id ?? session('cv_id')) == $cv->id ? 'selected' : '' }}>
+                                            {{ $cv->name }}
+                                        </option>
+                                    @endforeach
+                                </x-base.tom-select>
+                                @error('cv_id')
+                                    <div class="pristine-error text-danger mt-2">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        @else
+                            <input type="hidden" name="cv_id" value="{{ $data['cvs']->first()->id ?? session('cv_id') }}">
+                        @endif
                     </div>
                     <br>
                     <hr style="border: 1px solid black;">
 
                     <div class="mt-3 grid grid-cols-12 gap-2">
-                        {{-- <div class="input-form col-span-4">
-                            <x-base.form-label for="crud-form-1">Kategori</x-base.form-label>
-                            <x-base.tom-select name="kategori" id="kategori" class="w-full"
-                                data-placeholder="Pilih Kategori">
-                                <option value="">Pilih Kategori</option>
-                                @foreach ($data['spendingCategory'] as $kategori)
-                                    <option value="{{ $kategori->id }}_{{ $kategori->spending_category }}">
-                                        {{ $kategori->spending_category }}
-                                    </option>
-                                @endforeach
-                            </x-base.tom-select>
-                        </div> --}}
                         <div class="input-form col-span-6">
                             <x-base.form-label for="crud-form-1">Keterangan</x-base.form-label>
                             <x-base.form-textarea class="form-control" id="keterangan" name="keterangan"
@@ -136,11 +146,6 @@
                             @if (isset($data['detail']))
                                 @foreach ($data['detail'] as $item)
                                     <tr class="row-data">
-                                        {{-- <td class="py-2 px-4 kategori_id" hidden>{{ $item['spending_category_id'] }}<input
-                                                type="hidden" name="kategori_id[]" id="kategori_id[]"
-                                                value="{{ $item['spending_category_id'] }}" /></td>
-                                        <td class="py-2 px-4 w-1/4">{{ $item['spendingCategory']['spending_category'] }}
-                                        </td> --}}
                                         <td class="py-2 px-4 keterangan w-1/4">{{ $item['description'] }}<input
                                                 type="hidden" class="column_keterangan" name="keterangan[]"
                                                 id="keterangan[]" value="{{ $item['description'] }}" /></td>

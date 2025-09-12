@@ -18,6 +18,7 @@ class Spending extends Model
         'description',
         'created_by',
         'spending_category_id',
+        'cv_id',
         'payment_method',
         'nominal'
     ];
@@ -27,6 +28,11 @@ class Spending extends Model
     public function spendingCategory()
     {
         return $this->belongsTo(SpendingCategory::class, 'spending_category_id', 'id');
+    }
+
+    public function cv()
+    {
+        return $this->belongsTo(CV::class, 'cv_id', 'id');
     }
 
     public function getSpendingCategory()

@@ -15,7 +15,9 @@ class TransportController extends Controller
 {
     public function index(Request $request)
     {
+        $cv_id = session('cv_id');
         $all = Transport::with('customer', 'driver')
+            ->where('cv_id', $cv_id)
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;

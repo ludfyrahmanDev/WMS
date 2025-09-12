@@ -124,4 +124,71 @@ class User extends Authenticatable
 
         return true;
     }
+
+    /**
+     * Check if user has company access.
+     */
+    public function hasCompanyAccess()
+    {
+        return $this->hasPermission('company.access');
+    }
+
+    /**
+     * Get CVs/Companies that user can access.
+     */
+    public function getAccessibleCVs()
+    {
+        if (!$this->role || !$this->hasCompanyAccess()) {
+            return collect();
+        }
+
+        $roleCVs = $this->role->cvs;
+        
+        // If role has no specific CV restrictions, return all CVs
+        if ($roleCVs->isEmpty()) {
+            return CV::all();
+        }
+
+        return $roleCVs;
+    }
+
+    /**
+     * Check if user can access specific CV.
+     */
+    public function canAccessCV($cvId)
+    {
+        if (!$this->hasCompanyAccess()) {
+            return false;
+        }
+
+        $accessibleCVs = $this->getAccessibleCVs();
+        return $accessibleCVs->pluck('id')->contains($cvId);
+    }
+
+    /**
+     * Check if user has full company access (can access all CVs).
+     */
+    public function hasFullCompanyAccess()
+    {
+        return $this->hasCompanyAccess() && $this->getCompanyAccessLevel() === 'all';
+    }
+
+    /**
+     * Get user's company access level.
+     * Returns: 'all', 'limited', or 'none'
+     */
+    public function getCompanyAccessLevel()
+    {
+        if (!$this->hasCompanyAccess()) {
+            return 'none';
+        }
+
+        $roleCVs = $this->role->cvs ?? collect();
+        
+        if ($roleCVs->isEmpty()) {
+            return 'all'; // Can access all CVs
+        } else {
+            return 'limited'; // Can only access specific CVs
+        }
+    }
 }

@@ -21,6 +21,7 @@ class SellingStoreRequest extends FormRequest
         return [
             'tgl_jual' => ['required'],
             'customer' => ['required'],
+            'cv_id' => ['nullable', 'exists:cv,id'],
             'driver' => ['required'],
             'kendaraan' => ['required'],
             'uang_saku' => ['required'],
@@ -35,6 +36,7 @@ class SellingStoreRequest extends FormRequest
         return [
             'tgl_jual.required' => 'Tanggal Penjualan tidak boleh kosong!',
             'customer.required' => 'Pelanggan tidak boleh kosong!',
+            'cv_id.exists' => 'Perusahaan tidak valid!',
             'driver.required' => 'Driver tidak boleh kosong!',
             'kendaraan.required' => 'Kendaraan tidak boleh kosong!',
             'uang_saku.required' => 'Uang Saku tidak boleh kosong!',

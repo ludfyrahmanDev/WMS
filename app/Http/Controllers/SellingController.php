@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Stock;
 use App\Models\Selling;
 use App\Models\Spending;
+use App\Models\Customer;
+use App\Models\Driver;
+use App\Models\Vehicle;
 use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
 use App\Models\SellingDetail;
@@ -16,12 +19,18 @@ use App\Http\Requests\Transaksi\SellingStoreRequest;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Support\Facades\Schema;
 
 class SellingController extends Controller
 {
     public function index(Request $request)
     {
-        $all = Selling::with('customer', 'driver')
+        $selectedCvId = session('cv_id');
+        
+        $all = Selling::with('customer', 'driver', 'cv')
+            ->when($selectedCvId && auth()->user()->hasCompanyAccess(), function ($query) use ($selectedCvId) {
+                $query->where('cv_id', $selectedCvId);
+            })
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;
@@ -42,14 +51,17 @@ class SellingController extends Controller
 
     public function create(Selling $selling)
     {
+        $selectedCvId = session('cv_id');
+        $cvs = auth()->user()->getAccessibleCvs();
         $data['customer']   = $selling->getCustomer();
         $data['driver']     = $selling->getDriver();
         $data['vehicle']    = $selling->getVehicle();
         $data['product']    = $selling->getProduct();
-
+        $data['cvs']        = $cvs;
         $data['header'] = (object)[
             'date'                  => null,
             'customer_id'           => null,
+            'cv_id'                 => $selectedCvId,
             'vehicle_id'            => null,
             'driver_id'             => null,
             'driver_pocket_money'   => null,
@@ -61,7 +73,7 @@ class SellingController extends Controller
             'payment_type'          => null
         ];
 
-        $title  = 'Data Penjualan';
+        $title  = 'Tambah Penjualan';
         $route  = route('selling.store');
         $type   = 'create';
 
@@ -80,6 +92,7 @@ class SellingController extends Controller
             $selling                        = new Selling();
             $selling->date                  = $request->tgl_jual;
             $selling->customer_id           = $request->customer;
+            $selling->cv_id                 = $request->cv_id ?? session('cv_id');
             $selling->vehicle_id            = $request->supplier;
             $selling->driver_id             = $request->driver;
             $selling->vehicle_id            = $request->kendaraan;
@@ -151,6 +164,7 @@ class SellingController extends Controller
     public function edit(Selling $Selling)
     {
         $selling2 = new Selling;
+        $cvs = auth()->user()->getAccessibleCvs();
 
         // $Selling->load('selling_detail.stock');
         // $Selling->load('selling_detail.stock.product');
@@ -161,12 +175,13 @@ class SellingController extends Controller
         $data['driver']     = $selling2->getDriver();
         $data['vehicle']    = $selling2->getVehicle();
         $data['product']    = $selling2->getProduct();
+        $data['cvs']        = $cvs;
         $data['header']     = $Selling;
         $data['detail']     = $sellingDetails;
 
         // echo json_encode($data['detail']); die;
 
-        $title = 'Data Penjualan';
+        $title = 'Edit Penjualan';
         $route = route('selling.update', $Selling);
         $type = 'edit';
 
@@ -497,5 +512,77 @@ class SellingController extends Controller
 
         // Unduh file PDF
         return $dompdf->stream("$name.pdf");
+    }
+
+    public function getCustomersByCv($cv_id)
+    {
+        try {
+            // Check if cv_id column exists, if not return all customers
+            if (Schema::hasColumn('customer', 'cv_id')) {
+                $customers = Customer::where('cv_id', $cv_id)
+                    ->select('id', 'name')
+                    ->get();
+            } else {
+                $customers = Customer::select('id', 'name')->get();
+            }
+            
+            return response()->json([
+                'success' => true,
+                'data' => $customers
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function getDriversByCv($cv_id)
+    {
+        try {
+            // Check if cv_id column exists, if not return all drivers
+            if (Schema::hasColumn('driver', 'cv_id')) {
+                $drivers = Driver::where('cv_id', $cv_id)
+                    ->select('id', 'name')
+                    ->get();
+            } else {
+                $drivers = Driver::select('id', 'name')->get();
+            }
+            
+            return response()->json([
+                'success' => true,
+                'data' => $drivers
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function getVehiclesByCv($cv_id)
+    {
+        try {
+            // Check if cv_id column exists, if not return all vehicles
+            if (Schema::hasColumn('vehicle', 'cv_id')) {
+                $vehicles = Vehicle::where('cv_id', $cv_id)
+                    ->select('id', 'name', 'license_plate')
+                    ->get();
+            } else {
+                $vehicles = Vehicle::select('id', 'name', 'license_plate')->get();
+            }
+            
+            return response()->json([
+                'success' => true,
+                'data' => $vehicles
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 }

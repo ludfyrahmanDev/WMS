@@ -12,19 +12,25 @@ use App\Models\VehicleServiceDetail;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\VehicleServiceExport;
 use App\Http\Requests\Transaksi\VehicleServiceStoreRequest;
+use App\Http\Requests\Transaksi\VehicleServiceRequest;
 use Dompdf\Dompdf;
 use Dompdf\Options;
-
+use Illuminate\Support\Facades\DB;
 class VehicleServiceController extends Controller
 {
     public function index(Request $request)
     {
+        $selectedCvId = session('cv_id');
+        
         $all = VehicleService::filterResource($request, [
             'date',
             'driver.name',
             'vehicle.name'
         ], [])
-            ->with('driver', 'vehicle', 'vehicleServiceDetail')
+            ->when($selectedCvId && auth()->user()->hasCompanyAccess(), function ($query) use ($selectedCvId) {
+                $query->where('cv_id', $selectedCvId);
+            })
+            ->with(['driver', 'vehicle', 'vehicleServiceDetail', 'cv'])
             ->orderBy($request->get('sort_by', 'date'), $request->get('order', 'desc'));
         $total = 0;
         if($request->has('start_date') && $request->has('end_date')){
@@ -52,75 +58,65 @@ class VehicleServiceController extends Controller
 
     public function create()
     {
+        $selectedCvId = session('cv_id');
+        $cvs = auth()->user()->getAccessibleCvs();
+        
         $data['header'] = (object)[
             'date' => null,
             'driver_id' => null,
-            'vehicle_id' => null
+            'vehicle_id' => null,
+            'cv_id' => $selectedCvId
         ];
 
         $vehicleService = new VehicleService;
 
-        // $driver = new Driver;
-        // $vehicle = new Vehicle;
-        // $spendingCategory = new SpendingCategory;
-
-        // $data['driver'] = $driver->select('id', 'name')->get();
-        // $data['vehicle'] = $vehicle->select('id', 'name', 'license_plate')->get();
-        // $data['spendingCategory'] = $spendingCategory->select('id', 'spending_category')->where('spending_types', 'kendaraan')->get();
-
         $data['driver'] = $vehicleService->getDriver();
         $data['vehicle'] = $vehicleService->getVehicle();
-        // $data['spendingCategory'] = $vehicleService->getSpendingCategory();
+        $data['cvs'] = $cvs;
 
-        $title = 'Data Servis Kendaraan';
+        $title = 'Tambah Servis Kendaraan';
         $route = route('vehicle_service.store');
         $type = 'create';
 
         return view('pages.backoffice.vehicle_service._form', compact('data', 'title', 'route', 'type'));
     }
 
-    public function store(VehicleServiceStoreRequest $request)
+    public function store(VehicleServiceRequest $request)
     {
-        $user = auth()->user();
-
+        DB::beginTransaction();
         try {
-            // cek saldo
-            $totalKeterangan = COUNT($request->keterangan);
+            $data = $request->validated();
+            
+            $vehicleData = [
+                'date' => $data['tanggal'],
+                'driver_id' => $data['driver'],
+                'vehicle_id' => $data['kendaraan'],
+                'cv_id' => $data['cv_id'] ?? session('cv_id'),
+                'who_create' => auth()->user()->name,
+                'who_update' => auth()->user()->name,
+            ];
 
-            $totalHarga = 0;
-            for ($i = 0; $i < $totalKeterangan; $i++) {
-                $totalHarga += intval($request->total_pengeluaran[$i]);
-            }
+            $vehicleService = VehicleService::create($vehicleData);
 
-            $saldo = new SpendingController();
-
-            $cekSaldo = $saldo->saldoKendaraan($request);
-
-            if (intval($totalHarga) > intval($cekSaldo)) {
-                return back()->with('failed', 'Gagal, saldo tidak cukup!');
-            }
-            // selesai total harga
-
-            $vehicleService = new VehicleService();
-            $vehicleService->date = $request->tanggal;
-            $vehicleService->driver_id = $request->driver;
-            $vehicleService->vehicle_id = $request->kendaraan;
-            $vehicleService->who_create = $user['name'];
-            $vehicleService->who_update = $user['name'];
-            $vehicleService->save();
-
-            for ($i = 0; $i < $totalKeterangan; $i++) {
+            // keterangan
+            foreach ($request->keterangan as $index => $keterangan) {
                 $vehicleServiceDetail = new VehicleServiceDetail();
                 $vehicleServiceDetail->vehicle_service_id = $vehicleService->id;
-                // $vehicleServiceDetail->spending_category_id = $request->kategori_id[$i];
-                $vehicleServiceDetail->amount_of_expenditure = curencyToInteger($request->total_pengeluaran[$i]);
-                $vehicleServiceDetail->description = $request->keterangan[$i];
+                $vehicleServiceDetail->amount_of_expenditure = curencyToInteger($request->total_pengeluaran[$index]);
+                $vehicleServiceDetail->description = $keterangan;
                 $vehicleServiceDetail->save();
             }
 
-            return redirect(route('vehicle_service.index'))->with('success', 'Berhasil menambah data!');
-        } catch (\Throwable $th) {
-            return back()->with('failed', 'Gagal menambah data!' . $th->getMessage());
+            DB::commit();
+
+            return redirect()->route('vehicle_service.index');
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'data' => null,
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -138,14 +134,15 @@ class VehicleServiceController extends Controller
     public function edit(VehicleService $vehicleService)
     {
         // $vehicleService->load('vehicleServiceDetail.spendingCategory');
+        $cvs = auth()->user()->getAccessibleCvs();
 
         $data['driver'] = $vehicleService->getDriver();
         $data['vehicle'] = $vehicleService->getVehicle();
-        // $data['spendingCategory'] = $vehicleService->getSpendingCategory();
+        $data['cvs'] = $cvs;
         $data['header'] = $vehicleService;
         $data['detail'] = $vehicleService->vehicleServiceDetail;
 
-        $title = 'Data Servis Kendaraan';
+        $title = 'Edit Servis Kendaraan';
         $route = route('vehicle_service.update', $vehicleService);
         $type = 'edit';
 
@@ -166,18 +163,13 @@ class VehicleServiceController extends Controller
             }
 
             $saldo = new SpendingController();
-
-            $cekSaldo = $saldo->saldoKendaraan($request);
-
-            if (intval($totalHarga) > intval($cekSaldo)) {
-                return back()->with('failed', 'Gagal, saldo tidak cukup!');
-            }
             // selesai total harga
 
             // update table vehicle service
             $vehicleService->date = $request->tanggal;
             $vehicleService->driver_id = $request->driver;
             $vehicleService->vehicle_id = $request->kendaraan;
+            $vehicleService->cv_id = $request->cv_id ?? session('cv_id');
             $vehicleService->who_update = $user['name'];
             $vehicleService->save();
 

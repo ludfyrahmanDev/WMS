@@ -42,10 +42,10 @@ class PermissionTranslationService
             'stock.edit' => 'Edit Stok',
             
             // Sales
-            'sales.view' => 'Lihat Penjualan',
-            'sales.create' => 'Tambah Penjualan',
-            'sales.edit' => 'Edit Penjualan',
-            'sales.delete' => 'Hapus Penjualan',
+            'selling.view' => 'Lihat Penjualan',
+            'selling.create' => 'Tambah Penjualan',
+            'selling.edit' => 'Edit Penjualan',
+            'selling.delete' => 'Hapus Penjualan',
             
             // Customers
             'customers.view' => 'Lihat Customer',

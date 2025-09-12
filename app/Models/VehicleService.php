@@ -17,6 +17,7 @@ class VehicleService extends Model
         'date',
         'driver_id',
         'vehicle_id',
+        'cv_id',
         'who_create',
         'who_update'
     ];
@@ -51,5 +52,10 @@ class VehicleService extends Model
     public function vehicleServiceDetail()
     {
         return $this->hasMany(VehicleServiceDetail::class);
+    }
+
+    public function cv()
+    {
+        return $this->belongsTo(CV::class, 'cv_id', 'id');
     }
 }

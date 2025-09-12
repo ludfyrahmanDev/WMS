@@ -38,6 +38,14 @@ class Role extends Model
     }
 
     /**
+     * Get the CVs/Companies that this role can access.
+     */
+    public function cvs()
+    {
+        return $this->belongsToMany(CV::class, 'role_cv', 'role_id', 'cv_id');
+    }
+
+    /**
      * Check if role has a specific permission.
      */
     public function hasPermission($permission)

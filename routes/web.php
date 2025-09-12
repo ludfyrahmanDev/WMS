@@ -85,14 +85,14 @@ Route::middleware('auth')->group(function () {
     Route::resource('vehicle_service', VehicleServiceController::class)->middleware('permission:vehicle_services.view,vehicle_services.create,vehicle_services.edit,vehicle_services.delete');
     Route::get('vehicle_service_export', [VehicleServiceController::class, 'export'])->name('vehicle_service.export')->middleware('permission:vehicle_services.view');
     Route::get('vehicle_service_export_pdf', [VehicleServiceController::class, 'exportPdf'])->name('vehicle_service.export-pdf')->middleware('permission:vehicle_services.view');
-    Route::resource('selling', SellingController::class)->middleware('permission:sales.view,sales.create,sales.edit,sales.delete');
-    Route::get('selling_export', [SellingController::class, 'export'])->name('selling.export')->middleware('permission:sales.view');
-    Route::get('selling_export_pdf', [SellingController::class, 'exportPdf'])->name('selling.export-pdf')->middleware('permission:sales.view');
-    Route::get('selling_export_coretax', [SellingController::class, 'exportCoreTax'])->name('selling.export-coretax')->middleware('permission:sales.view');
-    Route::get('exportToCoretax', [SellingController::class, 'exportToCoretax'])->name('selling.export-')->middleware('permission:sales.view');
+    Route::resource('selling', SellingController::class)->middleware('permission:selling.view,selling.create,selling.edit,selling.delete');
+    Route::get('selling_export', [SellingController::class, 'export'])->name('selling.export')->middleware('permission:selling.view');
+    Route::get('selling_export_pdf', [SellingController::class, 'exportPdf'])->name('selling.export-pdf')->middleware('permission:selling.view');
+    Route::get('selling_export_coretax', [SellingController::class, 'exportCoreTax'])->name('selling.export-coretax')->middleware('permission:selling.view');
+    Route::get('exportToCoretax', [SellingController::class, 'exportToCoretax'])->name('selling.export-')->middleware('permission:selling.view');
     Route::get('transport_export', [TransportController::class, 'export'])->name('transport.export')->middleware('permission:transport.view');
     Route::get('transport_export_pdf', [TransportController::class, 'exportPdf'])->name('transport.export-pdf')->middleware('permission:transport.view');
-    Route::get('selling_export_one/{id}', [SellingController::class, 'exportPdfSingle'])->name('selling.export-one')->middleware('permission:sales.view');
+    Route::get('selling_export_one/{id}', [SellingController::class, 'exportPdfSingle'])->name('selling.export-one')->middleware('permission:selling.view');
     Route::get('/getHargaStock', [SellingController::class, 'getHargaStock'])->middleware('permission:products.view');
     // end transaction
     Route::get('product/{product}', [ProductController::class, 'getDataProduct'])->name('product.get')->middleware('permission:products.view');

@@ -68,6 +68,25 @@
                             </div>
                         @enderror
                     </div>
+                    
+                    @if(auth()->user()->hasCompanyAccess())
+                        <div class="mt-3 input-form">
+                            <x-base.form-label for="cv_id">Perusahaan</x-base.form-label>
+                            <x-base.tom-select name="cv_id" class="w-full" data-placeholder="Pilih Perusahaan" required>
+                                <option value="">Pilih Perusahaan</option>
+                                @foreach ($cvs as $cv)
+                                    <option value="{{ $cv->id }}" {{ $selectedCvId == $cv->id ? 'selected' : '' }}>
+                                        {{ $cv->name }}
+                                    </option>
+                                @endforeach
+                            </x-base.tom-select>
+                            @error('cv_id')
+                                <div class="pristine-error text-danger mt-2">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    @endif
                     <div class="mt-3 input-form">
                         <x-base.form-label for="crud-form-1">Deskripsi <sup>(optional)</sup></x-base.form-label>
                         <x-base.form-textarea class="form-control" id="validation-form-6" name="description"

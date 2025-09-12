@@ -83,6 +83,9 @@
                             Users
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
+                            Company Access
+                        </x-base.table.th>
+                        <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
                             Status
                         </x-base.table.th>
                         <x-base.table.th class="whitespace-nowrap border-b-0 text-center">
@@ -125,6 +128,31 @@
                                 <span class="rounded-full bg-green-100 dark:bg-green-900/30 px-2 py-1 text-xs font-medium text-green-800 dark:text-green-400">
                                     {{ $item->users->count() }} users
                                 </span>
+                            </x-base.table.td>
+                            <x-base.table.td
+                                class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 text-center">
+                                @php
+                                    $hasCompanyAccess = $item->permissions->where('name', 'company.access')->count() > 0;
+                                    $cvCount = $item->cvs->count();
+                                @endphp
+                                @if($hasCompanyAccess)
+                                    @if($cvCount > 0)
+                                        <span class="rounded-full bg-emerald-100 dark:bg-emerald-900/30 px-2 py-1 text-xs font-medium text-emerald-800 dark:text-emerald-400 flex items-center justify-center gap-1">
+                                            <x-base.lucide class="h-3 w-3" icon="Building" />
+                                            {{ $cvCount }} CV{{ $cvCount > 1 ? 's' : '' }}
+                                        </span>
+                                    @else
+                                        <span class="rounded-full bg-blue-100 dark:bg-blue-900/30 px-2 py-1 text-xs font-medium text-blue-800 dark:text-blue-400 flex items-center justify-center gap-1">
+                                            <x-base.lucide class="h-3 w-3" icon="Globe" />
+                                            All CVs
+                                        </span>
+                                    @endif
+                                @else
+                                    <span class="rounded-full bg-slate-100 dark:bg-slate-900/30 px-2 py-1 text-xs font-medium text-slate-600 dark:text-slate-400 flex items-center justify-center gap-1">
+                                        <x-base.lucide class="h-3 w-3" icon="Lock" />
+                                        No Access
+                                    </span>
+                                @endif
                             </x-base.table.td>
                             <x-base.table.td
                                 class="border-b-0 bg-white shadow-[20px_3px_20px_#0000000b] first:rounded-l-md last:rounded-r-md dark:bg-darkmode-600 text-center">

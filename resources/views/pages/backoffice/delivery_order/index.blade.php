@@ -143,7 +143,7 @@
                                     Tanggal Pembelian
                                 </x-base.table.th>
                                 <x-base.table.th class="border-b-0 text-center font-semibold">
-                                    Tanggal Pengambilan
+                                    Jumlah
                                 </x-base.table.th>
                                 <x-base.table.th class="border-b-0 text-center font-semibold">
                                     Supplier
@@ -175,7 +175,7 @@
                                         {{ date('d M Y', strtotime($item['purchase_date'])) }}
                                     </x-base.table.td>
                                     <x-base.table.td class="text-center py-4">
-                                        {{ date('d M Y', strtotime($item['pick_up_date'])) }}
+                                        {{ toThousand($item['grand_total']) }}
                                     </x-base.table.td>
                                     <x-base.table.td class="text-center py-4">
                                         {{ $item['supplier']['name'] }}
