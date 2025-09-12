@@ -66,6 +66,28 @@
                                 </div>
                             @enderror
                         </div>
+                        @if (count($data['cvs']) > 1)
+                            <div class="input-form col-span-4">
+                                <x-base.form-label for="cv_id">Perusahaan</x-base.form-label>
+                                <x-base.tom-select name="cv_id" id="cv_id" class="w-full"
+                                    data-placeholder="Pilih Perusahaan" required>
+                                    <option value="">Pilih Perusahaan</option>
+                                    @foreach ($data['cvs'] as $cv)
+                                        <option value="{{ $cv->id }}"
+                                            {{ ($data['header']->cv_id ?? session('cv_id')) == $cv->id ? 'selected' : '' }}>
+                                            {{ $cv->name }}
+                                        </option>
+                                    @endforeach
+                                </x-base.tom-select>
+                                @error('cv_id')
+                                    <div class="pristine-error text-danger mt-2">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        @else
+                            <input type="hidden" name="cv_id" value="{{ $data['cvs']->first()->id ?? session('cv_id') }}">
+                        @endif
                         <div class="input-form col-span-4">
                             <x-base.form-label for="crud-form-1">Pengemudi</x-base.form-label>
                             <x-base.tom-select name="driver" class="w-full" data-placeholder="Pilih driver" id="driver">
@@ -509,6 +531,10 @@
 
                 $('#modalDetailStockHarga').removeAttr('disabled');
             }
+
+            // Handle CV change to update customers, drivers and vehicles
+
+
         </script>
     @endpush
 @endsection

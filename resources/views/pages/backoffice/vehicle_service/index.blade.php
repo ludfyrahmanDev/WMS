@@ -21,7 +21,7 @@
         </x-base.alert>
     @endif
     <!-- Statistics Cards -->
-    <div class="mt-5 grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="intro-y box p-5">
             <div class="flex items-center">
                 <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
@@ -41,17 +41,6 @@
                 <div>
                     <div class="text-slate-500 text-sm">Total Biaya</div>
                     <div class="text-xl font-semibold text-red-600">{{ toThousand($total ?? 0) }}</div>
-                </div>
-            </div>
-        </div>
-        <div class="intro-y box p-5">
-            <div class="flex items-center">
-                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
-                    <x-base.lucide class="h-5 w-5 text-green-600" icon="Wallet" />
-                </div>
-                <div>
-                    <div class="text-slate-500 text-sm">Saldo Kendaraan</div>
-                    <div class="text-xl font-semibold text-green-600">{{ toThousand($saldo ?? 0) }}</div>
                 </div>
             </div>
         </div>
@@ -139,7 +128,7 @@
                 </div>
 
                 <!-- Table Content -->
-                <div class="overflow-auto">
+                <div class="overflow-hidden">
                     <x-base.table class="border-spacing-y-[10px] border-separate">
                         <x-base.table.thead>
                             <x-base.table.tr>

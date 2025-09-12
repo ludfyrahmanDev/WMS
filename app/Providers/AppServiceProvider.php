@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Blade;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -19,5 +21,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Custom Blade directive for checking company access
+        Blade::if('companyAccess', function () {
+            return auth()->check() && auth()->user()->hasCompanyAccess();
+        });
+
+        // Custom Blade directive for checking CV access
+        Blade::if('canAccessCV', function ($cvId) {
+            return auth()->check() && auth()->user()->canAccessCV($cvId);
+        });
+
+        // Custom Blade directive for checking if user has access to all CVs
+        Blade::if('hasAllCVAccess', function () {
+            return auth()->check() && auth()->user()->getCompanyAccessLevel() === 'all';
+        });
     }
 }

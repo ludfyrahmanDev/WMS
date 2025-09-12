@@ -4,15 +4,15 @@ namespace App\Http\Requests\Transaksi;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class VehicleServiceStoreRequest extends FormRequest
+class VehicleServiceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
-    // public function authorize(): bool
-    // {
-    //     return false;
-    // }
+    public function authorize(): bool
+    {
+        return true;
+    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -22,10 +22,11 @@ class VehicleServiceStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tanggal' => ['required'],
-            'driver' => ['required'],
-            'kendaraan' => ['required'],
-            'keterangan' => ['required'],
+            'tanggal' => ['required', 'date'],
+            'driver' => ['required', 'exists:driver,id'],
+            'kendaraan' => ['required', 'exists:vehicle,id'],
+            'keterangan' => ['required', 'array'],
+            'total_pengeluaran' => ['required', 'array'],
             'cv_id' => ['nullable', 'exists:cv,id'],
         ];
     }
@@ -33,10 +34,12 @@ class VehicleServiceStoreRequest extends FormRequest
     public function messages()
     {
         return [
-            'tanggal.required' => 'Tanggal tidak boleh kosong!',
+            'date.required' => 'Tanggal tidak boleh kosong!',
             'driver.required' => 'Driver tidak boleh kosong!',
             'kendaraan.required' => 'Kendaraan tidak boleh kosong!',
-            'keterangan.required' => 'Tabel Pengeluaran wajib ada data minimal 1!'
+            'total_pengeluaran.required' => 'Total pengeluaran tidak boleh kosong!',
+            'keterangan.required' => 'Keterangan tidak boleh kosong!',
+            'cv_id.exists' => 'Perusahaan tidak valid!',
         ];
     }
 }

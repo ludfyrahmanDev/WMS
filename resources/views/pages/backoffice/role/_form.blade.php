@@ -27,7 +27,7 @@
 
     <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12">
-            <form action="{{ $route }}" method="post">
+            <form action="{{ $route }}" method="post" onsubmit="debugFormSubmit(event)">
                 @csrf
                 @if ($type != 'create')
                     @method('PUT')
@@ -182,6 +182,108 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- BEGIN: Company Access -->
+                    <div class="mb-6">
+                        <div class="bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 rounded-xl border-2 border-emerald-200 dark:border-emerald-700 p-6">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center mr-4">
+                                        <x-base.lucide class="h-5 w-5 text-white" icon="Building" />
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-emerald-800 dark:text-emerald-200">
+                                            Company Access
+                                        </h3>
+                                        <p class="text-sm text-emerald-600 dark:text-emerald-400 mt-1">
+                                            Enable access to company data and select which CV/companies can be accessed
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <x-base.form-switch>
+                                        <x-base.form-switch.input 
+                                            id="company_access_toggle" 
+                                            name="company_access_toggle" 
+                                            type="checkbox"
+                                            class="company-access-toggle"
+                                            checked="@if(($data->permissions ?? collect())->pluck('name')->contains('company.access') || ($data->cvs ?? collect())->count() > 0) checked @endif"
+                                        />
+                                        <x-base.form-switch.label for="company_access_toggle" class="text-emerald-700 dark:text-emerald-300">
+                                            Enable Company Access
+                                        </x-base.form-switch.label>
+                                    </x-base.form-switch>
+                                </div>
+                            </div>
+                            
+                            <div id="company-access-selection" class="pt-4 border-t border-emerald-200 dark:border-emerald-700" 
+                                 style="display: {{ (($data->permissions ?? collect())->pluck('name')->contains('company.access') || ($data->cvs ?? collect())->count() > 0) ? 'block' : 'none' }};">
+                                
+                                <!-- Debug info -->
+                                @if(session('debug'))
+                                    <div class="bg-yellow-50 border border-yellow-200 rounded p-3 mb-4">
+                                        <pre>{{ session('debug') }}</pre>
+                                    </div>
+                                @endif
+                                
+                                @error('cvs')
+                                    <div class="bg-red-50 border border-red-200 text-red-700 rounded p-3 mb-4">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                                
+                                <div class="mb-4">
+                                    <x-base.form-label for="cv_access" class="text-emerald-800 dark:text-emerald-200 font-medium">
+                                        Select CV/Companies to Access
+                                    </x-base.form-label>
+                                    <p class="text-xs text-emerald-600 dark:text-emerald-400 mt-1 mb-3">
+                                        Choose which companies this role can access. Leave empty for access to all companies.
+                                    </p>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    @foreach(App\Models\CV::all() as $cv)
+                                        <div class="bg-white dark:bg-slate-800 rounded-lg border border-emerald-200 dark:border-slate-600 p-3 hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors">
+                                            <x-base.form-check class="cv-checkbox">
+                                                <x-base.form-check.input 
+                                                    type="checkbox" 
+                                                    name="cvs[]" 
+                                                    value="{{ $cv->id }}"
+                                                    id="cv_{{ $cv->id }}"
+                                                    class="cv-checkbox-input scale-110"
+                                                    checked="{{($data->cvs ?? collect())->pluck('id')->contains($cv->id) ? 'checked' : ''}}"
+                                                />
+                                                <x-base.form-check.label for="cv_{{ $cv->id }}" class="flex items-center cursor-pointer w-full">
+                                                    <div class="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/50 rounded-lg flex items-center justify-center mr-3">
+                                                        <x-base.lucide class="h-4 w-4 text-emerald-600 dark:text-emerald-400" icon="Building2" />
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <div class="text-sm font-medium text-slate-800 dark:text-slate-200">
+                                                            {{ $cv->name }}
+                                                        </div>
+                                                        @if($cv->description)
+                                                            <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                                                {{ Str::limit($cv->description, 50) }}
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </x-base.form-check.label>
+                                            </x-base.form-check>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                
+                                @if(App\Models\CV::count() == 0)
+                                    <div class="text-center py-8">
+                                        <x-base.lucide class="h-12 w-12 text-slate-400 mx-auto mb-3" icon="Building" />
+                                        <p class="text-slate-500 dark:text-slate-400">No companies/CVs available</p>
+                                        <p class="text-xs text-slate-400 dark:text-slate-500 mt-1">Create companies first to assign access</p>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END: Company Access -->
 
                     <div class="space-y-4" id="permissions-container">
                         @foreach($permissions as $groupName => $groupPermissions)
@@ -501,6 +603,60 @@
                 }
             });
 
+            // Company Access Toggle functionality
+            const companyAccessToggle = document.getElementById('company_access_toggle');
+            const companyAccessSelection = document.getElementById('company-access-selection');
+            const companyPermissionInput = document.getElementById('company_permission');
+            const cvCheckboxInputs = document.querySelectorAll('.cv-checkbox-input');
+            
+            companyAccessToggle.addEventListener('change', function() {
+                console.log('Company access toggle changed:', this.checked);
+                
+                if (this.checked) {
+                    companyAccessSelection.style.display = 'block';
+                    
+                    // Auto-add company.access permission (ID: 74) to permissions array by creating hidden input
+                    let hiddenPermissionInput = document.querySelector('input[name="permissions[]"][value="74"]');
+                    if (!hiddenPermissionInput) {
+                        hiddenPermissionInput = document.createElement('input');
+                        hiddenPermissionInput.type = 'hidden';
+                        hiddenPermissionInput.name = 'permissions[]';
+                        hiddenPermissionInput.value = '74';
+                        hiddenPermissionInput.id = 'hidden_company_access';
+                        companyAccessSelection.appendChild(hiddenPermissionInput);
+                        console.log('Added company.access permission hidden input');
+                    }
+                } else {
+                    companyAccessSelection.style.display = 'none';
+                    
+                    // Remove company.access permission
+                    const hiddenPermissionInput = document.getElementById('hidden_company_access');
+                    if (hiddenPermissionInput) {
+                        hiddenPermissionInput.remove();
+                        console.log('Removed company.access permission hidden input');
+                    }
+                    
+                    // Uncheck all CV selections when disabled
+                    cvCheckboxInputs.forEach(input => {
+                        input.checked = false;
+                    });
+                }
+                updateCounters();
+            });
+
+            // Initialize company access permission on page load
+            if (companyAccessToggle.checked) {
+                let hiddenPermissionInput = document.querySelector('input[name="permissions[]"][value="74"]');
+                if (!hiddenPermissionInput) {
+                    hiddenPermissionInput = document.createElement('input');
+                    hiddenPermissionInput.type = 'hidden';
+                    hiddenPermissionInput.name = 'permissions[]';
+                    hiddenPermissionInput.value = '74';
+                    hiddenPermissionInput.id = 'hidden_company_access';
+                    companyAccessSelection.appendChild(hiddenPermissionInput);
+                }
+            }
+
             // Initial counter update
             updateCounters();
 
@@ -515,6 +671,26 @@
                 });
             });
         });
+
+        // Debug function for form submission
+        function debugFormSubmit(event) {
+            console.log('Form submission debug:');
+            
+            // Debug permissions
+            const permissions = document.querySelectorAll('input[name="permissions[]"]:checked');
+            console.log('Selected permissions:', Array.from(permissions).map(p => p.value));
+            
+            // Debug CVs
+            const cvs = document.querySelectorAll('input[name="cvs[]"]:checked');
+            console.log('Selected CVs:', Array.from(cvs).map(cv => cv.value));
+            
+            // Check company access toggle
+            const companyToggle = document.getElementById('company_access_toggle');
+            console.log('Company access enabled:', companyToggle.checked);
+            
+            // Allow form to submit
+            return true;
+        }
     </script>
     @endpush
 @endsection

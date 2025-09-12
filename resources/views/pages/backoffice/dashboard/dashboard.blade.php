@@ -13,22 +13,26 @@
                 <p class="mt-1 text-slate-600 dark:text-slate-400">Monitor your business performance and manage operations</p>
             </div>
             <div class="mt-4 flex space-x-3 sm:mt-0">
-                <x-base.button
-                    class="bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-200"
-                    href="{{ route('selling.create') }}"
-                    as="a"
-                >
-                    <x-base.lucide class="mr-2 h-4 w-4" icon="Plus" />
-                    New Sale
-                </x-base.button>
-                <x-base.button
-                    class="bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:shadow-xl transition-all duration-200"
-                    href="{{ route('product.create') }}"
-                    as="a"
-                >
-                    <x-base.lucide class="mr-2 h-4 w-4" icon="Package" />
-                    Add Product
-                </x-base.button>
+                @can('selling.create')
+                    <x-base.button
+                        class="bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                        href="{{ route('selling.create') }}"
+                        as="a"
+                    >
+                        <x-base.lucide class="mr-2 h-4 w-4" icon="Plus" />
+                        New Sale
+                    </x-base.button>
+                @endcan
+                @can('products.create')
+                    <x-base.button
+                        class="bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                        href="{{ route('product.create') }}"
+                        as="a"
+                    >
+                        <x-base.lucide class="mr-2 h-4 w-4" icon="Package" />
+                        Add Product
+                    </x-base.button>
+                @endcan
             </div>
         </div>
     </div>
@@ -53,6 +57,89 @@
                         </button>
                     </div>
                 </div>
+                
+                <!-- Company Access Status -->
+                @auth
+                    @if(auth()->user()->hasCompanyAccess())
+                        <div class="mb-6">
+                            <div class="bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 rounded-2xl border-2 border-emerald-200 dark:border-emerald-700 p-6">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mr-4">
+                                            <x-base.lucide class="h-6 w-6 text-white" icon="Building" />
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-emerald-800 dark:text-emerald-200">
+                                                Company Data Access Active
+                                            </h3>
+                                            <p class="text-sm text-emerald-600 dark:text-emerald-400 mb-3">
+                                                @if(auth()->user()->hasFullCompanyAccess())
+                                                    You have full access to all company data and financial reports
+                                                @else
+                                                    You have {{ ucfirst(auth()->user()->getCompanyAccessLevel()) }} access to company data
+                                                @endif
+                                            </p>
+                                            
+                                            <!-- Show accessible companies -->
+                                            @if(auth()->user()->getCompanyAccessLevel() === 'limited')
+                                                <div class="mt-3">
+                                                    <p class="text-xs text-emerald-700 dark:text-emerald-300 font-medium mb-2">Accessible Companies:</p>
+                                                    <div class="flex flex-wrap gap-2">
+                                                        @foreach(auth()->user()->getAccessibleCvs() as $cv)
+                                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-800 dark:text-emerald-200">
+                                                                <x-base.lucide class="mr-1 h-3 w-3" icon="Building2" />
+                                                                {{ $cv->name }}
+                                                            </span>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @elseif(auth()->user()->getCompanyAccessLevel() === 'all')
+                                                <div class="mt-3">
+                                                    <p class="text-xs text-emerald-700 dark:text-emerald-300 font-medium mb-2">All Companies Available:</p>
+                                                    <div class="flex flex-wrap gap-2">
+                                                        @foreach(App\Models\CV::all() as $cv)
+                                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200">
+                                                                <x-base.lucide class="mr-1 h-3 w-3" icon="Building2" />
+                                                                {{ $cv->name }}
+                                                            </span>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            @if(auth()->user()->getCompanyAccessLevel() !== 'none')
+                                                <span class="text-xs text-emerald-600 dark:text-emerald-400">
+                                                    {{ auth()->user()->getAccessibleCvs()->count() }} 
+                                                    {{ auth()->user()->getCompanyAccessLevel() === 'all' ? 'of ' . App\Models\CV::count() : '' }} 
+                                                    {{ auth()->user()->getAccessibleCvs()->count() === 1 ? 'company' : 'companies' }} accessible
+                                                </span>
+                                            @endif
+                                        </div>
+                                        
+                                        @if(session('cv_id') && auth()->user()->getCompanyAccessLevel() !== 'none')
+                                            @php
+                                                $selectedCv = App\Models\CV::find(session('cv_id'));
+                                            @endphp
+                                            @if($selectedCv)
+                                                <div class="flex items-center">
+                                                    <span class="text-xs text-emerald-700 dark:text-emerald-300 mr-2">Currently viewing:</span>
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-emerald-200 text-emerald-900 dark:bg-emerald-700 dark:text-emerald-100">
+                                                        <x-base.lucide class="mr-1 h-3 w-3" icon="Eye" />
+                                                        {{ $selectedCv->name }}
+                                                    </span>
+                                                </div>
+                                            @endif
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @endauth
+
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                     <!-- Item Sales Card -->
                     <div class="intro-y">

@@ -122,6 +122,9 @@ class PermissionSeeder extends Seeder
             ['name' => 'closing.edit', 'display_name' => 'Edit Closing', 'description' => 'Can edit closing reports', 'group' => 'Closing'],
             ['name' => 'closing.delete', 'display_name' => 'Delete Closing', 'description' => 'Can delete closing reports', 'group' => 'Closing'],
             ['name' => 'closing.export', 'display_name' => 'Export Closing', 'description' => 'Can export closing reports', 'group' => 'Closing'],
+            
+            // Company Data Access - Simplified Permission
+            ['name' => 'company.access', 'display_name' => 'Access Company Data', 'description' => 'Can access selected company/CV data', 'group' => 'Company Access'],
         ];
 
         foreach ($permissions as $permission) {

@@ -16,7 +16,7 @@ class CvSeeder extends Seeder
      */
     public function run(): void
     {
-        CV::destroy(CV::all()->pluck('id')->toArray()); // Clear existing CVs
+        // Don't destroy existing CVs, just add new ones if they don't exist
         $datas = [
             [
                 'name' => 'Perusahaan 1',
@@ -38,9 +38,12 @@ class CvSeeder extends Seeder
             ],
         ];
 
-        // Insert the CV data
+        // Insert the CV data using firstOrCreate
         foreach ($datas as $data) {
-            CV::create($data);
+            CV::firstOrCreate(
+                ['name' => $data['name']], 
+                $data
+            );
         }
     }
 }

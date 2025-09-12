@@ -24,6 +24,8 @@ class SpendingController extends Controller
 {
     public function index(Request $request)
     {
+        $selectedCvId = session('cv_id');
+        
         $all = Spending::filterResource($request, [
             'date',
             'spendingCategory.spending_category',
@@ -34,7 +36,10 @@ class SpendingController extends Controller
         ->when($request->has('search'), function ($query) use ($request) {
             $query->where('description', 'like', '%' . $request->search . '%');
         })
-        ->with('spendingCategory')
+        ->when($selectedCvId && auth()->user()->hasCompanyAccess(), function ($query) use ($selectedCvId) {
+            $query->where('cv_id', $selectedCvId);
+        })
+        ->with(['spendingCategory', 'cv'])
         ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
         if($request->has('start_date') && $request->has('end_date')){
             $start_date = $request->start_date;
@@ -45,10 +50,8 @@ class SpendingController extends Controller
         $outcome = $all->get()->where('mutation', 'Uang Keluar')->sum('nominal');
         $sellingCompleted = Selling::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
         $sellingInCompleted = Selling::where('status', '!=','Completed')->sum(\DB::raw('(grand_total - total_payment)'));
-        // $purchaseCompleted = DeliveryOrder::whereIn('status', ['Completed', 'On Progress'])->sum('total_payment');
-        // sum append field from deliveryorder
-        $purchaseCompleted = DeliveryOrder::get()->sum('payment');
-        $inCompleted = DeliveryOrder::get()->sum('grand_total');
+        $purchaseCompleted = DeliveryOrder::where('cv_id', $selectedCvId)->get()->sum('payment');
+        $inCompleted = DeliveryOrder::where('cv_id', $selectedCvId)->get()->sum('grand_total');
         $purchaseInCompleted = $purchaseCompleted - $inCompleted;
         
         // Hitung nilai persediaan
@@ -61,6 +64,10 @@ class SpendingController extends Controller
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 return $query->whereBetween('vehicle_service.date', [$request->start_date, $request->end_date]);
             })
+            ->when($selectedCvId && auth()->user()->hasCompanyAccess(), function ($query) use ($selectedCvId) {
+                return $query->where('vehicle_service.cv_id', $selectedCvId);
+            })
+            ->where('vehicle_service.cv_id', $selectedCvId)
             ->sum('vehicle_service_detail.amount_of_expenditure') ?? 0;
         
         // Hitung ongkos pengiriman (Transport)
@@ -68,19 +75,25 @@ class SpendingController extends Controller
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 return $query->whereBetween('selling.date', [$request->start_date, $request->end_date]);
             })
+            ->where('selling.cv_id', $selectedCvId)
             ->sum('customer.ongkosan') ?? 0;
             
         // Hitung saku sopir (pengeluaran dari ongkos)
         $driversPocketMoney = \App\Models\Selling::when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 return $query->whereBetween('date', [$request->start_date, $request->end_date]);
             })
+            ->where('cv_id', $selectedCvId)
             ->sum('drivers_pocket_money') ?? 0;
         
         // Gabungkan data servis kendaraan ke dalam laporan kas
-        $vehicleServiceData = VehicleService::with(['vehicleServiceDetail.spendingCategory', 'vehicle', 'driver'])
+        $vehicleServiceData = VehicleService::with(['vehicleServiceDetail.spendingCategory', 'vehicle', 'driver', 'cv'])
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 return $query->whereBetween('date', [$request->start_date, $request->end_date]);
             })
+            ->when($selectedCvId && auth()->user()->hasCompanyAccess(), function ($query) use ($selectedCvId) {
+                return $query->where('cv_id', $selectedCvId);
+            })
+            ->where('cv_id', $selectedCvId)
             ->get()
             ->map(function ($service) {
                 $totalCost = $service->vehicleServiceDetail->sum('amount_of_expenditure');
@@ -101,6 +114,7 @@ class SpendingController extends Controller
             ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 return $query->whereBetween('date', [$request->start_date, $request->end_date]);
             })
+            ->where('cv_id', $selectedCvId)
             ->get()
             ->flatMap(function ($transport) {
                 $data = [];
@@ -224,13 +238,15 @@ class SpendingController extends Controller
             'nominal' => null
         ];
 
-        $cv_id = session('cv_id');
-        $cv = CV::find($cv_id);
-        $title = 'Tambah Transaksi ('.$cv->name.')';
+        $selectedCvId = session('cv_id');
+        $cvs = auth()->user()->getAccessibleCvs();
+        $selectedCv = $selectedCvId ? CV::find($selectedCvId) : null;
+        
+        $title = 'Tambah Transaksi' . ($selectedCv ? ' (' . $selectedCv->name . ')' : '');
         $route = route('spending.store');
         $type = 'create';
 
-        return view('pages.backoffice.spending._form', compact('data', 'title', 'route', 'type', 'kategori', 'enum'));
+        return view('pages.backoffice.spending._form', compact('data', 'title', 'route', 'type', 'kategori', 'enum', 'cvs', 'selectedCvId'));
     }
 
     public function store(SpendingStoreRequest $request)
@@ -242,6 +258,7 @@ class SpendingController extends Controller
             $spending->date = $request->tanggal;
             $spending->mutation = $request->mutasi;
             $spending->spending_category_id = $request->spending_category;
+            $spending->cv_id = $request->cv_id ?? session('cv_id');
             $spending->who_create = $user['name'];
             $spending->who_update = $user['name'];
             $spending->description = $request->description;
@@ -259,12 +276,15 @@ class SpendingController extends Controller
     {
         $kategori = $spending->getSpendingCategory();
         $enum = PaymentMethod::asOptions();
+        $cvs = auth()->user()->getAccessibleCvs();
+        $selectedCvId = $spending->cv_id;
+        
         $data = $spending;
-        $title = 'Data Transaksi Lain Lain';
+        $title = 'Edit Transaksi';
         $route = route('spending.update', $spending);
         $type = 'edit';
 
-        return view('pages.backoffice.spending._form', compact('kategori', 'enum', 'data', 'title', 'route', 'type'));
+        return view('pages.backoffice.spending._form', compact('kategori', 'enum', 'data', 'title', 'route', 'type', 'cvs', 'selectedCvId'));
     }
 
     public function update(SpendingStoreRequest $request, Spending $spending)
@@ -276,6 +296,7 @@ class SpendingController extends Controller
             $spending->date = $request->tanggal;
             $spending->mutation = $request->mutasi;
             $spending->spending_category_id = $request->spending_category;
+            $spending->cv_id = $request->cv_id;
             $spending->who_update = $user['name'];
             $spending->description = $description;
             $spending->payment_method = $request->payment_method;

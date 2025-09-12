@@ -14,7 +14,7 @@ class VehicleServiceDetail extends Model
     protected $table = 'vehicle_service_detail';
 
     protected $fillable = [
-        'spending_category_id',
+        'vehicle_service_id',
         'amount_of_expenditure',
         'description'
     ];

@@ -67,7 +67,9 @@ class RoleController extends Controller
             'description' => 'nullable|string',
             'is_active' => 'boolean',
             'permissions' => 'array',
-            'permissions.*' => 'exists:permissions,id'
+            'permissions.*' => 'exists:permissions,id',
+            'cvs' => 'array',
+            'cvs.*' => 'exists:cv,id'
         ]);
 
         try {
@@ -81,6 +83,11 @@ class RoleController extends Controller
             // Assign permissions
             if ($request->has('permissions')) {
                 $role->permissions()->attach($request->permissions);
+            }
+
+            // Assign CV access
+            if ($request->has('cvs')) {
+                $role->cvs()->attach($request->cvs);
             }
 
             return redirect('role')->with('success', 'Role berhasil dibuat!');
@@ -110,7 +117,7 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
-        $data = $role->load('permissions');
+        $data = $role->load(['permissions', 'cvs']);
         $title = 'Edit Role';
         
         // Get all permissions grouped by module
@@ -134,7 +141,9 @@ class RoleController extends Controller
             'display_name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'permissions' => 'array',
-            'permissions.*' => 'exists:permissions,id'
+            'permissions.*' => 'exists:permissions,id',
+            'cvs' => 'array',
+            'cvs.*' => 'exists:cv,id'
         ]);
 
         try {
@@ -146,6 +155,9 @@ class RoleController extends Controller
 
             // Sync permissions
             $role->permissions()->sync($request->permissions ?? []);
+
+            // Sync CV access
+            $role->cvs()->sync($request->cvs ?? []);
 
             return redirect('role')->with('success', 'Role berhasil diupdate!');
         } catch (\Throwable $th) {

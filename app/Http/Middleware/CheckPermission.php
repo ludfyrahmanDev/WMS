@@ -16,7 +16,9 @@ class CheckPermission
     public function handle(Request $request, Closure $next, ...$permissions): Response
     {
         $user = $request->user();
-
+        if(request()->has('cv_id')){
+            session(['cv_id' => request()->get('cv_id')]);
+        }
         // If user is not authenticated, redirect to login
         if (!$user) {
             return redirect()->route('login');

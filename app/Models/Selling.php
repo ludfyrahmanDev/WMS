@@ -20,6 +20,7 @@ class Selling extends Model
     protected $fillable = [
         'date',
         'customer_id',
+        'cv_id',
         'vehicle_id',
         'driver_id',
         'drivers_pocket_money',
@@ -48,6 +49,11 @@ class Selling extends Model
         return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
     }
 
+    public function cv()
+    {
+        return $this->belongsTo(Cv::class, 'cv_id', 'id');
+    }
+
     public function getVehicle()
     {
         return Vehicle::all();
@@ -55,7 +61,6 @@ class Selling extends Model
 
     public function getProduct()
     {
-
         return DB::table('stock AS s')
             ->select('p.id', 'p.product', DB::raw('SUM(s.last_stock) AS last_stock'))
             ->leftJoin('product AS p', 's.product_id', '=', 'p.id')
