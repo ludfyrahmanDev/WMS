@@ -46,8 +46,6 @@
                             <th scope="col">Tanggal Pengambilan DO</th>
                             <th scope="col">Tipe Transaksi</th>
                             <th scope="col">Supplier</th>
-                            <th scope="col">Nopol</th>
-                            <th scope="col">Driver</th>
                             <th scope="col">Produk</th>
                             <th scope="col">Qty</th>
                             <th scope="col">Harga/Kg</th>
@@ -74,12 +72,6 @@
                                         <td rowspan="{{ COUNT($item->delivery_order_detail) }}"
                                             style="vertical-align: middle;">
                                             {{ $item->supplier->name }}</td>
-                                        <td rowspan="{{ COUNT($item->delivery_order_detail) }}"
-                                            style="vertical-align: middle;">
-                                            {{ $item->vehicle->license_plate }}</td>
-                                        <td rowspan="{{ COUNT($item->delivery_order_detail) }}"
-                                            style="vertical-align: middle;">
-                                            {{ $item->driver->name }}</td>
                                     @endif
 
                                     <td>{{ $childItem->stock->product->product ?? '-' }}</td>

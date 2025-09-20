@@ -71,43 +71,7 @@
                         </div>
                     </div>
                     <div class="mt-2 grid grid-cols-12 gap-2">
-                        <div class="input-form col-span-4">
-                            <x-base.form-label for="driver">Driver</x-base.form-label>
-                            <x-base.tom-select name="driver" id="driver" class="w-full" data-placeholder="Pilih Driver"
-                                required disabled>
-                                <option value="">Pilih Driver</option>
-                                @foreach ($data['driver'] as $driver)
-                                    <option value="{{ $driver->id }}"
-                                        {{ $data['header']->driver_id == $driver->id ? 'selected' : '' }}>
-                                        {{ $driver->name }}</option>
-                                @endforeach
-                            </x-base.tom-select>
-                            @error('driver')
-                                <div class="pristine-error text-danger mt-2">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                        <div class="input-form col-span-4">
-                            <x-base.form-label for="kendaraan">Kendaraan</x-base.form-label>
-                            <x-base.tom-select name="kendaraan" id="kendaraan" class="w-full"
-                                data-placeholder="Pilih Kendaraan" required disabled>
-                                <option value="">Pilih Kendaraan</option>
-                                @foreach ($data['vehicle'] as $vehicle)
-                                    <option value="{{ $vehicle->id }}"
-                                        {{ $data['header']->vehicle_id == $vehicle->id ? 'selected' : '' }}>
-                                        {{ $vehicle->name }} -
-                                        {{ $vehicle->license_plate }}
-                                    </option>
-                                @endforeach
-                            </x-base.tom-select>
-                            @error('kendaraan')
-                                <div class="pristine-error text-danger mt-2">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                        <div class="input-form col-span-4">
+                        <div class="input-form col-span-6">
                             <x-base.form-label for="tipe_pembelian">Tipe Pembelian</x-base.form-label>
                             <x-base.tom-select name="tipe_pembelian" id="tipe_pembelian" class="w-full"
                                 data-placeholder="Pilih Tipe Pembelian" required disabled>
