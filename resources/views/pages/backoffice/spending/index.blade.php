@@ -5,62 +5,133 @@
 @endsection
 
 @section('subcontent')
-    <h2 class="intro-y mt-10 text-lg font-medium">{{ $title }}</h2>
+    <!-- Modern Header -->
+    <div class="flex items-center justify-between mb-8 pt-6">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-800">{{ $title }}</h1>
+            <p class="text-slate-600 mt-2">Kelola pengeluaran perusahaan dengan sistem keuangan terintegrasi</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-r from-red-500 to-red-600 p-3 rounded-lg text-white shadow-lg">
+                <x-base.lucide class="w-6 h-6" icon="TrendingDown" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
     @if (session('success'))
-        <x-base.alert class="mb-2 mt-5 flex items-center" variant="outline-success">
-            <x-base.lucide class="mr-2 h-6 w-6" icon="AlertOctagon" />
-            {{ session('success') }}
-            <x-base.alert.dismiss-button class="btn-close" type="button" aria-label="Close">
+        <x-base.alert class="mb-6 flex items-center bg-green-50 border-green-200 text-green-800" variant="outline-success">
+            <x-base.lucide class="mr-3 h-5 w-5 text-green-500" icon="CheckCircle" />
+            <div class="flex-1">{{ session('success') }}</div>
+            <x-base.alert.dismiss-button class="text-green-500 hover:text-green-700 ml-4">
                 <x-base.lucide class="h-4 w-4" icon="X" />
             </x-base.alert.dismiss-button>
         </x-base.alert>
     @endif
     @if (session('failed'))
-        <x-base.alert class="mb-2 flex items-center" variant="outline-danger">
-            <x-base.lucide class="mr-2 h-6 w-6" icon="AlertOctagon" />
-            {{ session('failed') }}
-            <x-base.alert.dismiss-button class="btn-close" type="button" aria-label="Close">
+        <x-base.alert class="mb-6 flex items-center bg-red-50 border-red-200 text-red-800" variant="outline-danger">
+            <x-base.lucide class="mr-3 h-5 w-5 text-red-500" icon="AlertCircle" />
+            <div class="flex-1">{{ session('failed') }}</div>
+            <x-base.alert.dismiss-button class="text-red-500 hover:text-red-700 ml-4">
                 <x-base.lucide class="h-4 w-4" icon="X" />
             </x-base.alert.dismiss-button>
         </x-base.alert>
     @endif
-    <div class="mt-5 grid grid-cols-12 gap-6">
-        <div class="intro-y col-span-12 mt-2 flex flex-wrap items-center sm:flex-nowrap">
-            <a href="{{ route($route . '.create') }}">
-                <x-base.button class="mr-2 shadow-md" variant="primary">
-                    Add Data
-                </x-base.button>
-            </a>
-            <x-base.menu>
-                <x-base.menu.button class="!box px-2" as="x-base.button">
-                    <span class="flex h-5 w-5 items-center justify-center">
-                        <x-base.lucide class="h-4 w-4" icon="file" />
-                    </span>
-                </x-base.menu.button>
-                <x-base.menu.items class="w-40">
-                    <x-base.menu.item href="{{ route($route . '.export', $request) }}" target="_blank">
-                        <x-base.lucide class="mr-2 h-4 w-4" icon="sheet" /> Export to Excel
-                    </x-base.menu.item>
-                    <x-base.menu.item href="{{ route($route . '.export-pdf', $request) }}">
-                        <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" /> Export to PDF
-                    </x-base.menu.item>
-                </x-base.menu.items>
-            </x-base.menu>
-            <div class="mx-auto hidden text-slate-500 md:block">
-                Showing 1 to {{ $data->total() < 10 ? $data->total() : 10 }} of {{ $data->total() }} entries
-            </div>
-            <div class="mt-3 w-full flex sm:mt-0 sm:ml-auto sm:w-auto md:ml-0">
-                <div class=" flex w-72">
-                    <x-base.form-input  class="datepicker !box mr-4 sm:w-56" id="start_date" type="date"
-                        value="{{ $request['start_date'] ?? old('start_date') }}" required placeholder="Tanggal Mulai" />
-                    <x-base.form-input  class="datepicker !box mr-4 sm:w-56" id="end_date" type="date"
-                        value="{{ $request['end_date'] ?? old('end_date') }}" required placeholder="Tanggal Mulai" />
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-gradient-to-r from-red-500 to-red-600 p-4 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-red-100 text-sm">Total Pengeluaran</p>
+                    <p class="text-2xl font-bold">{{ toThousand($totalSpending ?? 0) }}</p>
                 </div>
-                {{-- make live search --}}
-                <div class="relative w-56 text-slate-500">
-                    <x-base.form-input class="!box w-56 pr-10" type="text" id="search"
-                        value="{{ request()->get('search') }}" placeholder="Search..." />
-                    <x-base.lucide class="absolute inset-y-0 right-0 my-auto mr-3 h-4 w-4" icon="Search" />
+                <x-base.lucide class="w-8 h-8 text-red-200" icon="TrendingDown" />
+            </div>
+        </div>
+        <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-4 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-orange-100 text-sm">Transaksi Bulan Ini</p>
+                    <p class="text-2xl font-bold">{{ $data->where('created_at', '>=', now()->startOfMonth())->count() ?? 0 }}</p>
+                </div>
+                <x-base.lucide class="w-8 h-8 text-orange-200" icon="Calendar" />
+            </div>
+        </div>
+        <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-4 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-purple-100 text-sm">Rata-rata Harian</p>
+                    <p class="text-2xl font-bold">{{ toThousand(($totalSpending ?? 0) / 30) }}</p>
+                </div>
+                <x-base.lucide class="w-8 h-8 text-purple-200" icon="BarChart3" />
+            </div>
+        </div>
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-blue-100 text-sm">Total Kategori</p>
+                    <p class="text-2xl font-bold">{{ $data->unique('spending_category_id')->count() ?? 0 }}</p>
+                </div>
+                <x-base.lucide class="w-8 h-8 text-blue-200" icon="Layers" />
+            </div>
+        </div>
+    </div>
+    <!-- Actions & Filters -->
+    <div class="mt-8 grid grid-cols-12 gap-6">
+        <div class="intro-y col-span-12">
+            <div class="box p-5">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <!-- Actions -->
+                    <div class="flex items-center gap-3">
+                        <a href="{{ route($route . '.create') }}">
+                            <x-base.button variant="primary">
+                                Tambah Data Pengeluaran
+                            </x-base.button>
+                        </a>
+                        
+                        <x-base.menu>
+                            <x-base.menu.button as="x-base.button" variant="outline-secondary">
+                                Export Data
+                            </x-base.menu.button>
+                            <x-base.menu.items class="w-48">
+                                <x-base.menu.item href="{{ route($route . '.export', $request) }}" target="_blank">
+                                    Export ke Excel
+                                </x-base.menu.item>
+                                <x-base.menu.item href="{{ route($route . '.export-pdf', $request) }}">
+                                    Export ke PDF
+                                </x-base.menu.item>
+                            </x-base.menu.items>
+                        </x-base.menu>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="flex flex-col sm:flex-row gap-3 lg:w-auto w-full">
+                        <x-base.form-input 
+                            class="!box w-full sm:w-56" 
+                            type="text" 
+                            id="search"
+                            value="{{ request()->get('search') }}" 
+                            placeholder="Cari pengeluaran..." 
+                        />
+                        <x-base.form-input 
+                            class="!box" 
+                            id="start_date" 
+                            type="date"
+                            value="{{ $request['start_date'] ?? old('start_date') }}" 
+                        />
+                        <x-base.form-input 
+                            class="!box" 
+                            id="end_date" 
+                            type="date"
+                            value="{{ $request['end_date'] ?? old('end_date') }}" 
+                        />
+                    </div>
+                </div>
+                
+                <!-- Data Info -->
+                <div class="text-slate-500 text-sm mt-3 pt-3 border-t">
+                    Menampilkan 1 hingga {{ $data->total() < 10 ? $data->total() : 10 }} dari {{ $data->total() }} data
                 </div>
             </div>
         </div>
@@ -637,3 +708,129 @@
     </x-base.dialog>
     <!-- END: Delete Confirmation Modal -->
 @endsection
+
+@push('js')
+<script>
+    // Search functionality
+    let searchTimeout;
+    const searchInput = document.getElementById('search');
+    const startDateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
+
+    function performSearch() {
+        const searchValue = searchInput.value;
+        const startDate = startDateInput.value;
+        const endDate = endDateInput.value;
+
+        const params = new URLSearchParams(window.location.search);
+        
+        if (searchValue) {
+            params.set('search', searchValue);
+        } else {
+            params.delete('search');
+        }
+        
+        if (startDate) {
+            params.set('start_date', startDate);
+        } else {
+            params.delete('start_date');
+        }
+        
+        if (endDate) {
+            params.set('end_date', endDate);
+        } else {
+            params.delete('end_date');
+        }
+
+        window.location.href = `${window.location.pathname}?${params.toString()}`;
+    }
+
+    // Debounced search for text input
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(performSearch, 500);
+        });
+    }
+
+    // Immediate search for date inputs
+    if (startDateInput) {
+        startDateInput.addEventListener('change', performSearch);
+    }
+
+    if (endDateInput) {
+        endDateInput.addEventListener('change', performSearch);
+    }
+
+    // Auto-dismiss alerts
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            setTimeout(function() {
+                if (alert && alert.parentNode) {
+                    alert.style.transition = 'opacity 0.5s ease-out';
+                    alert.style.opacity = '0';
+                    setTimeout(function() {
+                        alert.remove();
+                    }, 500);
+                }
+            }, 5000);
+        });
+    });
+
+    // Enhanced table interactions
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add hover effects to table rows
+        const tableRows = document.querySelectorAll('table tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#f8fafc';
+                this.style.transition = 'all 0.2s ease';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '';
+            });
+        });
+
+        // Smooth scroll to top when pagination changes
+        const paginationLinks = document.querySelectorAll('.pagination a');
+        paginationLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Financial data enhancements for Neraca section
+        const neracaTables = document.querySelectorAll('table');
+        neracaTables.forEach(table => {
+            if (table.querySelector('th[class*="bg-primary"]')) {
+                // Add subtle animations to financial data
+                const cells = table.querySelectorAll('td');
+                cells.forEach((cell, index) => {
+                    cell.style.animation = `fadeInUp 0.5s ease-in-out ${index * 0.1}s both`;
+                });
+            }
+        });
+    });
+
+    // Add CSS animations for financial data
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+@endpush

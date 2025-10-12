@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\DeliveryOrderQuota;
 use Illuminate\Support\Facades\DB;
 use App\Models\DeliveryOrderPayment;
+use App\Models\Kas;
+use Illuminate\Support\Facades\Auth;
 
 class DeliveryOrderController extends Controller
 {
@@ -55,8 +57,6 @@ class DeliveryOrderController extends Controller
             'purchase_date' => null,
             'pick_up_date' => null,
             'supplier_id' => null,
-            'driver_id' => null,
-            'vehicle_id' => null,
             'transaction_type' => null,
             'grand_total' => null,
             'notes' => null,
@@ -67,8 +67,6 @@ class DeliveryOrderController extends Controller
         $deliveryOrder = new DeliveryOrder;
 
         $data['supplier'] = $deliveryOrder->getSupplier();
-        $data['driver'] = $deliveryOrder->getDriver();
-        $data['vehicle'] = $deliveryOrder->getVehicle();
         $data['product'] = $deliveryOrder->getProduct();
 
         $title = 'Data Pembelian';
@@ -102,8 +100,6 @@ class DeliveryOrderController extends Controller
             $delivery_order->purchase_date = $request->tanggal_pembelian;
             // $delivery_order->pick_up_date = $request->tanggal_pengambilan;
             $delivery_order->supplier_id = $request->supplier ?? null;
-            $delivery_order->driver_id = $request->driver ?? null;
-            $delivery_order->vehicle_id = $request->kendaraan  ?? null;
             $delivery_order->grand_total = curencyToInteger($request->grand_total);
             $delivery_order->total_payment = curencyToInteger($request->total_bayar);
             // $delivery_order->status = 'In Progress';
@@ -114,6 +110,9 @@ class DeliveryOrderController extends Controller
             $delivery_order->notes = $request->catatan;
             $delivery_order->cv_id = session('cv_id');
             $delivery_order->save();
+
+            // Handle kas entry logic
+            $this->handleKasEntry($delivery_order, $request->tipe_pembelian, $user['name']);
 
             //insert Table Delivery Order Detail
             $totalDataProduk = COUNT($request->produk_id);
@@ -186,8 +185,6 @@ class DeliveryOrderController extends Controller
         // $delivery_order->load('delivery_order_detail.stock.product');
 
         $data['supplier'] = $deliveryOrder->getSupplier();
-        $data['driver'] = $deliveryOrder->getDriver();
-        $data['vehicle'] = $deliveryOrder->getVehicle();
         $data['product'] = $deliveryOrder->getProduct();
         $data['header'] = $delivery_order;
         $data['detail'] = $delivery_order->delivery_order_quota;
@@ -256,8 +253,6 @@ class DeliveryOrderController extends Controller
             $delivery_order->purchase_date = $request->tanggal_pembelian;
             // $delivery_order->pick_up_date = $request->tanggal_pengambilan;
             $delivery_order->supplier_id = $request->supplier;
-            $delivery_order->driver_id = $request->driver;
-            $delivery_order->vehicle_id = $request->kendaraan;
             $delivery_order->grand_total = curencyToInteger($request->grand_total);
             $delivery_order->total_payment = curencyToInteger($request->total_bayar);
 
@@ -313,9 +308,10 @@ class DeliveryOrderController extends Controller
         $delivery_order->load('delivery_order_quota_detail.stock.product');
         // $delivery_order->load('delivery_order_quota_detail.product');
         $data['supplier'] = $deliveryOrder->getSupplier();
-        $data['driver'] = $deliveryOrder->getDriver();
-        $data['vehicle'] = $deliveryOrder->getVehicle();
         $data['product'] = $deliveryOrder->getProduct();
+        // Empty arrays for removed driver and vehicle fields
+        $data['driver'] = [];
+        $data['vehicle'] = [];
         $data['header'] = $delivery_order;
         $data['detail'] = $delivery_order->delivery_order_quota;
         $data['payment'] = $delivery_order->delivery_order_payment->sum('amount');
@@ -398,7 +394,7 @@ class DeliveryOrderController extends Controller
             'transaction_type',
             'status'
         ], [])
-            ->with(['supplier', 'vehicle', 'delivery_order_detail'])
+            ->with(['supplier', 'delivery_order_detail'])
             ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'));
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;
@@ -412,5 +408,26 @@ class DeliveryOrderController extends Controller
         $name = 'Laporan Pembelian';
         // show preview pdf
         return $pdf->download("$name.pdf");
+    }
+
+    /**
+     * Handle kas entry for delivery order
+     */
+    private function handleKasEntry(DeliveryOrder $deliveryOrder, string $transactionType, string $userName)
+    {
+        // For "Kontan" (cash) transactions, create immediate debit entry
+        if ($transactionType === 'Kontan') {
+            Kas::create([
+                'transaction_type' => 'debit',
+                'amount' => $deliveryOrder->grand_total,
+                'description' => "Pembelian kontan dari supplier {$deliveryOrder->supplier->name} - DO #{$deliveryOrder->id}",
+                'delivery_order_id' => $deliveryOrder->id,
+                'cv_id' => $deliveryOrder->cv_id,
+                'who_create' => $userName,
+                'who_update' => $userName
+            ]);
+        }
+        // For "Tempo Panjang" (credit) transactions, kas entry will be created when payment is made
+        // This will be handled in the payment processing method
     }
 }

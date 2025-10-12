@@ -18,6 +18,10 @@ class CheckPermission
         $user = $request->user();
         if(request()->has('cv_id')){
             session(['cv_id' => request()->get('cv_id')]);
+        }else{
+            if(!session()->has('cv_id')){
+                session(['cv_id' => 1]);
+            }
         }
         // If user is not authenticated, redirect to login
         if (!$user) {

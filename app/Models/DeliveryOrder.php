@@ -3,9 +3,7 @@
 namespace App\Models;
 
 use App\Models\Stock;
-use App\Models\Driver;
 use App\Models\Product;
-use App\Models\Vehicle;
 use App\Models\Supplier;
 use App\Models\DeliveryOrderQuota;
 use App\Models\DeliveryOrderDetail;
@@ -24,8 +22,6 @@ class DeliveryOrder extends Model
     protected $fillable = [
         'purchase_date',
         'supplier_id',
-        'vehicle_id',
-        'driver_id',
         'transaction_type',
         'grand_total',
         'total_payment',
@@ -57,11 +53,6 @@ class DeliveryOrder extends Model
         return $this->hasMany(DeliveryOrderPayment::class);
     }
 
-    public function getDriver()
-    {
-        return Driver::select('id', 'name')->get();
-    }
-
     public function delivery_order_quota()
     {
         return $this->hasMany(DeliveryOrderQuota::class);
@@ -69,16 +60,6 @@ class DeliveryOrder extends Model
     public function delivery_order_quota_detail()
     {
         return $this->hasMany(DeliveryOrderDetail::class);
-    }
-
-    public function getVehicle()
-    {
-        return Vehicle::all();
-    }
-
-    public function vehicle()
-    {
-        return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
     }
 
     public function getProduct()
@@ -89,10 +70,6 @@ class DeliveryOrder extends Model
     public function supplier()
     {
         return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
-    }
-    public function driver()
-    {
-        return $this->belongsTo(Driver::class, 'driver_id', 'id');
     }
 
     public function delivery_order_detail()

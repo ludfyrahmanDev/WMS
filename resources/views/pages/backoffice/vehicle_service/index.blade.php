@@ -5,59 +5,82 @@
 @endsection
 
 @section('subcontent')
-    <div class="mt-8">
-        <h2 class="text-2xl font-bold">Data Service Kendaraan</h2>
-        <p class="text-slate-500 mt-1">Kelola data service dan maintenance kendaraan</p>
+    <!-- Modern Page Header -->
+    <div class="intro-y mt-8">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-xl">
+                    <x-base.lucide class="w-6 h-6 text-indigo-600" icon="Wrench" />
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-800">{{ $title ?? 'Data Service Kendaraan' }}</h1>
+                    <p class="text-slate-600 mt-1">Kelola data service dan maintenance kendaraan</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2 text-sm text-slate-500">
+                <x-base.lucide class="w-4 h-4" icon="Calendar" />
+                <span>{{ now()->format('d M Y') }}</span>
+            </div>
+        </div>
     </div>
-    
+
+    <!-- Alert Messages -->
     @if (session('success'))
-        <x-base.alert class="mb-2 mt-5" variant="outline-success">
-            {{ session('success') }}
+        <x-base.alert class="mb-6 flex items-center bg-emerald-50 border-emerald-200" variant="outline-success" data-dismissible="true">
+            <x-base.lucide class="mr-3 h-5 w-5 text-emerald-600" icon="CheckCircle" />
+            <span class="text-emerald-800">{{ session('success') }}</span>
+            <x-base.alert.dismiss-button class="btn-close ml-auto" type="button" aria-label="Close">
+                <x-base.lucide class="h-4 w-4" icon="X" />
+            </x-base.alert.dismiss-button>
         </x-base.alert>
     @endif
+
     @if (session('failed'))
-        <x-base.alert class="mb-2 mt-5" variant="outline-danger">
-            {{ session('failed') }}
+        <x-base.alert class="mb-6 flex items-center bg-red-50 border-red-200" variant="outline-danger" data-dismissible="true">
+            <x-base.lucide class="mr-3 h-5 w-5 text-red-600" icon="AlertCircle" />
+            <span class="text-red-800">{{ session('failed') }}</span>
+            <x-base.alert.dismiss-button class="btn-close ml-auto" type="button" aria-label="Close">
+                <x-base.lucide class="h-4 w-4" icon="X" />
+            </x-base.alert.dismiss-button>
         </x-base.alert>
     @endif
-    <!-- Statistics Cards -->
-    <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="intro-y box p-5">
-            <div class="flex items-center">
-                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                    <x-base.lucide class="h-5 w-5 text-blue-600" icon="Car" />
-                </div>
+
+    <!-- Enhanced Statistics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 p-4 rounded-lg text-white">
+            <div class="flex items-center justify-between">
                 <div>
-                    <div class="text-slate-500 text-sm">Total Service</div>
-                    <div class="text-xl font-semibold">{{ $data->total() }}</div>
+                    <p class="text-indigo-100 text-sm">Total Service</p>
+                    <p class="text-2xl font-bold">{{ $data->total() ?? 0 }}</p>
                 </div>
+                <x-base.lucide class="w-8 h-8 text-indigo-200" icon="Wrench" />
             </div>
         </div>
-        <div class="intro-y box p-5">
-            <div class="flex items-center">
-                <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
-                    <x-base.lucide class="h-5 w-5 text-red-600" icon="DollarSign" />
-                </div>
+        <div class="bg-gradient-to-r from-red-500 to-red-600 p-4 rounded-lg text-white">
+            <div class="flex items-center justify-between">
                 <div>
-                    <div class="text-slate-500 text-sm">Total Biaya</div>
-                    <div class="text-xl font-semibold text-red-600">{{ toThousand($total ?? 0) }}</div>
+                    <p class="text-red-100 text-sm">Total Biaya</p>
+                    <p class="text-2xl font-bold">{{ toThousand($total ?? 0) }}</p>
                 </div>
+                <x-base.lucide class="w-8 h-8 text-red-200" icon="DollarSign" />
             </div>
         </div>
-        <div class="intro-y box p-5">
-            <div class="flex items-center">
-                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-                    <x-base.lucide class="h-5 w-5 text-purple-600" icon="Calculator" />
-                </div>
+        <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-4 rounded-lg text-white">
+            <div class="flex items-center justify-between">
                 <div>
-                    <div class="text-slate-500 text-sm">Rata-rata Biaya</div>
-                    <div class="text-xl font-semibold text-purple-600">
-                        @php
-                            $avgCost = $data->count() > 0 ? ($total ?? 0) / $data->count() : 0;
-                        @endphp
-                        {{ toThousand($avgCost) }}
-                    </div>
+                    <p class="text-purple-100 text-sm">Service Bulan Ini</p>
+                    <p class="text-2xl font-bold">{{ $data->where('created_at', '>=', now()->startOfMonth())->count() ?? 0 }}</p>
                 </div>
+                <x-base.lucide class="w-8 h-8 text-purple-200" icon="Calendar" />
+            </div>
+        </div>
+        <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-4 rounded-lg text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-orange-100 text-sm">Pending Service</p>
+                    <p class="text-2xl font-bold">{{ $data->where('status', 'pending')->count() ?? 0 }}</p>
+                </div>
+                <x-base.lucide class="w-8 h-8 text-orange-200" icon="Clock" />
             </div>
         </div>
     </div>
@@ -274,3 +297,103 @@
     </x-base.dialog>
     <!-- END: Delete Confirmation Modal -->
 @endsection
+
+@push('js')
+<script>
+    // Search functionality
+    let searchTimeout;
+    const searchInput = document.getElementById('search');
+    const startDateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
+
+    function performSearch() {
+        const searchValue = searchInput.value;
+        const startDate = startDateInput.value;
+        const endDate = endDateInput.value;
+
+        const params = new URLSearchParams(window.location.search);
+        
+        if (searchValue) {
+            params.set('search', searchValue);
+        } else {
+            params.delete('search');
+        }
+        
+        if (startDate) {
+            params.set('start_date', startDate);
+        } else {
+            params.delete('start_date');
+        }
+        
+        if (endDate) {
+            params.set('end_date', endDate);
+        } else {
+            params.delete('end_date');
+        }
+
+        window.location.href = `${window.location.pathname}?${params.toString()}`;
+    }
+
+    // Debounced search for text input
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(performSearch, 500);
+        });
+    }
+
+    // Immediate search for date inputs
+    if (startDateInput) {
+        startDateInput.addEventListener('change', performSearch);
+    }
+
+    if (endDateInput) {
+        endDateInput.addEventListener('change', performSearch);
+    }
+
+    // Auto-dismiss alerts
+    document.addEventListener('DOMContentLoaded', function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            setTimeout(function() {
+                if (alert && alert.parentNode) {
+                    alert.style.transition = 'opacity 0.5s ease-out';
+                    alert.style.opacity = '0';
+                    setTimeout(function() {
+                        alert.remove();
+                    }, 500);
+                }
+            }, 5000);
+        });
+    });
+
+    // Enhanced table interactions
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add hover effects to table rows
+        const tableRows = document.querySelectorAll('table tbody tr');
+        tableRows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#f8fafc';
+                this.style.transform = 'scale(1.01)';
+                this.style.transition = 'all 0.2s ease';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '';
+                this.style.transform = '';
+            });
+        });
+
+        // Smooth scroll to top when pagination changes
+        const paginationLinks = document.querySelectorAll('.pagination a');
+        paginationLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    });
+</script>
+@endpush

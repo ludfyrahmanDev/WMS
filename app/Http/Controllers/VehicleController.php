@@ -15,7 +15,7 @@ class VehicleController extends Controller
             'license_plate',
             'brand',
         ], [])
-        ->withCount('service', 'selling', 'deliveryOrder')
+        ->withCount('service')
         ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
         ->paginate($request->get('per_page', 10));
 

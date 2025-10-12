@@ -16,6 +16,7 @@ use App\Models\SpendingCategory;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\Transaksi\SellingStoreRequest;
+use App\Models\Kas;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -150,6 +151,9 @@ class SellingController extends Controller
                     $selling_detail->save();
                 }
             }
+
+            // Create kas entry for selling (always credit/debit - uang masuk)
+            $this->createKasEntryForSelling($selling, $user['name']);
 
             return redirect(route('selling.index'))->with('success', 'Berhasil menambah data!');
         } catch (\Throwable $th) {
@@ -584,5 +588,22 @@ class SellingController extends Controller
                 'message' => $e->getMessage()
             ]);
         }
+    }
+
+    /**
+     * Create kas entry for selling transaction
+     */
+    private function createKasEntryForSelling(Selling $selling, string $userName)
+    {
+        // Selling always creates debit entry (money in from sales)
+        Kas::create([
+            'transaction_type' => 'debit',
+            'amount' => $selling->grand_total,
+            'description' => "Penjualan kepada {$selling->customer->name} - Selling #{$selling->id}",
+            'selling_id' => $selling->id,
+            'cv_id' => $selling->cv_id,
+            'who_create' => $userName,
+            'who_update' => $userName
+        ]);
     }
 }

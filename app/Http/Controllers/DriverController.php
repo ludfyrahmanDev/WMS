@@ -17,7 +17,7 @@ class DriverController extends Controller
             'address',
             'phone'
         ], [])
-        ->withCount('deliveryOrder', 'vehicleService', 'selling')
+        ->withCount('vehicleService')
         ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'))
         ->paginate($request->get('per_page', 10));
         $title = 'Data Driver';

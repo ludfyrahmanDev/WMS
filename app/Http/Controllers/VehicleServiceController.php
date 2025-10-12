@@ -53,7 +53,7 @@ class VehicleServiceController extends Controller
         $route = 'vehicle_service';
         $request = $request->toArray();
 
-        return view('pages.backoffice.vehicle_service.index', compact('data', 'request','title', 'route', 'request', 'total', 'saldo'));
+        return view('pages.backoffice.vehicle_service.index', compact('data', 'request', 'title', 'route', 'total', 'saldo'));
     }
 
     public function create()
