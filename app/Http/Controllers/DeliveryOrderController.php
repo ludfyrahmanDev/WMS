@@ -40,10 +40,12 @@ class DeliveryOrderController extends Controller
             $all = $all->whereBetween('purchase_date', [$start_date, $end_date]);
         }
         $total = $all->get()->sum('grand_total');
-        $completed = $all->get()->sum('total_payment');
-        $inCompleted = $all->get()->where('status', '!=', 'Completed')->sum(function ($item) {
-            return $item->grand_total - $item->total_payment;
+        // sum delivery_order_quota_detail subtotal
+        $completed = $all->get()->sum(function ($item) {
+            return $item->delivery_order_quota_detail->sum('subtotal');
         });
+        
+        $inCompleted = $total - $completed;
         $data = $all->paginate($request->get('per_page', 10));
         $title = 'Data Pembelian';
         $route = 'delivery_order';
@@ -87,14 +89,6 @@ class DeliveryOrderController extends Controller
 
             $cekSaldo = $saldo->saldo($request);
 
-            // if (intval($request->total_bayar) > intval($cekSaldo)) {
-            //     return back()->with('failed', 'Gagal, saldo tidak cukup!');
-            // }
-
-            // if (intval(curencyToInteger($request->total_bayar)) > intval(curencyToInteger($request->grand_total))) {
-            //     return back()->with('failed', 'Gagal, Total Bayar melebihi dari Grand Total!');
-            // }
-
             // insert Table Delivery order 
             $delivery_order = new DeliveryOrder();
             $delivery_order->purchase_date = $request->tanggal_pembelian;
@@ -131,22 +125,6 @@ class DeliveryOrderController extends Controller
                 $orderQuota->last_stock          = $request->jumlah_qty[$i];
                 $orderQuota->created_at          = Carbon::now();
                 $orderQuota->save();
-                // $stock = new Stock();
-                // $stock->product_id = $request->produk_id[$i];
-                // $stock->purchase_date = $request->tanggal_pembelian;
-                // $stock->is_active = 0;
-                // $stock->price_kg = curencyToInteger($request->hargaKG[$i]);
-                // $stock->first_stock = $request->jumlah_qty[$i];
-                // $stock->stock_in_use = 0;
-                // $stock->last_stock   = $request->jumlah_qty[$i];
-                // $stock->save();
-
-                // $delivery_order_detail = new DeliveryOrderDetail();
-                // $delivery_order_detail->delivery_order_id = $delivery_order->id;
-                // $delivery_order_detail->stock_id = $stock->id;
-                // $delivery_order_detail->purchase_amount = $request->jumlah_qty[$i];
-                // $delivery_order_detail->subtotal = curencyToInteger($request->subtotal_produk[$i]);
-                // $delivery_order_detail->save();
             }
             DB::commit();
 
@@ -306,7 +284,6 @@ class DeliveryOrderController extends Controller
         $delivery_order->load('delivery_order_quota_detail');
         $delivery_order->load('delivery_order_quota_detail.stock');
         $delivery_order->load('delivery_order_quota_detail.stock.product');
-        // $delivery_order->load('delivery_order_quota_detail.product');
         $data['supplier'] = $deliveryOrder->getSupplier();
         $data['product'] = $deliveryOrder->getProduct();
         // Empty arrays for removed driver and vehicle fields
@@ -316,7 +293,6 @@ class DeliveryOrderController extends Controller
         $data['detail'] = $delivery_order->delivery_order_quota;
         $data['payment'] = $delivery_order->delivery_order_payment->sum('amount');
         $data['payment_detail'] = $delivery_order->delivery_order_quota_detail;
-        // dd($data['payment_detail']->toArray());
         $title = 'Data Pembelian';
         $route = route('delivery_order.update', $delivery_order);
         $type = 'view';
@@ -361,7 +337,7 @@ class DeliveryOrderController extends Controller
                 $delivery_order_detail->no_faktur = $request->no_faktur[$i];
                 $delivery_order_detail->stock_id = $stock->id;
                 $delivery_order_detail->purchase_amount = $request->jumlah_qty[$i];
-                $delivery_order_detail->subtotal = curencyToInteger($deliveryOrderQuota->subtotal);
+                $delivery_order_detail->subtotal = curencyToInteger($request->jumlah_qty[$i] * $deliveryOrderQuota->price_kg);
                 $delivery_order_detail->save();
 
                 $deliveryOrderPayment = new DeliveryOrderPayment();
@@ -369,6 +345,19 @@ class DeliveryOrderController extends Controller
                 $deliveryOrderPayment->amount = $request->jumlah_qty[$i] * $deliveryOrderQuota->price_kg;
                 $deliveryOrderPayment->created_at = Carbon::now();
                 $deliveryOrderPayment->save();
+
+                $kasEntry = new Kas();
+                $kasEntry->transaction_type = 'kredit';
+                $kasEntry->amount = $request->jumlah_qty[$i] * $deliveryOrderQuota->price_kg;
+                $kasEntry->description = "Pembelian barang dari supplier {$delivery_order->supplier->name} - DO #{$delivery_order->id}";
+                $kasEntry->delivery_order_id = $delivery_order->id;
+                $kasEntry->cv_id = $delivery_order->cv_id;
+                $kasEntry->who_create = auth()->user()['name'];
+                $kasEntry->who_update = auth()->user()['name'];
+                $kasEntry->save();
+
+                $kas = new Kas();
+
             }
             DB::commit();
             return redirect(route('delivery_order.index'))->with('success', 'Berhasil Tambah data pengambilan!');
@@ -418,7 +407,7 @@ class DeliveryOrderController extends Controller
         // For "Kontan" (cash) transactions, create immediate debit entry
         if ($transactionType === 'Kontan') {
             Kas::create([
-                'transaction_type' => 'debit',
+                'transaction_type' => 'kredit',
                 'amount' => $deliveryOrder->grand_total,
                 'description' => "Pembelian kontan dari supplier {$deliveryOrder->supplier->name} - DO #{$deliveryOrder->id}",
                 'delivery_order_id' => $deliveryOrder->id,
