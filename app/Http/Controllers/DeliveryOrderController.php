@@ -40,11 +40,9 @@ class DeliveryOrderController extends Controller
             $all = $all->whereBetween('purchase_date', [$start_date, $end_date]);
         }
         $total = $all->get()->sum('grand_total');
-        // sum delivery_order_quota_detail subtotal
         $completed = $all->get()->sum(function ($item) {
             return $item->delivery_order_quota_detail->sum('subtotal');
         });
-        
         $inCompleted = $total - $completed;
         $data = $all->paginate($request->get('per_page', 10));
         $title = 'Data Pembelian';
