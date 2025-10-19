@@ -156,53 +156,35 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Delivery Info Section -->
+                    <!-- Payment Info Section -->
                     <div class="border-t border-slate-200 p-5">
-                        <h3 class="mb-3 text-base font-medium">Informasi Pengiriman</h3>
+                        <h3 class="mb-3 text-base font-medium">Informasi Pembayaran</h3>
                         <div class="grid grid-cols-12 gap-4">
-                            <div class="col-span-12 lg:col-span-4">
+                            <div class="col-span-12 lg:col-span-6">
                                 <div class="rounded-lg bg-slate-50 p-4">
-                                    <div class="mb-3">
-                                        <x-base.form-label for="driver">Pengemudi</x-base.form-label>
-                                        <x-base.tom-select 
-                                            name="driver" 
-                                            id="driver" 
-                                            class="w-full" 
-                                            data-placeholder="Pilih Pengemudi"
-                                        >
-                                            <option value="">Pilih Pengemudi</option>
-                                            @foreach ($data['driver'] as $row)
-                                                <option value="{{ $row->id }}"
-                                                    {{ $data['header']->driver_id == $row->id ? 'selected' : '' }}>
-                                                    {{ $row->name }}
-                                                </option>
-                                            @endforeach
-                                        </x-base.tom-select>
-                                        @error('driver')
-                                            <div class="mt-2 text-danger text-sm">
-                                                {{ $message }}
-                                            </div>
-                                        @enderror
-                                    </div>
-
                                     <div>
-                                        <x-base.form-label for="kendaraan">Kendaraan</x-base.form-label>
+                                        <x-base.form-label for="tipe_pembelian">Tipe Pembelian</x-base.form-label>
                                         <x-base.tom-select 
-                                            name="kendaraan" 
-                                            id="kendaraan" 
-                                            class="w-full" 
-                                            data-placeholder="Pilih Kendaraan"
+                                            name="tipe_pembelian" 
+                                            id="tipe_pembelian" 
+                                            class="w-full"
+                                            data-placeholder="Pilih Tipe Pembelian" 
+                                            required
                                         >
-                                            <option value="">Pilih Kendaraan</option>
-                                            @foreach ($data['vehicle'] as $row)
-                                                <option value="{{ $row->id }}"
-                                                    {{ $data['header']->vehicle_id == $row->id ? 'selected' : '' }}>
-                                                    <span class="font-medium">{{ $row->name }}</span>
-                                                    <span class="text-slate-500">({{ $row->license_plate }})</span>
-                                                </option>
-                                            @endforeach
+                                            <option value="tempo"
+                                                {{ $data['header']->purchasing_method == 'tempo' ? 'selected' : '' }}>
+                                                Tempo Panjang
+                                            </option>
+                                            <option value="titipan"
+                                                {{ $data['header']->purchasing_method == 'titipan' ? 'selected' : '' }}>
+                                                Titipan
+                                            </option>
+                                            <option value="kontan"
+                                                {{ $data['header']->purchasing_method == 'kontan' ? 'selected' : '' }}>
+                                                Kontan
+                                            </option>
                                         </x-base.tom-select>
-                                        @error('kendaraan')
+                                        @error('tipe_pembelian')
                                             <div class="mt-2 text-danger text-sm">
                                                 {{ $message }}
                                             </div>
@@ -211,75 +193,34 @@
                                 </div>
                             </div>
 
-                            <div class="col-span-12 lg:col-span-8">
+                            <div class="col-span-12 lg:col-span-6">
                                 <div class="rounded-lg bg-slate-50 p-4">
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <x-base.form-label for="tipe_pembelian">Tipe Pembelian</x-base.form-label>
-                                            <x-base.tom-select 
-                                                name="tipe_pembelian" 
-                                                id="tipe_pembelian" 
-                                                class="w-full"
-                                                data-placeholder="Pilih Tipe Pembelian" 
-                                                required
-                                            >
-                                                <option value="tempo"
-                                                    {{ $data['header']->purchasing_method == 'tempo' ? 'selected' : '' }}>
-                                                    Tempo Panjang
-                                                </option>
-                                                <option value="titipan"
-                                                    {{ $data['header']->purchasing_method == 'titipan' ? 'selected' : '' }}>
-                                                    Titipan
-                                                </option>
-                                                <option value="kontan"
-                                                    {{ $data['header']->purchasing_method == 'kontan' ? 'selected' : '' }}>
-                                                    Kontan
-                                                </option>
-                                            </x-base.tom-select>
-                                            @error('tipe_pembelian')
-                                                <div class="mt-2 text-danger text-sm">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        <div>
-                                            <x-base.form-label for="tipe_pembayaran">Tipe Pembayaran</x-base.form-label>
-                                            <x-base.tom-select 
-                                                name="tipe_pembayaran" 
-                                                id="tipe_pembayaran" 
-                                                class="w-full"
-                                                data-placeholder="Pilih Tipe Pembayaran" 
-                                                required
-                                            >
-                                                <option value="cash" 
-                                                    {{ $data['header']->payment_type == 'cash' ? 'selected' : '' }}>
-                                                    Cash
-                                                </option>
-                                                <option value="transfer"
-                                                    {{ $data['header']->payment_type == 'transfer' ? 'selected' : '' }}>
-                                                    Transfer
-                                                </option>
-                                            </x-base.tom-select>
-                                            @error('tipe_pembayaran')
-                                                <div class="mt-2 text-danger text-sm">
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-
-                                        <div>
-                                            <x-base.form-label for="uang_saku">Uang Saku Pengemudi</x-base.form-label>
-                                            <x-base.form-input 
-                                                class="w-full" 
-                                                type="text" 
-                                                name="uang_saku"
-                                                id="uang_saku" 
-                                                value="{{ $data['header']->drivers_pocket_money ?? old('uang_saku') }}"
-                                                placeholder="Masukkan uang saku pengemudi" 
-                                                price="true"
-                                                onkeypress="return event.charCode >= 48 && event.charCode <= 57" 
-                                            />
+                                    <div>
+                                        <x-base.form-label for="tipe_pembayaran">Tipe Pembayaran</x-base.form-label>
+                                        <x-base.tom-select 
+                                            name="tipe_pembayaran" 
+                                            id="tipe_pembayaran" 
+                                            class="w-full"
+                                            data-placeholder="Pilih Tipe Pembayaran" 
+                                            required
+                                        >
+                                            <option value="cash" 
+                                                {{ $data['header']->payment_type == 'cash' ? 'selected' : '' }}>
+                                                Cash
+                                            </option>
+                                            <option value="transfer"
+                                                {{ $data['header']->payment_type == 'transfer' ? 'selected' : '' }}>
+                                                Transfer
+                                            </option>
+                                        </x-base.tom-select>
+                                        @error('tipe_pembayaran')
+                                            <div class="mt-2 text-danger text-sm">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
                                         </div>
 
                                         <div>
@@ -532,9 +473,9 @@
                                     <table class="min-w-full divide-y divide-slate-200">
                                         <thead>
                                             <tr class="bg-slate-50">
-                                                <th class="px-4 py-3 text-center text-sm font-medium text-slate-600">No</th>
-                                                <th class="px-4 py-3 text-center text-sm font-medium text-slate-600">Stok</th>
-                                                <th class="px-4 py-3 text-center text-sm font-medium text-slate-600">Harga/Kg</th>
+                                                <td class="px-4 py-3 text-start text-sm font-medium text-slate-600">No</td>
+                                                <td class="px-4 py-3 text-start text-sm font-medium text-slate-600">Stok</td>
+                                                <td class="px-4 py-3 text-start text-sm font-medium text-slate-600">Harga/Kg</td>
                                             </tr>
                                         </thead>
                                         <tbody id="tableDetailStockHarga" class="divide-y divide-slate-200">
@@ -753,7 +694,10 @@
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.send();
 
-                $('#modalDetailStockHarga').removeAttr('disabled');
+                
+            }
+
+            $('#modalDetailStockHarga').removeAttr('disabled');
             }
 
             // Handle CV change to update customers, drivers and vehicles
