@@ -221,19 +221,17 @@
                                     </div>
                                 </div>
                             </div>
-                                        </div>
 
-                                        <div>
-                                            <x-base.form-label for="catatan">Catatan</x-base.form-label>
-                                            <x-base.form-textarea 
-                                                class="form-control" 
-                                                id="catatan" 
-                                                name="catatan"
-                                                rows="3"
-                                                placeholder="Masukkan catatan (Optional)..."
-                                            >{{ $data['header']->notes ?? old('catatan') }}</x-base.form-textarea>
-                                        </div>
-                                    </div>
+                            <div class="col-span-12">
+                                <div class="rounded-lg bg-slate-50 p-4">
+                                    <x-base.form-label for="catatan">Catatan</x-base.form-label>
+                                    <x-base.form-textarea 
+                                        class="form-control" 
+                                        id="catatan" 
+                                        name="catatan"
+                                        rows="3"
+                                        placeholder="Masukkan catatan (Optional)..."
+                                    >{{ $data['header']->notes ?? old('catatan') }}</x-base.form-textarea>
                                 </div>
                             </div>
                         </div>
@@ -242,14 +240,6 @@
                     <div class="border-t border-slate-200 p-5">
                         <div class="mb-4 flex items-center justify-between">
                             <h3 class="text-base font-medium">Daftar Produk</h3>
-                            <x-base.button 
-                                type="button" 
-                                variant="primary" 
-                                onclick="tambahProduk()"
-                            >
-                                <x-base.lucide class="mr-2 h-4 w-4" icon="Plus"/>
-                                Tambah Produk
-                            </x-base.button>
                         </div>
 
                         <div class="rounded-lg bg-slate-50 p-4">
@@ -285,7 +275,6 @@
                                             placeholder="Jumlah"
                                             onkeypress="return event.charCode >= 48 && event.charCode <= 57"
                                             onchange="getHargaStock(this.value)" 
-                                            disabled 
                                         />
                                         <x-base.input-group.text>
                                             <x-base.button 
@@ -319,6 +308,14 @@
                                     </div>
                                 </div>
                             </div>
+                            <x-base.button 
+                                type="button" 
+                                variant="primary" 
+                                onclick="tambahProduk()"
+                            >
+                                <x-base.lucide class="mr-2 h-4 w-4" icon="Plus"/>
+                                Tambah Produk
+                            </x-base.button>
                         </div>
                     </div>
                     <!-- Products Table -->
@@ -697,8 +694,8 @@
                 
             }
 
-            $('#modalDetailStockHarga').removeAttr('disabled');
-            }
+            // $('#modalDetailStockHarga').removeAttr('disabled');
+            // }
 
             // Handle CV change to update customers, drivers and vehicles
 
