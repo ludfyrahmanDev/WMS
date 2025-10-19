@@ -94,6 +94,7 @@ Route::middleware('auth')->group(function () {
     Route::get('transport_export_pdf', [TransportController::class, 'exportPdf'])->name('transport.export-pdf')->middleware('permission:transport.view');
     Route::get('selling_export_one/{id}', [SellingController::class, 'exportPdfSingle'])->name('selling.export-one')->middleware('permission:selling.view');
     Route::get('/getHargaStock', [SellingController::class, 'getHargaStock'])->middleware('permission:products.view');
+    Route::post('/transport/get-invoice', [TransportController::class, 'getInvoice'])->name('transport.getInvoice');
     // end transaction
     Route::get('product/{product}', [ProductController::class, 'getDataProduct'])->name('product.get')->middleware('permission:products.view');
     Route::get('stock', [StockController::class, 'index'])->name('stockIndex')->middleware('permission:stock.view');
