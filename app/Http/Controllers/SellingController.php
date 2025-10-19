@@ -6,8 +6,6 @@ use App\Models\Stock;
 use App\Models\Selling;
 use App\Models\Spending;
 use App\Models\Customer;
-use App\Models\Driver;
-use App\Models\Vehicle;
 use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
 use App\Models\SellingDetail;
@@ -28,7 +26,7 @@ class SellingController extends Controller
     {
         $selectedCvId = session('cv_id');
         
-        $all = Selling::with('customer', 'driver', 'cv')
+        $all = Selling::with('customer', 'cv')
             ->when($selectedCvId && auth()->user()->hasCompanyAccess(), function ($query) use ($selectedCvId) {
                 $query->where('cv_id', $selectedCvId);
             })
@@ -55,17 +53,12 @@ class SellingController extends Controller
         $selectedCvId = session('cv_id');
         $cvs = auth()->user()->getAccessibleCvs();
         $data['customer']   = $selling->getCustomer();
-        $data['driver']     = $selling->getDriver();
-        $data['vehicle']    = $selling->getVehicle();
         $data['product']    = $selling->getProduct();
         $data['cvs']        = $cvs;
         $data['header'] = (object)[
             'date'                  => null,
             'customer_id'           => null,
             'cv_id'                 => $selectedCvId,
-            'vehicle_id'            => null,
-            'driver_id'             => null,
-            'driver_pocket_money'   => null,
             'net_profit'            => null,
             'purchasing_method'     => null,
             'notes'                 => null,
@@ -94,10 +87,6 @@ class SellingController extends Controller
             $selling->date                  = $request->tgl_jual;
             $selling->customer_id           = $request->customer;
             $selling->cv_id                 = $request->cv_id ?? session('cv_id');
-            $selling->vehicle_id            = $request->supplier;
-            $selling->driver_id             = $request->driver;
-            $selling->vehicle_id            = $request->kendaraan;
-            $selling->drivers_pocket_money  = curencyToInteger($request->uang_saku);
             $selling->purchasing_method     = $request->tipe_pembelian;
             $selling->payment_type          = $request->tipe_pembayaran;
             $selling->notes                 = $request->catatan;

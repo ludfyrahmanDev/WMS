@@ -5,321 +5,486 @@
 @endsection
 
 @section('subcontent')
-    <div class="intro-y mt-8 flex items-center">
-        <h2 class="mr-auto text-lg font-medium">Form Penjualan</h2>
+    <div class="intro-y mt-8 flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-lg font-medium text-slate-900">Form Penjualan</h2>
+                <p class="mt-1 text-slate-600">{{ $type == 'create' ? 'Buat penjualan baru' : 'Edit penjualan' }}</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <x-base.button class="px-3" variant="outline-secondary">
+                    <x-base.lucide class="mr-2 h-4 w-4" icon="ArrowLeft"/>
+                    <a href="{{ route('selling.index') }}">Kembali</a>
+                </x-base.button>
+                @if ($type != 'create')
+                    <x-base.button class="px-3" variant="outline-danger">
+                        <x-base.lucide class="mr-2 h-4 w-4" icon="FileX"/>
+                        Batalkan
+                    </x-base.button>
+                @endif
+            </div>
+        </div>
+
+        @if (session('success'))
+            <x-base.alert class="flex items-center" variant="outline-success">
+                <x-base.lucide class="mr-2 h-5 w-5" icon="CheckCircle" />
+                {{ session('success') }}
+                <x-base.alert.dismiss-button class="btn-close" type="button" aria-label="Close">
+                    <x-base.lucide class="h-4 w-4" icon="X" />
+                </x-base.alert.dismiss-button>
+            </x-base.alert>
+        @endif
+        
+        @if (session('failed'))
+            <x-base.alert class="flex items-center" variant="outline-danger">
+                <x-base.lucide class="mr-2 h-5 w-5" icon="AlertCircle" />
+                {{ session('failed') }}
+                <x-base.alert.dismiss-button class="btn-close" type="button" aria-label="Close">
+                    <x-base.lucide class="h-4 w-4" icon="X" />
+                </x-base.alert.dismiss-button>
+            </x-base.alert>
+        @endif
     </div>
-    @if (session('success'))
-        <x-base.alert class="mb-2 mt-5 flex items-center" variant="outline-success">
-            <x-base.lucide class="mr-2 h-6 w-6" icon="AlertOctagon" />
-            {{ session('success') }}
-            <x-base.alert.dismiss-button class="btn-close" type="button" aria-label="Close">
-                <x-base.lucide class="h-4 w-4" icon="X" />
-            </x-base.alert.dismiss-button>
-        </x-base.alert>
-    @endif
-    @if (session('failed'))
-        <x-base.alert class="mb-2 flex items-center" variant="outline-danger">
-            <x-base.lucide class="mr-2 h-6 w-6" icon="AlertOctagon" />
-            {{ session('failed') }}
-            <x-base.alert.dismiss-button class="btn-close" type="button" aria-label="Close">
-                <x-base.lucide class="h-4 w-4" icon="X" />
-            </x-base.alert.dismiss-button>
-        </x-base.alert>
-    @endif
     <div class="mt-5 grid grid-cols-12 gap-6">
-
         <div class="intro-y col-span-12 lg:col-span-12">
-
             <form action="{{ $route }}" method="post" enctype="multipart/form-data">
                 @csrf
                 @if ($type != 'create')
                     @method('PUT')
                 @endif
-                <!-- BEGIN: Form Layout -->
-                <div class="intro-y box p-5">
-                    <div class="grid grid-cols-12 gap-2">
-                        <div class="input-form col-span-4">
-                            <x-base.form-label for="crud-form-1">Tanggal Penjualan</x-base.form-label>
-                            <x-base.form-input class="w-full" id="crud-form-1" type="date" name="tgl_jual"
-                                value="{{ $data['header']->date ?? date('Y-m-d') }}"
-                                placeholder="Pilih Tanggal Pembelian" />
-                            @error('tgl_jual')
-                                <div class="pristine-error text-danger mt-2">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                        <div class="input-form col-span-4">
-                            <x-base.form-label for="crud-form-1">Pelanggan</x-base.form-label>
-                            <x-base.tom-select name="customer" class="w-full" data-placeholder="Pilih Pelanggan"
-                                id="customer">
-                                <option value="">Pilih Pelanggan</option>
-                                @foreach ($data['customer'] as $row)
-                                    <option value="{{ $row->id }}"
-                                        {{ $data['header']->customer_id == $row->id ? 'selected' : '' }}>
-                                        {{ $row->name }}</option>
-                                @endforeach
-                            </x-base.tom-select>
-                            @error('customer')
-                                <div class="pristine-error text-danger mt-2">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                        @if (count($data['cvs']) > 1)
-                            <div class="input-form col-span-4">
-                                <x-base.form-label for="cv_id">Perusahaan</x-base.form-label>
-                                <x-base.tom-select name="cv_id" id="cv_id" class="w-full"
-                                    data-placeholder="Pilih Perusahaan" required>
-                                    <option value="">Pilih Perusahaan</option>
-                                    @foreach ($data['cvs'] as $cv)
-                                        <option value="{{ $cv->id }}"
-                                            {{ ($data['header']->cv_id ?? session('cv_id')) == $cv->id ? 'selected' : '' }}>
-                                            {{ $cv->name }}
-                                        </option>
-                                    @endforeach
-                                </x-base.tom-select>
-                                @error('cv_id')
-                                    <div class="pristine-error text-danger mt-2">
-                                        {{ $message }}
+                
+                <!-- Main Form Layout -->
+                <div class="intro-y rounded-lg border border-slate-200 bg-white">
+                    <!-- Transaction Info Section -->
+                    <div class="p-5">
+                        <h3 class="mb-3 text-base font-medium">Informasi Transaksi</h3>
+                        <div class="grid grid-cols-12 gap-4">
+                            <div class="col-span-12 lg:col-span-4">
+                                <div class="rounded-lg bg-slate-50 p-4">
+                                    <div class="mb-3">
+                                        <x-base.form-label for="tgl_jual">Tanggal Penjualan</x-base.form-label>
+                                        <x-base.form-input 
+                                            class="w-full" 
+                                            id="tgl_jual" 
+                                            type="date" 
+                                            name="tgl_jual"
+                                            value="{{ $data['header']->date ?? date('Y-m-d') }}"
+                                        />
+                                        @error('tgl_jual')
+                                            <div class="mt-2 text-danger text-sm">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
                                     </div>
-                                @enderror
-                            </div>
-                        @else
-                            <input type="hidden" name="cv_id" value="{{ $data['cvs']->first()->id ?? session('cv_id') }}">
-                        @endif
-                        <div class="input-form col-span-4">
-                            <x-base.form-label for="crud-form-1">Pengemudi</x-base.form-label>
-                            <x-base.tom-select name="driver" class="w-full" data-placeholder="Pilih driver" id="driver">
-                                <option value="">Pilih Pengemudi</option>
-                                @foreach ($data['driver'] as $row)
-                                    <option value="{{ $row->id }}"
-                                        {{ $data['header']->driver_id == $row->id ? 'selected' : '' }}>
-                                        {{ $row->name }}</option>
-                                @endforeach
-                            </x-base.tom-select>
-                            @error('driver')
-                                <div class="pristine-error text-danger mt-2">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="mt-2 grid grid-cols-12 gap-2">
-                        <div class="input-form col-span-4">
-                            <x-base.form-label for="crud-form-1">Kendaraan</x-base.form-label>
-                            <x-base.tom-select name="kendaraan" class="w-full" data-placeholder="Pilih Kendaraan"
-                                id="kendaraan">
-                                <option value="">Pilih Kendaraan</option>
-                                @foreach ($data['vehicle'] as $row)
-                                    <option value="{{ $row->id }}"
-                                        {{ $data['header']->vehicle_id == $row->id ? 'selected' : '' }}>
-                                        {{ '[ ' . $row->license_plate . ' ] ' . $row->name }}
-                                    </option>
-                                @endforeach
-                            </x-base.tom-select>
-                            @error('kendaraan')
-                                <div class="pristine-error text-danger mt-2">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                        <div class="input-form col-span-4">
-                            <x-base.form-label for="crud-form-1">Uang Saku Pengemudi</x-base.form-label>
-                            <x-base.form-input class="w-full" id="crud-form-1" type="text" name="uang_saku"
-                                id="uang_saku" value="{{ $data['header']->drivers_pocket_money ?? old('uang_saku') }}"
-                                placeholder="Masukkan uang saku pengemudi" price="true"
-                                onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
-                        </div>
-                        <div class="input-form col-span-4">
-                            <x-base.form-label for="tipe_pembelian">Tipe Pembelian</x-base.form-label>
-                            <x-base.tom-select name="tipe_pembelian" id="tipe_pembelian" class="w-full"
-                                data-placeholder="Pilih Tipe Pembelian" required>
-                                <option value="tempo"
-                                    {{ $data['header']->purchasing_method == 'tempo' ? 'selected' : '' }}>Tempo Panjang
-                                </option>
-                                <option value="titipan"
-                                    {{ $data['header']->purchasing_method == 'titipan' ? 'selected' : '' }}>Titipan
-                                </option>
-                                <option value="kontan"
-                                    {{ $data['header']->purchasing_method == 'kontan' ? 'selected' : '' }}>Kontan</option>
-                            </x-base.tom-select>
-                            @error('tipe_pembelian')
-                                <div class="pristine-error text-danger mt-2">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                        <div class="input-form col-span-4">
-                            <x-base.form-label for="tipe_pembayaran">Tipe Pembayaran</x-base.form-label>
-                            <x-base.tom-select name="tipe_pembayaran" id="tipe_pembayaran" class="w-full"
-                                data-placeholder="Pilih Tipe Pembayaran" required>
-                                <option value="cash" {{ $data['header']->payment_type == 'cash' ? 'selected' : '' }}>Cash
-                                </option>
-                                <option value="transfer"
-                                    {{ $data['header']->payment_type == 'transfer' ? 'selected' : '' }}>Transfer</option>
-                            </x-base.tom-select>
-                            @error('tipe_pembayaran')
-                                <div class="pristine-error text-danger mt-2">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                        <div class="input-form col-span-8">
-                            <x-base.form-label for="catatan">Catatan</x-base.form-label>
-                            <x-base.form-textarea class="form-control" id="catatan" name="catatan"
-                                placeholder="Masukkan catatan (Optional)..."
-                                value="{{ $data['header']->notes ?? old('catatan') }}"></x-base.form-textarea>
-                        </div>
-                    </div>
-                    <br>
-                    <hr style="border: 1px solid black;">
-                    <div class="mt-3 grid grid-cols-12 gap-2">
-                        <div class="input-form col-span-4">
-                            <x-base.form-label for="crud-form-1">Produk</x-base.form-label>
-                            <x-base.tom-select name="produk" id="produk" class="w-full"
-                                data-placeholder="Pilih Produk">
-                                <option value="">Pilih Produk</option>
-                                @foreach ($data['product'] as $row)
-                                    <option value="{{ $row->id }}_{{ $row->product }}_{{ $row->last_stock }}">
-                                        {{ $row->product . ' ( Sisa Stok : ' . $row->last_stock . ' )' }}
-                                    </option>
-                                @endforeach
-                            </x-base.tom-select>
-                        </div>
-                        <div class="input-form col-span-4">
-                            <x-base.form-label for="qty_jual">Qty</x-base.form-label>
-                            <x-base.input-group inputGroup>
-                                <x-base.form-input class="w-full" type="text" name="qty_jual" id="qty_jual"
-                                    placeholder="Masukkan jumlah beli"
-                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                    onchange="getHargaStock(this.value)" disabled />
-                                <x-base.input-group.text>
-                                    <x-base.button type="button" id="modalDetailStockHarga" data-tw-toggle="modal"
-                                        data-tw-target="#detailStockHarga" variant="primary" disabled>
-                                        <x-base.lucide class="h-4 w-4" icon="Eye" />
-                                    </x-base.button>
-                                </x-base.input-group.text>
-                            </x-base.input-group>
-                        </div>
-                        <div class="input-form col-span-4">
-                            <x-base.form-label for="harga_jual">Harga Jual</x-base.form-label>
-                            <x-base.form-input class="w-full" type="text" name="harga_jual" value=""
-                                id="harga_jual" placeholder="Masukkan Harga Jual" price="true"/>
-                        </div>
-                    </div>
 
-                    <div class="mt-3 grid grid-cols-12">
-                        <div class="col-span-6 flex">
-                            {{-- <h3><strong>Produk</strong></h3> --}}
+                                    @if (count($data['cvs']) > 1)
+                                        <div class="mb-3">
+                                            <x-base.form-label for="cv_id">Perusahaan</x-base.form-label>
+                                            <x-base.tom-select 
+                                                name="cv_id" 
+                                                id="cv_id" 
+                                                class="w-full"
+                                                data-placeholder="Pilih Perusahaan" 
+                                                required
+                                            >
+                                                <option value="">Pilih Perusahaan</option>
+                                                @foreach ($data['cvs'] as $cv)
+                                                    <option value="{{ $cv->id }}"
+                                                        {{ ($data['header']->cv_id ?? session('cv_id')) == $cv->id ? 'selected' : '' }}>
+                                                        {{ $cv->name }}
+                                                    </option>
+                                                @endforeach
+                                            </x-base.tom-select>
+                                            @error('cv_id')
+                                                <div class="mt-2 text-danger text-sm">
+                                                    {{ $message }}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    @else
+                                        <input type="hidden" name="cv_id" value="{{ $data['cvs']->first()->id ?? session('cv_id') }}">
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="col-span-12 lg:col-span-4">
+                                <div class="rounded-lg bg-slate-50 p-4">
+                                    <div class="mb-3">
+                                        <x-base.form-label for="customer">Pelanggan</x-base.form-label>
+                                        <x-base.tom-select 
+                                            name="customer" 
+                                            id="customer" 
+                                            class="w-full" 
+                                            data-placeholder="Pilih Pelanggan"
+                                        >
+                                            <option value="">Pilih Pelanggan</option>
+                                            @foreach ($data['customer'] as $row)
+                                                <option value="{{ $row->id }}"
+                                                    {{ $data['header']->customer_id == $row->id ? 'selected' : '' }}>
+                                                    {{ $row->name }}
+                                                </option>
+                                            @endforeach
+                                        </x-base.tom-select>
+                                        @error('customer')
+                                            <div class="mt-2 text-danger text-sm">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-span-12 lg:col-span-4">
+                                <div class="rounded-lg bg-slate-50 p-4">
+                                    <div class="mb-3">
+                                        <x-base.form-label>Status Transaksi</x-base.form-label>
+                                        <div class="mt-2 flex items-center gap-2">
+                                            <span class="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium
+                                                {{ $type == 'create' ? 'bg-primary/20 text-primary' : 
+                                                ($data['header']->status == 'completed' ? 'bg-success/20 text-success' : 'bg-warning/20 text-warning') }}">
+                                                <x-base.lucide 
+                                                    class="mr-1 h-4 w-4" 
+                                                    icon="{{ $type == 'create' ? 'FileEdit' : 
+                                                        ($data['header']->status == 'completed' ? 'CheckCircle' : 'Clock') }}" 
+                                                />
+                                                {{ $type == 'create' ? 'Draft Baru' : 
+                                                    ($data['header']->status == 'completed' ? 'Selesai' : 'Dalam Proses') }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-span-6 flex justify-end">
-                            <x-base.button type="button" onclick="tambahProduk()" variant="primary">
+                    </div>
+                    <!-- Payment Info Section -->
+                    <div class="border-t border-slate-200 p-5">
+                        <h3 class="mb-3 text-base font-medium">Informasi Pembayaran</h3>
+                        <div class="grid grid-cols-12 gap-4">
+                            <div class="col-span-12 lg:col-span-6">
+                                <div class="rounded-lg bg-slate-50 p-4">
+                                    <div>
+                                        <x-base.form-label for="tipe_pembelian">Tipe Pembelian</x-base.form-label>
+                                        <x-base.tom-select 
+                                            name="tipe_pembelian" 
+                                            id="tipe_pembelian" 
+                                            class="w-full"
+                                            data-placeholder="Pilih Tipe Pembelian" 
+                                            required
+                                        >
+                                            <option value="tempo"
+                                                {{ $data['header']->purchasing_method == 'tempo' ? 'selected' : '' }}>
+                                                Tempo Panjang
+                                            </option>
+                                            <option value="titipan"
+                                                {{ $data['header']->purchasing_method == 'titipan' ? 'selected' : '' }}>
+                                                Titipan
+                                            </option>
+                                            <option value="kontan"
+                                                {{ $data['header']->purchasing_method == 'kontan' ? 'selected' : '' }}>
+                                                Kontan
+                                            </option>
+                                        </x-base.tom-select>
+                                        @error('tipe_pembelian')
+                                            <div class="mt-2 text-danger text-sm">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-span-12 lg:col-span-6">
+                                <div class="rounded-lg bg-slate-50 p-4">
+                                    <div>
+                                        <x-base.form-label for="tipe_pembayaran">Tipe Pembayaran</x-base.form-label>
+                                        <x-base.tom-select 
+                                            name="tipe_pembayaran" 
+                                            id="tipe_pembayaran" 
+                                            class="w-full"
+                                            data-placeholder="Pilih Tipe Pembayaran" 
+                                            required
+                                        >
+                                            <option value="cash" 
+                                                {{ $data['header']->payment_type == 'cash' ? 'selected' : '' }}>
+                                                Cash
+                                            </option>
+                                            <option value="transfer"
+                                                {{ $data['header']->payment_type == 'transfer' ? 'selected' : '' }}>
+                                                Transfer
+                                            </option>
+                                        </x-base.tom-select>
+                                        @error('tipe_pembayaran')
+                                            <div class="mt-2 text-danger text-sm">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                                        </div>
+
+                                        <div>
+                                            <x-base.form-label for="catatan">Catatan</x-base.form-label>
+                                            <x-base.form-textarea 
+                                                class="form-control" 
+                                                id="catatan" 
+                                                name="catatan"
+                                                rows="3"
+                                                placeholder="Masukkan catatan (Optional)..."
+                                            >{{ $data['header']->notes ?? old('catatan') }}</x-base.form-textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Products Section -->
+                    <div class="border-t border-slate-200 p-5">
+                        <div class="mb-4 flex items-center justify-between">
+                            <h3 class="text-base font-medium">Daftar Produk</h3>
+                            <x-base.button 
+                                type="button" 
+                                variant="primary" 
+                                onclick="tambahProduk()"
+                            >
+                                <x-base.lucide class="mr-2 h-4 w-4" icon="Plus"/>
                                 Tambah Produk
                             </x-base.button>
                         </div>
+
+                        <div class="rounded-lg bg-slate-50 p-4">
+                            <div class="grid grid-cols-12 gap-4">
+                                <div class="col-span-12 lg:col-span-6">
+                                    <x-base.form-label for="produk">Produk</x-base.form-label>
+                                    <x-base.tom-select 
+                                        name="produk" 
+                                        id="produk" 
+                                        class="w-full"
+                                        data-placeholder="Pilih Produk"
+                                    >
+                                        <option value="">Pilih Produk</option>
+                                        @foreach ($data['product'] as $row)
+                                            <option value="{{ $row->id }}_{{ $row->product }}_{{ $row->last_stock }}">
+                                                <div class="flex items-center justify-between">
+                                                    <span>{{ $row->product }}</span>
+                                                    <span class="text-slate-500">(Stok: {{ $row->last_stock }})</span>
+                                                </div>
+                                            </option>
+                                        @endforeach
+                                    </x-base.tom-select>
+                                </div>
+
+                                <div class="col-span-12 lg:col-span-3">
+                                    <x-base.form-label for="qty_jual">Jumlah (QTY)</x-base.form-label>
+                                    <x-base.input-group>
+                                        <x-base.form-input 
+                                            class="w-full" 
+                                            type="text" 
+                                            name="qty_jual" 
+                                            id="qty_jual"
+                                            placeholder="Jumlah"
+                                            onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                            onchange="getHargaStock(this.value)" 
+                                            disabled 
+                                        />
+                                        <x-base.input-group.text>
+                                            <x-base.button 
+                                                type="button" 
+                                                id="modalDetailStockHarga" 
+                                                data-tw-toggle="modal"
+                                                data-tw-target="#detailStockHarga" 
+                                                variant="primary" 
+                                                disabled
+                                            >
+                                                <x-base.lucide class="h-4 w-4" icon="Eye" />
+                                            </x-base.button>
+                                        </x-base.input-group.text>
+                                    </x-base.input-group>
+                                </div>
+
+                                <div class="col-span-12 lg:col-span-3">
+                                    <x-base.form-label for="harga_jual">Harga Jual</x-base.form-label>
+                                    <div class="relative">
+                                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                            <span class="text-slate-500">Rp</span>
+                                        </div>
+                                        <x-base.form-input 
+                                            class="w-full pl-10" 
+                                            type="text" 
+                                            name="harga_jual" 
+                                            id="harga_jual"
+                                            placeholder="Harga jual per unit" 
+                                            price="true"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <br>
-                    <table class="min-w-full bg-white border-gray-300" id="transDetail">
-                        <thead>
-                            <tr class="bg-dark text-white">
-                                <th class="py-2 px-4 border-b text-left w-1/4">Produk</th>
-                                <th class="py-2 px-4 border-b text-left w-1/4">Qty</th>
-                                <th class="py-2 px-4 border-b text-left w-1/4">Harga Jual</th>
-                                <th class="py-2 px-4 border-b text-left w-1/4">Subtotal</th>
-                                <th class="py-2 px-4 border-b text-left w-1/4">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transDetail">
-                            @if (isset($data['detail']))
-                                @foreach ($data['detail'] as $item)
-                                    <tr class="row-data">
-                                        <td class="py-2 px-4 produk_id" hidden>{{ $item['id'] }}<input type="hidden"
-                                                name="produk_id[]" id="produk_id[]" value="{{ $item['id'] }}" /></td>
-                                        <td class="py-2 px-4 profit_peritem" hidden><input type="hidden"
-                                                name="profit_peritem[]" id="profit_peritem[]"
-                                                class="column_profit_peritem" value="{{ $item['labaPerItem'] }}" /></td>
-                                        <td class="py-2 px-4 w-1/4">{{ $item['product'] }}</td>
-                                        <td class="py-2 px-4 jumlah_qty w-1/4">{{ $item['total_qty'] }}<input
-                                                type="hidden" name="jumlah_qty[]" id="jumlah_qty[]"
-                                                value="{{ $item['total_qty'] }}" /></td>
-                                        <td class="py-2 px-4 harga_jual">{{ toThousand($item['price_sell']) }}<input type="hidden"
-                                                name="harga_jual[]" id="harga_jual[]"
-                                                value="{{ $item['price_sell'] }}" /></td>
-                                        <td class="py-2 px-4 subtotal w-1/4">{{ toThousand($item['subtotal']) }}<input type="hidden"
-                                                class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]"
-                                                value="{{ $item['subtotal'] }}" /></td>
-                                        <td class="py-2 px-4 w-1/4">
-                                            <button onclick="hapusRow(this)" class="flex items-center text-danger">
-                                                Hapus</button>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @endif
-                        </tbody>
-                        <tfoot>
-                            <tr class="bg-dark text-white">
-                                <th class="py-2 px-4 border-b text-center" colspan="4">Laba Bersih</th>
-                                <th class="py-2 px-4 border-b text-center laba_bersih">
-                                    {{ toThousand($data['header']->net_profit) ?? 0 }}</th>
-                                <th class="py-2 px-4 border-b text-center" hidden><x-base.form-input
-                                        class="w-3/5 text-center" id="laba_bersih" type="text" name="laba_bersih"
-                                        value="{{ $data['header']->net_profit ?? 0 }}" /></th>
-                            </tr>
-                            <tr class="bg-dark text-white">
-                                <th class="py-2 px-4 border-b text-center" colspan="4">Grand Total</th>
-                                <th class="py-2 px-4 border-b text-center grand_total">
-                                    {{ toThousand($data['header']->grand_total) ?? 0 }}</th>
-                                <th class="py-2 px-4 border-b text-center" hidden><x-base.form-input
-                                        class="w-3/5 text-center" id="grand_total" type="text" name="grand_total"
-                                        value="{{ $data['header']->grand_total ?? 0 }}" /></th>
-                            </tr>
-                            <tr class="bg-dark ">
-                                <th class="py-2 px-4 border-b text-center text-white" colspan="4">Total Bayar</th>
-                                <th class="py-2 px-4 border-b text-center">
-                                    <x-base.form-input class="w-3/3 text-center" id="total_bayar" type="text"
-                                        name="total_bayar" value="{{ $data['header']->total_payment ?? 0 }}"
-                                        placeholder="Input Total Bayar" required price="true"
-                                        onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
-                                </th>
-                            </tr>
-                        </tfoot>
-                    </table>
-
-                    <div class="mode"></div>
-
-                    <div class="mt-5 text-right">
-                        <x-base.button class="mr-1 w-24" type="button" variant="outline-secondary">
-                            <a href="{{ route('selling.index') }}" variant="outline-secondary">
-                                Cancel
-                            </a>
-                        </x-base.button>
-                        <x-base.button class="w-24 lala" type="submit" variant="primary">
-                            Save
-                        </x-base.button>
-                        @if ($type != 'create')
-                            <x-base.button class="w-24" type="submit" onclick="closingSelling()" variant="success">
-                                Konfirmasi
-                            </x-base.button>
-                        @endif
-                    </div>
-
-                    <!-- BEGIN: Modal Content -->
-                    <x-base.dialog id="detailStockHarga">
-                        <x-base.dialog.panel class="p-10 text-center">
-                            <table class="min-w-full bg-white border-gray-300">
+                    <!-- Products Table -->
+                    <div class="border-t border-slate-200 p-5">
+                        <div class="rounded-lg border border-slate-200">
+                            <table class="min-w-full divide-y divide-slate-200" id="transDetail">
                                 <thead>
-                                    <tr class="bg-dark text-white">
-                                        <th class="py-2 px-4 border-b text-left w-1/4 text-center">No</th>
-                                        <th class="py-2 px-4 border-b text-left w-1/4 text-center">Stock</th>
-                                        <th class="py-2 px-4 border-b text-left w-1/4 text-center">Harga/Kg</th>
+                                    <tr class="bg-slate-50">
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-slate-600">Produk</th>
+                                        <th class="px-4 py-3 text-center text-sm font-medium text-slate-600">Qty</th>
+                                        <th class="px-4 py-3 text-right text-sm font-medium text-slate-600">Harga Jual</th>
+                                        <th class="px-4 py-3 text-right text-sm font-medium text-slate-600">Subtotal</th>
+                                        <th class="px-4 py-3 text-center text-sm font-medium text-slate-600">Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tableDetailStockHarga">
+                                <tbody class="divide-y divide-slate-200" id="transDetail">
+                                    @if (isset($data['detail']) && count($data['detail']) > 0)
+                                        @foreach ($data['detail'] as $item)
+                                            <tr class="row-data">
+                                                <td class="produk_id" hidden>
+                                                    {{ $item['id'] }}
+                                                    <input type="hidden" name="produk_id[]" value="{{ $item['id'] }}" />
+                                                </td>
+                                                <td class="profit_peritem" hidden>
+                                                    <input type="hidden" name="profit_peritem[]" class="column_profit_peritem" 
+                                                        value="{{ $item['labaPerItem'] }}" />
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    <div class="font-medium">{{ $item['product'] }}</div>
+                                                </td>
+                                                <td class="px-4 py-3 text-center">
+                                                    {{ $item['total_qty'] }}
+                                                    <input type="hidden" name="jumlah_qty[]" value="{{ $item['total_qty'] }}" />
+                                                </td>
+                                                <td class="px-4 py-3 text-right font-medium">
+                                                    Rp {{ toThousand($item['price_sell']) }}
+                                                    <input type="hidden" name="harga_jual[]" value="{{ $item['price_sell'] }}" />
+                                                </td>
+                                                <td class="px-4 py-3 text-right font-medium">
+                                                    Rp {{ toThousand($item['subtotal']) }}
+                                                    <input type="hidden" class="column_subtotal" name="subtotal_produk[]" 
+                                                        value="{{ $item['subtotal'] }}" />
+                                                </td>
+                                                <td class="px-4 py-3 text-center">
+                                                    <button type="button" onclick="hapusRow(this)" 
+                                                        class="inline-flex items-center text-danger hover:text-danger/70">
+                                                        <x-base.lucide class="h-4 w-4" icon="Trash2" />
+                                                        <span class="ml-2">Hapus</span>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @else
+                                        <tr>
+                                            <td colspan="5" class="px-4 py-3 text-center text-slate-500">
+                                                <div class="flex items-center justify-center">
+                                                    <x-base.lucide class="mr-2 h-4 w-4" icon="Package" />
+                                                    Belum ada produk ditambahkan
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endif
                                 </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Summary Card -->
+                        <div class="mt-4 grid grid-cols-12 gap-4">
+                            <div class="col-span-12 lg:col-span-4">
+                                <div class="rounded-lg bg-success/20 p-4">
+                                    <div class="text-sm font-medium text-success">Laba Bersih</div>
+                                    <div class="mt-1 text-2xl font-bold text-success">
+                                        Rp {{ toThousand($data['header']->net_profit) ?? 0 }}
+                                    </div>
+                                    <input type="hidden" id="laba_bersih" name="laba_bersih"
+                                        value="{{ $data['header']->net_profit ?? 0 }}" />
+                                </div>
+                            </div>
+
+                            <div class="col-span-12 lg:col-span-4">
+                                <div class="rounded-lg bg-primary/20 p-4">
+                                    <div class="text-sm font-medium text-primary">Grand Total</div>
+                                    <div class="mt-1 text-2xl font-bold text-primary grand_total">
+                                        Rp {{ toThousand($data['header']->grand_total) ?? 0 }}
+                                    </div>
+                                    <input type="hidden" id="grand_total" name="grand_total"
+                                        value="{{ $data['header']->grand_total ?? 0 }}" />
+                                </div>
+                            </div>
+
+                            <div class="col-span-12 lg:col-span-4">
+                                <div class="rounded-lg bg-warning/20 p-4">
+                                    <div class="text-sm font-medium text-warning">Total Bayar</div>
+                                    <div class="mt-1">
+                                        <x-base.form-input 
+                                            class="text-lg font-bold" 
+                                            type="text"
+                                            id="total_bayar" 
+                                            name="total_bayar" 
+                                            value="{{ $data['header']->total_payment ?? 0 }}"
+                                            placeholder="Masukkan total pembayaran" 
+                                            required 
+                                            price="true"
+                                            onkeypress="return event.charCode >= 48 && event.charCode <= 57" 
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="mode" id="mode" value="" />
+
+                        <!-- Action Buttons -->
+                        <div class="mt-5 flex items-center justify-end gap-2">
+                            <x-base.button type="button" variant="outline-secondary">
+                                <x-base.lucide class="mr-2 h-4 w-4" icon="X" />
+                                <a href="{{ route('selling.index') }}">
+                                    Batal
+                                </a>
+                            </x-base.button>
+                            
+                            <x-base.button type="submit" variant="primary">
+                                <x-base.lucide class="mr-2 h-4 w-4" icon="Save" />
+                                Simpan
+                            </x-base.button>
+
+                            @if ($type != 'create')
+                                <x-base.button type="submit" variant="success" onclick="closingSelling()">
+                                    <x-base.lucide class="mr-2 h-4 w-4" icon="CheckCircle" />
+                                    Konfirmasi
+                                </x-base.button>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Stock Price Details Modal -->
+                    <x-base.dialog id="detailStockHarga">
+                        <x-base.dialog.panel>
+                            <div class="p-5">
+                                <div class="mb-5 flex items-center justify-between">
+                                    <h3 class="text-lg font-medium">Detail Harga Stok</h3>
+                                    <x-base.button 
+                                        class="h-8 w-8" 
+                                        data-tw-dismiss="modal" 
+                                        variant="outline-secondary"
+                                    >
+                                        <x-base.lucide class="h-4 w-4" icon="X" />
+                                    </x-base.button>
+                                </div>
+
+                                <div class="rounded-lg border border-slate-200">
+                                    <table class="min-w-full divide-y divide-slate-200">
+                                        <thead>
+                                            <tr class="bg-slate-50">
+                                                <td class="px-4 py-3 text-start text-sm font-medium text-slate-600">No</td>
+                                                <td class="px-4 py-3 text-start text-sm font-medium text-slate-600">Stok</td>
+                                                <td class="px-4 py-3 text-start text-sm font-medium text-slate-600">Harga/Kg</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tableDetailStockHarga" class="divide-y divide-slate-200">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </x-base.dialog.panel>
                     </x-base.dialog>
-                    <!-- END: Modal Content -->
                 </div>
                 <!-- END: Form Layout -->
             </form>
@@ -529,7 +694,10 @@
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.send();
 
-                $('#modalDetailStockHarga').removeAttr('disabled');
+                
+            }
+
+            $('#modalDetailStockHarga').removeAttr('disabled');
             }
 
             // Handle CV change to update customers, drivers and vehicles

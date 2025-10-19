@@ -143,7 +143,7 @@
                                 <x-base.table.td class="py-4 px-6 border-b border-slate-200">
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                         <x-base.lucide class="w-3 h-3 mr-1" icon="Grid" />
-                                        {{ $item->category->category ?? 'N/A' }}
+                                        {{ $item->category->name ?? 'N/A' }}
                                     </span>
                                 </x-base.table.td>
                                 <x-base.table.td class="py-4 px-6 border-b border-slate-200 text-center">
