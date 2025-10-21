@@ -82,6 +82,11 @@
                 <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     <!-- Actions -->
                     <div class="flex items-center gap-3">
+                        <a href="{{ route($route . '.create') }}">
+                            <x-base.button class="mr-2 shadow-md" variant="primary">
+                                Tambah Transport
+                            </x-base.button>
+                        </a>
                         <x-base.menu>
                             <x-base.menu.button as="x-base.button" variant="outline-secondary">
                                 Export Data
@@ -95,14 +100,6 @@
                                 </x-base.menu.item>
                             </x-base.menu.items>
                         </x-base.menu>
-                    </div>
-
-                    <div class="flex items-center gap-3">
-                        <a href="{{ route($route . '.create') }}">
-                            <x-base.button class="mr-2 shadow-md" variant="primary">
-                                Add Data
-                            </x-base.button>
-                        </a>
                     </div>
 
                     <!-- Filters -->
@@ -131,7 +128,7 @@
                 </div>
 
                 <!-- Table Content -->
-                <div class="overflow-auto">
+                <div class="">
                     <x-base.table class="border-spacing-y-[10px] border-separate">
                         <x-base.table.thead>
                             <x-base.table.tr>

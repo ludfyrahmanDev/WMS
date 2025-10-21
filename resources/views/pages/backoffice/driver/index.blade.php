@@ -38,7 +38,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-blue-100 text-sm">Driver Aktif</p>
-                        <p class="text-2xl font-bold">{{ $data->where('status', 'active')->count() ?? 0 }}</p>
+                        <p class="text-2xl font-bold">{{ $data->count() ?? 0 }}</p>
                     </div>
                     <x-base.lucide class="w-8 h-8 text-blue-200" icon="UserCheck" />
                 </div>

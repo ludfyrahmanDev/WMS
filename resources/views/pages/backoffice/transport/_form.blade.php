@@ -134,7 +134,7 @@
                             <x-base.form-label for="ongkosan">Ongkosan</x-base.form-label>
                             <x-base.form-input class="w-full" id="ongkosan" type="text" name="ongkosan"
                                 value="{{ $data['header']->ongkosan ?? old('ongkosan') }}"
-                                placeholder="Masukkan nama merk produk"
+                                placeholder="Masukkan ongkosan"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57" price="true" />
                             @error('ongkosan')
                                 <div class="pristine-error text-danger mt-2">
@@ -147,7 +147,7 @@
                             <x-base.form-input class="w-full" id="drivers_pocket_money" type="text"
                                 name="drivers_pocket_money"
                                 value="{{ $data['header']->drivers_pocket_money ?? old('drivers_pocket_money') }}"
-                                placeholder="Masukkan nama penerima"
+                                placeholder="Masukkan besar uang saku"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57" price="true" />
                             @error('drivers_pocket_money')
                                 <div class="pristine-error text-danger mt-2">
@@ -159,7 +159,7 @@
                             <x-base.form-label for="setoran">Setoran</x-base.form-label>
                             <x-base.form-input class="w-full" id="setoran" type="text" name="setoran"
                                 value="{{ $data['header']->setoran ?? old('setoran') }}"
-                                placeholder="Masukkan berat produk"
+                                placeholder="Masukkan besar setoran"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57" price="true" />
                             @error('setoran')
                                 <div class="pristine-error text-danger mt-2">
