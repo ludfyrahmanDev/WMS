@@ -143,7 +143,7 @@
                                 <x-base.table.td class="py-4 px-6 border-b border-slate-200">
                                     <div class="flex items-center">
                                         <x-base.lucide class="w-4 h-4 mr-2 text-slate-400" icon="Phone" />
-                                        <span class="text-slate-700">{{ $item['phone_number'] ?? '-' }}</span>
+                                        <span class="text-slate-700">{{ $item['phone'] ?? '-' }}</span>
                                     </div>
                                 </x-base.table.td>
                                 <x-base.table.td class="py-4 px-6 border-b border-slate-200">

@@ -116,12 +116,12 @@
                                     <span>Produk</span>
                                 </div>
                             </x-base.table.th>
-                            <x-base.table.th class="border-b-0 py-4 px-6 text-left font-medium text-slate-700 whitespace-nowrap">
+                            {{-- <x-base.table.th class="border-b-0 py-4 px-6 text-left font-medium text-slate-700 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <x-base.lucide class="w-4 h-4 mr-2 text-slate-500" icon="Building" />
                                     <span>Supplier</span>
                                 </div>
-                            </x-base.table.th>
+                            </x-base.table.th> --}}
                             <x-base.table.th class="border-b-0 py-4 px-6 text-center font-medium text-slate-700 whitespace-nowrap">
                                 <div class="flex items-center justify-center">
                                     <x-base.lucide class="w-4 h-4 mr-2 text-slate-500" icon="Archive" />
@@ -167,29 +167,29 @@
                                         </div>
                                     </div>
                                 </x-base.table.td>
-                                <x-base.table.td class="py-4 px-6 border-b border-slate-200">
+                                {{-- <x-base.table.td class="py-4 px-6 border-b border-slate-200">
                                     <div class="flex items-center">
                                         <div class="flex items-center justify-center w-8 h-8 bg-orange-100 text-orange-600 rounded-full mr-2">
                                             <x-base.lucide class="w-4 h-4" icon="Building" />
                                         </div>
                                         <span class="text-slate-700">{{ $item->supplier->name ?? 'N/A' }}</span>
                                     </div>
-                                </x-base.table.td>
+                                </x-base.table.td> --}}
                                 <x-base.table.td class="py-4 px-6 border-b border-slate-200 text-center">
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                                         <x-base.lucide class="w-3 h-3 mr-1" icon="Plus" />
-                                        {{ number_format($item['stock_in'], 0, ',', '.') }} kg
+                                        {{ number_format($item['first_stock'], 0, ',', '.') }} kg
                                     </span>
                                 </x-base.table.td>
                                 <x-base.table.td class="py-4 px-6 border-b border-slate-200 text-center">
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
                                         <x-base.lucide class="w-3 h-3 mr-1" icon="Minus" />
-                                        {{ number_format($item['stock_out'], 0, ',', '.') }} kg
+                                        {{ number_format($item['stock_in_use'], 0, ',', '.') }} kg
                                     </span>
                                 </x-base.table.td>
                                 <x-base.table.td class="py-4 px-6 border-b border-slate-200 text-center">
                                     @php
-                                        $remaining = $item['remaining'];
+                                        $remaining = $item['last_stock'];
                                         $alertClass = $remaining < 10 ? 'bg-red-100 text-red-800' : 
                                                      ($remaining < 50 ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800');
                                     @endphp
