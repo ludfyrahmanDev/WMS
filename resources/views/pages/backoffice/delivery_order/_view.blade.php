@@ -12,6 +12,14 @@
                 <p class="mt-1 text-slate-600">Detail pesanan delivery #{{ $data['header']->id }}</p>
             </div>
             <div class="flex items-center gap-2">
+                <x-base.button variant="outline-secondary" onclick="window.history.back()">
+                    <x-base.lucide class="mr-2 h-4 w-4" icon="ArrowLeft" />
+                    Kembali
+                </x-base.button>
+                <x-base.button variant="primary" onclick="window.location.href='{{ route('delivery_order.coretax-preview', $data['header']->id) }}'">
+                    <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" />
+                    Export to Coretax
+                </x-base.button>
                 <span class="px-3 py-1 rounded-full text-sm font-medium 
                     {{ $data['header']->status == 'Completed' ? 'bg-success/20 text-success' : 
                        ($data['header']->status == 'On Progress' ? 'bg-warning/20 text-warning' : 

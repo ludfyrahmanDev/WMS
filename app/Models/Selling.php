@@ -88,6 +88,11 @@ class Selling extends Model
         return $this->hasMany(SellingDetail::class);
     }
 
+    public function details()
+    {
+        return $this->hasMany(SellingDetail::class, 'selling_id', 'id');
+    }
+
     public function getProductSummary()
     {
         return $this->selling_detail()

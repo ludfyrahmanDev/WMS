@@ -28,4 +28,9 @@ class SellingDetail extends Model
     {
         return $this->belongsTo(Stock::class);
     }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
 }

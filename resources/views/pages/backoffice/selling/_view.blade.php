@@ -16,7 +16,7 @@
                     <x-base.lucide class="mr-2 h-4 w-4" icon="ArrowLeft" />
                     Kembali
                 </x-base.button>
-                <x-base.button variant="primary">
+                <x-base.button variant="primary" onclick="window.location.href='{{ route('selling.coretax-preview', $data['header']->id) }}'">
                     <x-base.lucide class="mr-2 h-4 w-4" icon="FileText" />
                     Export to Coretax
                 </x-base.button>

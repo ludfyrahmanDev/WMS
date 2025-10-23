@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\Transaksi\SellingStoreRequest;
 use App\Models\Kas;
+use App\Services\CoretaxExportService;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -582,5 +583,57 @@ class SellingController extends Controller
             'who_create' => $userName,
             'who_update' => $userName
         ]);
+    }
+
+    /**
+     * Export to Coretax - Preview
+     */
+    public function coretaxPreview($id)
+    {
+        $coretaxService = new CoretaxExportService();
+        $previewData = $coretaxService->getPreviewData($id);
+        
+        $title = 'Preview Export Coretax';
+        $route = 'selling';
+        
+        return view('pages.backoffice.selling.coretax-preview', compact('previewData', 'title', 'route'));
+    }
+
+    /**
+     * Export to Coretax - Download CSV
+     */
+    public function coretaxExportCSV($id)
+    {
+        try {
+            $coretaxService = new CoretaxExportService();
+            $result = $coretaxService->generateCSV($id);
+            
+            if (!$result) {
+                return back()->with('failed', 'Tidak ada data untuk diekspor');
+            }
+            
+            return response()->download($result['filepath'], $result['filename'])->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            return back()->with('failed', 'Gagal export: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Export to Coretax - Download XML
+     */
+    public function coretaxExportXML($id)
+    {
+        try {
+            $coretaxService = new CoretaxExportService();
+            $result = $coretaxService->generateXML($id);
+            
+            if (!$result) {
+                return back()->with('failed', 'Tidak ada data untuk diekspor');
+            }
+            
+            return response()->download($result['filepath'], $result['filename'])->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            return back()->with('failed', 'Gagal export: ' . $e->getMessage());
+        }
     }
 }
