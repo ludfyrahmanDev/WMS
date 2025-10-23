@@ -77,5 +77,15 @@ class DeliveryOrder extends Model
         return $this->hasMany(DeliveryOrderDetail::class);
     }
 
+    public function details()
+    {
+        return $this->hasMany(DeliveryOrderDetail::class, 'delivery_order_id', 'id');
+    }
+
+    public function cv()
+    {
+        return $this->belongsTo(Cv::class, 'cv_id', 'id');
+    }
+
     
 }

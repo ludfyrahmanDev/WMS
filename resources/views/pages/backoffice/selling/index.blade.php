@@ -170,9 +170,6 @@
                                     Customer
                                 </x-base.table.th>
                                 <x-base.table.th class="border-b-0 text-center font-semibold">
-                                    Supir
-                                </x-base.table.th>
-                                <x-base.table.th class="border-b-0 text-center font-semibold">
                                     Metode Pembayaran
                                 </x-base.table.th>
                                 <x-base.table.th class="border-b-0 text-center font-semibold">
@@ -200,9 +197,6 @@
                                     </x-base.table.td>
                                     <x-base.table.td class="text-center py-4">
                                         {{ $item['customer']['name'] }}
-                                    </x-base.table.td>
-                                    <x-base.table.td class="text-center py-4">
-                                        {{ $item['driver']['name'] }}
                                     </x-base.table.td>
                                     <x-base.table.td class="text-center py-4">
                                         @php

@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\Transaksi\SellingStoreRequest;
 use App\Models\Kas;
+use App\Services\CoretaxExportService;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -211,10 +212,6 @@ class SellingController extends Controller
                 $selling->notes = $request->catatan;
                 $selling->save();
 
-                // $spending = Spending::whereIDSaldo();
-                // $spending->nominal += $request->angsuran;
-                // $spending->save();
-
                 return redirect(route('selling.index'))->with('success', 'Berhasil update data!');
                 return false;
             }
@@ -226,10 +223,6 @@ class SellingController extends Controller
             // insert Table Selling
             $selling->date                  = $request->tgl_jual;
             $selling->customer_id           = $request->customer;
-            $selling->vehicle_id            = $request->supplier;
-            $selling->driver_id             = $request->driver;
-            $selling->vehicle_id            = $request->kendaraan;
-            $selling->drivers_pocket_money  = curencyToInteger($request->uang_saku);
             $selling->purchasing_method     = $request->tipe_pembelian;
             $selling->payment_type          = $request->tipe_pembayaran;
             $selling->notes                 = $request->catatan;
@@ -237,15 +230,11 @@ class SellingController extends Controller
             $selling->total_payment         = curencyToInteger($request->total_bayar);
             $selling->net_profit            = curencyToInteger($request->laba_bersih);
 
-            if ($request->mode != null) {
+            // if ($request->mode != null) {
                 $selling->status = 'On Progress';
-
-                // $spending = Spending::whereIDSaldo();
-                // $spending->nominal += $request->total_bayar;
-                // $spending->save();
-            } else {
-                $selling->status = 'In Progress';
-            }
+            // } else {
+            //     $selling->status = 'In Progress';
+            // }
 
             $selling->created_by            = $user['name'];
             $selling->updated_by            = $user['name'];
@@ -306,7 +295,7 @@ class SellingController extends Controller
             if ($request->mode != null) {
                 return redirect(route('selling.index'))->with('success', 'Berhasil menyimpan data!');
             } else {
-                return redirect(route('selling.edit', $selling->id))->with('success', 'Berhasil update data!');
+                return redirect(route('selling.index'))->with('success', 'Berhasil update data!');
             }
             return redirect(route('selling.index'))->with('success', 'Berhasil menambah data!');
         } catch (\Throwable $th) {
@@ -594,5 +583,57 @@ class SellingController extends Controller
             'who_create' => $userName,
             'who_update' => $userName
         ]);
+    }
+
+    /**
+     * Export to Coretax - Preview
+     */
+    public function coretaxPreview($id)
+    {
+        $coretaxService = new CoretaxExportService();
+        $previewData = $coretaxService->getPreviewData($id);
+        
+        $title = 'Preview Export Coretax';
+        $route = 'selling';
+        
+        return view('pages.backoffice.selling.coretax-preview', compact('previewData', 'title', 'route'));
+    }
+
+    /**
+     * Export to Coretax - Download CSV
+     */
+    public function coretaxExportCSV($id)
+    {
+        try {
+            $coretaxService = new CoretaxExportService();
+            $result = $coretaxService->generateCSV($id);
+            
+            if (!$result) {
+                return back()->with('failed', 'Tidak ada data untuk diekspor');
+            }
+            
+            return response()->download($result['filepath'], $result['filename'])->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            return back()->with('failed', 'Gagal export: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Export to Coretax - Download XML
+     */
+    public function coretaxExportXML($id)
+    {
+        try {
+            $coretaxService = new CoretaxExportService();
+            $result = $coretaxService->generateXML($id);
+            
+            if (!$result) {
+                return back()->with('failed', 'Tidak ada data untuk diekspor');
+            }
+            
+            return response()->download($result['filepath'], $result['filename'])->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            return back()->with('failed', 'Gagal export: ' . $e->getMessage());
+        }
     }
 }

@@ -132,7 +132,7 @@
                 </div>
 
                 <!-- Table Content -->
-                <div class="overflow-x overflow-y-hidden">
+                <div class="">
                     <x-base.table class="border-spacing-y-[10px] border-separate">
                         <x-base.table.thead>
                             <x-base.table.tr>

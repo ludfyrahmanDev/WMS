@@ -14,6 +14,8 @@ class CV extends Model
 
     protected $fillable = [
         'name',
+        'npwp',
+        'address',
         'description',
         'who_create',
         'who_update',

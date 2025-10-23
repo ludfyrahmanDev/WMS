@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\DeliveryOrderPayment;
 use App\Models\Kas;
 use Illuminate\Support\Facades\Auth;
+use App\Services\CoretaxDeliveryOrderService;
 
 class DeliveryOrderController extends Controller
 {
@@ -417,4 +418,57 @@ class DeliveryOrderController extends Controller
         // For "Tempo Panjang" (credit) transactions, kas entry will be created when payment is made
         // This will be handled in the payment processing method
     }
+
+    /**
+     * Export to Coretax - Preview
+     */
+    public function coretaxPreview($id)
+    {
+        $coretaxService = new CoretaxDeliveryOrderService();
+        $previewData = $coretaxService->getPreviewData($id);
+        
+        $title = 'Preview Export Coretax - Delivery Order';
+        $route = 'delivery_order';
+        
+        return view('pages.backoffice.delivery_order.coretax-preview', compact('previewData', 'title', 'route'));
+    }
+
+    /**
+     * Export to Coretax - Download CSV
+     */
+    public function coretaxExportCSV($id)
+    {
+        try {
+            $coretaxService = new CoretaxDeliveryOrderService();
+            $result = $coretaxService->generateCSV($id);
+            
+            if (!$result) {
+                return back()->with('failed', 'Tidak ada data untuk diekspor');
+            }
+            
+            return response()->download($result['filepath'], $result['filename'])->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            return back()->with('failed', 'Gagal export: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Export to Coretax - Download XML
+     */
+    public function coretaxExportXML($id)
+    {
+        try {
+            $coretaxService = new CoretaxDeliveryOrderService();
+            $result = $coretaxService->generateXML($id);
+            
+            if (!$result) {
+                return back()->with('failed', 'Tidak ada data untuk diekspor');
+            }
+            
+            return response()->download($result['filepath'], $result['filename'])->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            return back()->with('failed', 'Gagal export: ' . $e->getMessage());
+        }
+    }
 }
+
