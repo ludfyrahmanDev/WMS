@@ -274,7 +274,7 @@
                                             id="qty_jual"
                                             placeholder="Jumlah"
                                             onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                            onchange="getHargaStock(this.value)" 
+                                            onKeyUp="getHargaStock(this.value)" 
                                         />
                                         <x-base.input-group.text>
                                             <x-base.button 
@@ -369,7 +369,7 @@
                                             </tr>
                                         @endforeach
                                     @else
-                                        <tr>
+                                        <tr class="emptyData">
                                             <td colspan="5" class="px-4 py-3 text-center text-slate-500">
                                                 <div class="flex items-center justify-center">
                                                     <x-base.lucide class="mr-2 h-4 w-4" icon="Package" />
@@ -388,7 +388,7 @@
                                 <div class="rounded-lg bg-success/20 p-4">
                                     <div class="text-sm font-medium text-success">Laba Bersih</div>
                                     <div class="mt-1 text-2xl font-bold text-success">
-                                        Rp {{ toThousand($data['header']->net_profit) ?? 0 }}
+                                        {{ toThousand($data['header']->net_profit) ?? 0 }}
                                     </div>
                                     <input type="hidden" id="laba_bersih" name="laba_bersih"
                                         value="{{ $data['header']->net_profit ?? 0 }}" />
@@ -594,7 +594,7 @@
                         <td class="py-2 px-4 w-1/4">${produk[1]}</td>
                         <td class="py-2 px-4 jumlah_qty w-1/4">${qty}<input type="hidden" name="jumlah_qty[]" id="jumlah_qty[]" value="${qty}" /></td>
                         <td class="py-2 px-4 harga_jual">${toCurrency(harga_jual)}<input type="hidden" name="harga_jual[]" id="harga_jual[]" value="${harga_jual}" /></td>
-                        <td class="py-2 px-4 subtotal w-1/4">${toCurrency(subtotal)}<input type="hidden" class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]" value="${subtotal}" /></td>
+                        <td class="py-2 px-4 subtotal">${toCurrency(subtotal)}<input type="hidden" class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]" value="${subtotal}" /></td>
                         <td class="py-2 px-4 w-1/4"> 
                             <button onclick="hapusRow(this)" class="flex items-center text-danger">
                             Hapus</button>
@@ -608,6 +608,7 @@
                     var sub_sementara = $(this).val();
                     totalSubtotal += parseInt(currencyToNumber(sub_sementara));
                 })
+                $('.emptyData').remove();
 
                 console.log(totalLaba);
                 $('.laba_bersih').text(toCurrency(totalLaba));
@@ -690,14 +691,8 @@
                 xhr.open("GET", url, true);
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.send();
-
-                
+                $('#modalDetailStockHarga').removeAttr('disabled');
             }
-
-            // $('#modalDetailStockHarga').removeAttr('disabled');
-            // }
-
-            // Handle CV change to update customers, drivers and vehicles
 
 
         </script>

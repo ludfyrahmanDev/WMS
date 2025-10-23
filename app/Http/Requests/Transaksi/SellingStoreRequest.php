@@ -22,9 +22,6 @@ class SellingStoreRequest extends FormRequest
             'tgl_jual' => ['required'],
             'customer' => ['required'],
             'cv_id' => ['nullable', 'exists:cv,id'],
-            'driver' => ['required'],
-            'kendaraan' => ['required'],
-            'uang_saku' => ['required'],
             'tipe_pembelian' => ['required'],
             'tipe_pembayaran' => ['required'],
             'total_bayar' => ['required']
