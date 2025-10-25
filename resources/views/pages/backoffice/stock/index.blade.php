@@ -163,7 +163,7 @@
                                         </div>
                                         <div>
                                             <div class="font-semibold text-slate-800">{{ $item->product->product ?? 'N/A' }}</div>
-                                            <div class="text-sm text-slate-500">{{ $item->product->category->category ?? 'Uncategorized' }}</div>
+                                            <div class="text-sm text-slate-500">{{ $item->product->category->name ?? 'Uncategorized' }}</div>
                                         </div>
                                     </div>
                                 </x-base.table.td>

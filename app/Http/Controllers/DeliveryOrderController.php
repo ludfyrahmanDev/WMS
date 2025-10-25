@@ -124,6 +124,28 @@ class DeliveryOrderController extends Controller
                 $orderQuota->last_stock          = $request->jumlah_qty[$i];
                 $orderQuota->created_at          = Carbon::now();
                 $orderQuota->save();
+
+                // Otomatis masukkan ke tabel Stock
+                $existingStock = Stock::where('product_id', $request->produk_id[$i])
+                    ->where('price_kg', curencyToInteger($request->hargaKG[$i]))
+                    ->first();
+
+                if ($existingStock) {
+                    // Update stok yang sudah ada
+                    $existingStock->last_stock += $request->jumlah_qty[$i];
+                    $existingStock->save();
+                } else {
+                    // Buat stok baru
+                    $stock = new Stock();
+                    $stock->product_id = $request->produk_id[$i];
+                    $stock->purchase_date = $request->tanggal_pembelian;
+                    $stock->price_kg = curencyToInteger($request->hargaKG[$i]);
+                    $stock->first_stock = $request->jumlah_qty[$i];
+                    $stock->stock_in_use = 0;
+                    $stock->is_active = 1;
+                    $stock->last_stock = $request->jumlah_qty[$i];
+                    $stock->save();
+                }
             }
             DB::commit();
 
@@ -138,18 +160,43 @@ class DeliveryOrderController extends Controller
     public function destroy(DeliveryOrder $delivery_order)
     {
         try {
-            $deliveryOrderDetails  = $delivery_order->delivery_order_detail;
+            DB::beginTransaction();
+            
+            // Ambil data delivery order quota untuk mengurangi stok
+            $deliveryOrderQuotas = $delivery_order->delivery_order_quota;
 
-            $delivery_order->delivery_order_detail()->delete();
+            foreach ($deliveryOrderQuotas as $quota) {
+                // Kurangi stok berdasarkan product_id dan price_kg
+                $stock = Stock::where('product_id', $quota->product_id)
+                    ->where('price_kg', $quota->price_kg)
+                    ->first();
 
-            foreach ($deliveryOrderDetails as $detail) {
-                $detail->stock()->delete();
+                if ($stock) {
+                    $stock->last_stock -= $quota->purchase_amount;
+                    
+                    // Jika stok menjadi 0 atau kurang, hapus record stock
+                    if ($stock->last_stock <= 0) {
+                        $stock->delete();
+                    } else {
+                        $stock->save();
+                    }
+                }
             }
 
+            // Hapus delivery order quota
+            $delivery_order->delivery_order_quota()->delete();
+            
+            // Hapus delivery order detail (jika ada)
+            $delivery_order->delivery_order_detail()->delete();
+
+            // Hapus delivery order
             $delivery_order->delete();
 
-            return  redirect('delivery_order')->with('success', 'Berhasil menghapus data!');
+            DB::commit();
+
+            return redirect('delivery_order')->with('success', 'Berhasil menghapus data!');
         } catch (\Throwable $th) {
+            DB::rollBack();
             return redirect('delivery_order')->with('failed', 'Gagal menghapus data!' . $th->getMessage());
         }
     }

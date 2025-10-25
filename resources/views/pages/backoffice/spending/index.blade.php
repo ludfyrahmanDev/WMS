@@ -540,11 +540,12 @@
                                         @elseif(isset($item['spendingCategory']) && is_object($item['spendingCategory']))
                                             {{ $item['spendingCategory']->spending_category }}
                                         @else
-                                            {{ $item['spendingCategory']['spending_category'] ?? 'N/A' }}
+                                            {{ $item['spending_category']['spending_category'] ?? 'N/A' }}
                                         @endif
                                         @if(isset($item['payment_method']))
                                          | {{ $item['payment_method'] }}
                                         @endif
+
                                     </div>
                                 </x-base.table.td>
                                 <x-base.table.td class="text-right border-b border-slate-100 py-3 px-4">
@@ -572,9 +573,28 @@
                                 </x-base.table.td>
                                 <x-base.table.td class="text-center border-b border-slate-100 py-3 px-4">
                                     @if (
-                                        isset($item['type']) && in_array($item['type'], ['vehicle_service', 'transport_income', 'drivers_pocket'])
+                                        isset($item['type']) && in_array($item['type'], ['vehicle_service', 'transport_income', 'drivers_pocket', 'profit_summary', 'receivables_summary', 'payables_summary'])
                                     )
-                                        <span class="text-slate-400 text-sm">Auto</span>
+                                        <span class="text-slate-400 text-sm">
+                                            @if($item['type'] == 'profit_summary')
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                    <x-base.lucide class="h-3 w-3 mr-1" icon="TrendingUp" />
+                                                    Summary
+                                                </span>
+                                            @elseif($item['type'] == 'receivables_summary')
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                                    <x-base.lucide class="h-3 w-3 mr-1" icon="Clock" />
+                                                    Summary
+                                                </span>
+                                            @elseif($item['type'] == 'payables_summary')
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                    <x-base.lucide class="h-3 w-3 mr-1" icon="AlertCircle" />
+                                                    Summary
+                                                </span>
+                                            @else
+                                                Auto
+                                            @endif
+                                        </span>
                                     @elseif (
                                         isset($item['spendingCategory']) &&
                                         (

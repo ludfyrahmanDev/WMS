@@ -20,6 +20,7 @@ class Stock extends Model
         'price_kg',
         'first_stock',
         'stock_in_use',
+        'is_active',
         'last_stock'
     ];
 

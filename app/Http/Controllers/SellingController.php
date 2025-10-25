@@ -116,25 +116,37 @@ class SellingController extends Controller
                     ->where('last_stock', '>', 0)
                     ->orderBy('purchase_date', 'asc')
                     ->get();
-
                 $arr = [];
                 $cekTotalStock = $qty;
-                foreach ($stocks as $key => $value) {
-                    if (intval($value->last_stock) >= intval($cekTotalStock)) {
-                        array_push($arr, ['id' => $value->id, 'stock' => $cekTotalStock, 'price_kg' => $value->price_kg, 'price_sell' => $harga_jual, 'subtotal' => $subtotal]);
-                        break;
-                    } else {
-                        array_push($arr, ['id' => $value->id, 'stock' => $value->last_stock, 'price_kg' => $value->price_kg, 'price_sell' => $harga_jual, 'subtotal' => $subtotal]);
-                        $cekTotalStock = intval($cekTotalStock) - intval($value->last_stock);
-                    }
-                };
+                if($request->price_method == 'old' && COUNT($stocks) > 0){
+                    array_push($arr, ['id' => $stocks[0]->id, 'stock' => $cekTotalStock, 'price_kg' => $stocks[0]->price_kg, 'price_sell' => $harga_jual, 'subtotal' => $subtotal]);
+                }else{
+                    foreach ($stocks as $key => $value) {
+                        if (intval($value->last_stock) >= intval($cekTotalStock)) {
+                            array_push($arr, ['id' => $value->id, 'stock' => $cekTotalStock, 'price_kg' => $value->price_kg, 'price_sell' => $harga_jual, 'subtotal' => $subtotal]);
+                            break;
+                        } else {
+                            array_push($arr, ['id' => $value->id, 'stock' => $value->last_stock, 'price_kg' => $value->price_kg, 'price_sell' => $harga_jual, 'subtotal' => $subtotal]);
+                            $cekTotalStock = intval($cekTotalStock) - intval($value->last_stock);
+                        }
+                    };
+                }
 
                 // insert Table Selling Detail
                 for ($j = 0; $j < COUNT($arr); $j++) {
                     $selling_detail = new SellingDetail();
                     $selling_detail->selling_id = $selling->id;
                     $selling_detail->stock_id = $arr[$j]['id'];
-                    $selling_detail->price_kg = $arr[$j]['price_kg'];
+                    $stock = Stock::find($arr[$j]['id']);
+                    $stock->stock_in_use += $arr[$j]['stock'];
+                    $stock->last_stock -= $arr[$j]['stock'];
+                    $stock->save();
+
+                    if($request->price_method == 'old'){
+                        $selling_detail->price_kg = $stocks[0]->price_kg;
+                    } else {
+                        $selling_detail->price_kg = $arr[$j]['price_kg'];
+                    }
                     $selling_detail->price_sell = $arr[$j]['price_sell'];
                     $selling_detail->qty        = $arr[$j]['stock'];
                     $selling_detail->subtotal   = $arr[$j]['subtotal'];
@@ -349,28 +361,37 @@ class SellingController extends Controller
         $produk = $request->input('produk');
         $qty = $request->input('qty');
 
-
-        $stocks = Stock::select('stock.id', 'stock.last_stock', 'stock.price_kg', 'stock.product_id')
+        $stocks = Stock::select(
+                'stock.id as stock_id', 
+                'stock.first_stock', 
+                'stock.stock_in_use', 
+                'stock.last_stock', 
+                'stock.price_kg', 
+                'stock.product_id', 
+                'stock.purchase_date'
+            )
             ->leftJoin('delivery_order_detail AS dod', 'stock.id', '=', 'dod.stock_id')
             ->leftJoin('delivery_order AS do', 'do.id', '=', 'dod.delivery_order_id')
             ->where('stock.product_id', $produk)
             ->where('stock.is_active', 1)
-            ->where('stock.last_stock', '>', 0)
             ->where('do.cv_id', session('cv_id'))
             ->orderBy('stock.purchase_date', 'asc')
+            ->orderBy('stock.id', 'asc')
             ->get();
 
+        // Return all available stocks with complete information including first_stock and stock_in_use
         $arr = [];
-        $cekTotalStock = $qty;
-        foreach ($stocks as $key => $value) {
-            if (intval($value->last_stock) >= intval($cekTotalStock)) {
-                array_push($arr, ['id' => $value->id, 'stock' => $cekTotalStock, 'price_kg' => $value->price_kg, 'product_id' => $value->product_id]);
-                break;
-            } else {
-                array_push($arr, ['id' => $value->id, 'stock' => $value->last_stock, 'price_kg' => $value->price_kg, 'product_id' => $value->product_id]);
-                $cekTotalStock = intval($cekTotalStock) - intval($value->last_stock);
-            }
-        };
+        foreach ($stocks as $stock) {
+            $arr[] = [
+                'stock_id' => $stock->stock_id,
+                'first_stock' => $stock->first_stock,
+                'stock_in_use' => $stock->stock_in_use,
+                'last_stock' => $stock->last_stock,
+                'price_kg' => $stock->price_kg,
+                'product_id' => $stock->product_id,
+                'purchase_date' => $stock->purchase_date
+            ];
+        }
 
         return response()->json($arr);
     }

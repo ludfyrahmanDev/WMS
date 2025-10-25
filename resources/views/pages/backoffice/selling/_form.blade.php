@@ -482,6 +482,83 @@
                             </div>
                         </x-base.dialog.panel>
                     </x-base.dialog>
+
+                    <!-- Price Method Selection Modal -->
+                    <x-base.dialog id="priceMethodModal" size="lg">
+                        <x-base.dialog.panel>
+                            <div class="p-5">
+                                <div class="mb-5">
+                                    <h3 class="text-lg font-medium mb-2">Pilih Metode Harga Pembelian</h3>
+                                    <p class="text-slate-600 text-sm">Qty yang diinputkan: <strong id="qtyDisplay"></strong>. Stok tersedia: <strong id="stockDisplay"></strong>. Pilih metode penentuan harga pembelian:</p>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <!-- Option 1: Use Old Price (FIFO) -->
+                                    <div class="border border-slate-200 rounded-lg p-4 hover:border-primary cursor-pointer" onclick="selectPriceMethod('old')">
+                                        <div class="flex items-start">
+                                            <input type="radio" name="price_method" value="old" id="method_old" class="mt-1">
+                                            <label for="method_old" class="ml-3 cursor-pointer flex-1">
+                                                <div class="font-medium text-base mb-1">Gunakan Harga Lama (FIFO)</div>
+                                                <p class="text-sm text-slate-600">Menggunakan harga dari stok yang paling lama terlebih dahulu. System akan mengecek stock_in_use, jika sudah mencapai first_stock maka stok tersebut tidak dapat digunakan lagi.</p>
+                                                <div class="mt-3 bg-slate-50 p-3 rounded">
+                                                    <div class="text-xs font-medium text-slate-600 mb-2">Contoh Alokasi:</div>
+                                                    <div class="text-sm space-y-1" id="oldPriceExample">
+                                                        <!-- Will be populated by JavaScript -->
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Option 2: Use Latest Available Price -->
+                                    <div class="border border-slate-200 rounded-lg p-4 hover:border-primary cursor-pointer" onclick="selectPriceMethod('latest')">
+                                        <div class="flex items-start">
+                                            <input type="radio" name="price_method" value="latest" id="method_latest" class="mt-1">
+                                            <label for="method_latest" class="ml-3 cursor-pointer flex-1">
+                                                <div class="font-medium text-base mb-1">Gunakan Harga Terbaru</div>
+                                                <p class="text-sm text-slate-600">Menggunakan harga sesuai dengan stok yang tersedia saat ini (last_stock). Hanya stok yang tersedia yang akan digunakan.</p>
+                                                <div class="mt-3 bg-slate-50 p-3 rounded">
+                                                    <div class="text-xs font-medium text-slate-600 mb-2">Contoh Alokasi:</div>
+                                                    <div class="text-sm space-y-1" id="latestPriceExample">
+                                                        <!-- Will be populated by JavaScript -->
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Detail Stock Table -->
+                                <div class="mt-5">
+                                    <h4 class="font-medium mb-3">Detail Stok Tersedia:</h4>
+                                    <div class="rounded-lg border border-slate-200">
+                                        <table class="min-w-full divide-y divide-slate-200">
+                                            <thead>
+                                                <tr class="bg-slate-50">
+                                                    <td class="px-4 py-3 text-start text-sm font-medium text-slate-600">Stock ID</td>
+                                                    <td class="px-4 py-3 text-center text-sm font-medium text-slate-600">First Stock</td>
+                                                    <td class="px-4 py-3 text-center text-sm font-medium text-slate-600">In Use</td>
+                                                    <td class="px-4 py-3 text-center text-sm font-medium text-slate-600">Available</td>
+                                                    <td class="px-4 py-3 text-right text-sm font-medium text-slate-600">Harga/Kg</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="modalStockDetail" class="divide-y divide-slate-200">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="mt-5 flex justify-end gap-2">
+                                    <x-base.button type="button" variant="outline-secondary" data-tw-dismiss="modal">
+                                        Batal
+                                    </x-base.button>
+                                    <x-base.button type="button" variant="primary" onclick="confirmPriceMethod()">
+                                        Konfirmasi
+                                    </x-base.button>
+                                </div>
+                            </div>
+                        </x-base.dialog.panel>
+                    </x-base.dialog>
                 </div>
                 <!-- END: Form Layout -->
             </form>
@@ -491,75 +568,206 @@
     @push('scripts')
         <script>
             var arrLaba = [];
+            var tempStockData = [];
+            var selectedPriceMethod = null;
+            var currentQty = 0;
+            var currentProduk = null;
 
             document.getElementById('produk').addEventListener('change', function() {
-                // var produk = this.value.split('_');
-
-                // var xhr = new XMLHttpRequest();
-                // var url = "/product/" + produk[0];
-
-                // xhr.open('GET', url, true);
-                // xhr.setRequestHeader('Content-Type', 'application/json');
-
-                // xhr.onreadystatechange = function() {
-                //     if (xhr.readyState == 4) {
-                //         if (xhr.status == 200) {
-                //             var response = JSON.parse(xhr.responseText);
-                //             // console.log(response);
-                //             document.getElementById('harga_jual').innerHTML = '';
-                //             // document.getElementById('subtotal').value = '';
-                //             document.getElementById('qty_jual').value = '';
-                //             // document.getElementById('harga').value = response.price;
-                //             // document.getElementById('harga_jual').value = response.price_sell;
-                //         } else {
-                //             console.log('Error:', xhr.status);
-                //         }
-                //     }
-                // };
-
-                // xhr.send();
-
                 $('#qty_jual').removeAttr('disabled');
             });
 
-            // document.getElementById('qty_jual').addEventListener('keyup', function() {
-            //     var harga_jual = document.getElementById('harga_jual').value;
-            //     var qty_jual = this.value;
+            function selectPriceMethod(method) {
+                selectedPriceMethod = method;
+                $('input[name="price_method"][value="' + method + '"]').prop('checked', true);
+            }
 
-            //     var subtotal = parseInt(harga_jual) * parseInt(qty_jual);
+            function confirmPriceMethod() {
+                if (!selectedPriceMethod) {
+                    alert('Harap pilih metode harga terlebih dahulu!');
+                    return false;
+                }
 
-            //     // Mengosongkan dan mengatur nilai elemen dengan ID "subtotal"
-            //     document.getElementById('subtotal').value = '';
-            //     document.getElementById('subtotal').value = subtotal;
-            // });
+                // Process stock allocation based on selected method
+                arrLaba = [];
+                let remainingQty = currentQty;
+                let stockList = [...tempStockData];
 
+                if (selectedPriceMethod === 'old') {
+                    // FIFO: Use oldest stock first, check stock_in_use vs first_stock
+                    stockList.sort((a, b) => a.stock_id - b.stock_id);
+                    
+                    for (let stock of stockList) {
+                        if (remainingQty <= 0) break;
+                        
+                        // Calculate available capacity: first_stock - stock_in_use
+                        let availableCapacity = stock.first_stock - stock.stock_in_use;
+                        
+                        if (availableCapacity <= 0) {
+                            // This stock is fully used, skip it
+                            continue;
+                        }
+                        
+                        let qtyToUse = Math.min(remainingQty, availableCapacity);
+                        arrLaba.push({
+                            stock_id: stock.stock_id,
+                            stock: qtyToUse,
+                            price_kg: stock.price_kg,
+                            available_capacity: availableCapacity
+                        });
+                        remainingQty -= qtyToUse;
+                    }
+                    
+                    if (remainingQty > 0) {
+                        alert('Stok dengan harga lama tidak mencukupi! Sisa qty yang tidak dapat dialokasikan: ' + remainingQty);
+                        arrLaba = [];
+                        return false;
+                    }
+                } else {
+                    // Latest: Use based on available stock (last_stock)
+                    for (let stock of stockList) {
+                        if (remainingQty <= 0) break;
+                        
+                        if (stock.last_stock <= 0) {
+                            continue;
+                        }
+                        
+                        let qtyToUse = Math.min(remainingQty, stock.last_stock);
+                        arrLaba.push({
+                            stock_id: stock.stock_id,
+                            stock: qtyToUse,
+                            price_kg: stock.price_kg,
+                            last_stock: stock.last_stock
+                        });
+                        remainingQty -= qtyToUse;
+                    }
+                    
+                    // if (remainingQty > 0) {
+                    //     alert('Stok yang tersedia tidak mencukupi! Sisa qty yang tidak dapat dialokasikan: ' + remainingQty);
+                    //     arrLaba = [];
+                    //     return false;
+                    // }
+                }
+
+                // Enable add product button
+                $('#modalDetailStockHarga').removeAttr('disabled');
+                
+                // Close modal
+                const modal = tailwind.Modal.getInstance(document.querySelector('#priceMethodModal'));
+                modal.hide();
+
+                // Show detail stock modal
+                displayStockDetail();
+            }
+
+            function displayStockDetail() {
+                $('#tableDetailStockHarga').html('');
+                
+                for (let i = 0; i < arrLaba.length; i++) {
+                    var stockHarga = `
+                        <tr class="row-data">
+                            <td class="py-2 px-4 w-1/4">${i + 1}</td>
+                            <td class="py-2 px-4 w-1/4">${arrLaba[i].stock}</td>
+                            <td class="py-2 px-4 w-1/4">${toCurrency(arrLaba[i].price_kg)}</td>
+                        </tr>
+                    `;
+                    $('#tableDetailStockHarga').html($('#tableDetailStockHarga').html() + stockHarga);
+                }
+            }
+
+            function showPriceMethodModal(stockData, qty, produk) {
+                tempStockData = stockData;
+                currentQty = qty;
+                currentProduk = produk;
+                selectedPriceMethod = null;
+                $('input[name="price_method"]').prop('checked', false);
+
+                // Calculate total available stock
+                let totalAvailableStock = stockData.reduce((sum, item) => sum + parseInt(item.last_stock), 0);
+                
+                // Display qty and available stock
+                $('#qtyDisplay').text(qty);
+                $('#stockDisplay').text(totalAvailableStock);
+
+                // Populate stock detail table in modal
+                $('#modalStockDetail').html('');
+                for (let i = 0; i < stockData.length; i++) {
+                    let row = `
+                        <tr>
+                            <td class="px-4 py-3">#${stockData[i].stock_id}</td>
+                            <td class="px-4 py-3 text-center">${stockData[i].first_stock}</td>
+                            <td class="px-4 py-3 text-center">${stockData[i].stock_in_use}</td>
+                            <td class="px-4 py-3 text-center">${stockData[i].last_stock}</td>
+                            <td class="px-4 py-3 text-right">${toCurrency(stockData[i].price_kg)}</td>
+                        </tr>
+                    `;
+                    $('#modalStockDetail').html($('#modalStockDetail').html() + row);
+                }
+
+                // Generate examples
+                generatePriceExamples(stockData, qty);
+
+                // Show modal
+                const modal = tailwind.Modal.getOrCreateInstance(document.querySelector('#priceMethodModal'));
+                modal.show();
+            }
+
+            function generatePriceExamples(stockData, qty) {
+                // Old Price (FIFO) Example - Check stock_in_use
+                let oldExample = '';
+                let remainingOld = qty;
+                let sortedOld = [...stockData].sort((a, b) => a.stock_id - b.stock_id);
+                
+                for (let stock of sortedOld) {
+                    if (remainingOld <= 0) break;
+                    
+                    let availableCapacity = stock.first_stock - stock.stock_in_use;
+                    if (availableCapacity <= 0) continue;
+                    
+                    let qtyToUse = Math.min(remainingOld, availableCapacity);
+                    oldExample += `<div>Stock #${stock.stock_id}: ${qtyToUse} pcs × ${toCurrency(stock.price_kg)} (Kapasitas: ${availableCapacity})</div>`;
+                    remainingOld -= qtyToUse;
+                }
+                
+                if (remainingOld > 0) {
+                    // oldExample += `<div class="text-danger mt-2">⚠️ Kekurangan: ${remainingOld} pcs (Stok tidak mencukupi)</div>`;
+                }
+                $('#oldPriceExample').html(oldExample || '<div class="text-slate-500">Tidak ada stok yang dapat digunakan</div>');
+
+                // Latest Price Example - Based on last_stock
+                let latestExample = '';
+                let remainingLatest = qty;
+                
+                for (let stock of stockData) {
+                    if (remainingLatest <= 0) break;
+                    
+                    if (stock.last_stock <= 0) continue;
+                    
+                    let qtyToUse = Math.min(remainingLatest, stock.last_stock);
+                    latestExample += `<div>Stock #${stock.stock_id}: ${qtyToUse} pcs × harga stok tersedia (Tersedia: ${stock.last_stock})</div>`;
+                    remainingLatest -= qtyToUse;
+                }
+                
+                if (remainingLatest > 0) {
+                    // latestExample += `<div class="text-danger mt-2">⚠️ Kekurangan: ${remainingLatest} pcs (Stok tidak mencukupi)</div>`;
+                }
+                $('#latestPriceExample').html(latestExample || '<div class="text-slate-500">Tidak ada stok yang tersedia</div>');
+            }
 
             function tambahProduk() {
                 var produk = $('#produk').val().split('_');
                 var qty = $('#qty_jual').val();
-                // var harga = $('#harga').val();
                 var harga_jual = currencyToNumber($('#harga_jual').val());
-                // var profit = parseInt((harga_jual - harga) * qty);
                 var profit = $('#laba_bersih').val();
                 var subtotal = parseInt(harga_jual) * parseInt(qty);
-
-                document.getElementById('qty_jual').value = '';
-                document.getElementById('qty_jual').disabled = true;
-                $("#qty_jual").attr('disabled')
-                // $("#qty_jual").prop('disabled', true)
-                document.getElementById('modalDetailStockHarga').disabled = true;
-                document.getElementById('produk').value = '';
-                document.getElementById('produk').dispatchEvent(new Event('change'));
-                document.getElementById('harga_jual').value = '';
-
 
                 if (produk == "" || qty == "" || harga_jual == "") {
                     alert("Harap pilih produk, qty, harga terjual terlebih dahulu!");
                     return false;
                 }
 
-                if (parseInt(qty) > parseInt(produk[2])) {
-                    alert("Stok tidak cukup!");
+                if (arrLaba.length === 0) {
+                    alert("Harap tentukan metode harga terlebih dahulu!");
                     return false;
                 }
 
@@ -591,13 +799,17 @@
                     <tr class="row-data">
                         <td class="py-2 px-4 produk_id" hidden>${produk[0]}<input type="hidden" name="produk_id[]" id="produk_id[]" value="${produk[0]}" /></td>
                         <td class="py-2 px-4 profit_peritem" hidden><input type="hidden" name="profit_peritem[]" id="profit_peritem[]" class="column_profit_peritem" value="${labaPerItem}" /></td>
-                        <td class="py-2 px-4 w-1/4">${produk[1]}</td>
-                        <td class="py-2 px-4 jumlah_qty w-1/4">${qty}<input type="hidden" name="jumlah_qty[]" id="jumlah_qty[]" value="${qty}" /></td>
-                        <td class="py-2 px-4 harga_jual">${toCurrency(harga_jual)}<input type="hidden" name="harga_jual[]" id="harga_jual[]" value="${harga_jual}" /></td>
-                        <td class="py-2 px-4 subtotal">${toCurrency(subtotal)}<input type="hidden" class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]" value="${subtotal}" /></td>
-                        <td class="py-2 px-4 w-1/4"> 
-                            <button onclick="hapusRow(this)" class="flex items-center text-danger">
-                            Hapus</button>
+                        <td class="px-4 py-3">
+                            <div class="font-medium">${produk[1]}</div>
+                        </td>
+                        <td class="px-4 py-3 text-center">${qty}<input type="hidden" name="jumlah_qty[]" id="jumlah_qty[]" value="${qty}" /></td>
+                        <td class="px-4 py-3 text-right font-medium">${toCurrency(harga_jual)}<input type="hidden" name="harga_jual[]" id="harga_jual[]" value="${harga_jual}" /></td>
+                        <td class="px-4 py-3 text-right font-medium">${toCurrency(subtotal)}<input type="hidden" class="column_subtotal" name="subtotal_produk[]" id="subtotal_produk[]" value="${subtotal}" /></td>
+                        <td class="px-4 py-3 text-center"> 
+                            <button type="button" onclick="hapusRow(this)" class="inline-flex items-center text-danger hover:text-danger/70">
+                                <x-base.lucide class="h-4 w-4" icon="Trash2" />
+                                <span class="ml-2">Hapus</span>
+                            </button>
                         </td>
                     </tr>
                 `;
@@ -610,13 +822,21 @@
                 })
                 $('.emptyData').remove();
 
-                console.log(totalLaba);
                 $('.laba_bersih').text(toCurrency(totalLaba));
                 $('#laba_bersih').val(totalLaba);
                 $('.grand_total').text(toCurrency(totalSubtotal));
                 $('#grand_total').val(totalSubtotal);
 
+                // Reset form
+                document.getElementById('qty_jual').value = '';
+                document.getElementById('qty_jual').disabled = true;
+                document.getElementById('modalDetailStockHarga').disabled = true;
+                document.getElementById('produk').value = '';
+                document.getElementById('produk').dispatchEvent(new Event('change'));
+                document.getElementById('harga_jual').value = '';
                 arrLaba = [];
+                tempStockData = [];
+                selectedPriceMethod = null;
             }
 
             function hapusRow(event) {
@@ -649,13 +869,14 @@
 
             function getHargaStock(qty) {
                 var produk = $('#produk').val().split('_');
-                $('#tableDetailStockHarga').html('');
 
                 if (qty == "") {
-                    alert('qty tidak boleh kosong!');
+                    document.getElementById('modalDetailStockHarga').disabled = true;
                     return false;
-                } else if (parseInt(qty) > parseInt(produk[2])) {
-                    alert('stok tidak cukup!');
+                }
+
+                if (produk == "" || produk[0] == "") {
+                    alert('Pilih produk terlebih dahulu!');
                     return false;
                 }
 
@@ -665,22 +886,14 @@
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState == 4) {
                         if (xhr.status == 200) {
-                            arrLaba = [];
-
                             var response = JSON.parse(xhr.responseText);
-
-                            for (let i = 0; i < response.length; i++) {
-                                var stockHarga = `
-                                    <tr class="row-data">
-                                        <td class="py-2 px-4 w-1/4">${i + 1}</td>
-                                        <td class="py-2 px-4 w-1/4">${response[i].stock}</td>
-                                        <td class="py-2 px-4 w-1/4">${toCurrency(response[i].price_kg)}</td>
-                                    </tr>
-                                `;
-
-                                $('#tableDetailStockHarga').html($('#tableDetailStockHarga').html() + stockHarga);
-
-                                arrLaba.push(response[i]);
+                            
+                            if (response.length > 0) {
+                                // Show price method modal regardless of qty vs stock
+                                showPriceMethodModal(response, qty, produk);
+                            } else {
+                                alert('Stok tidak tersedia!');
+                                document.getElementById('qty_jual').value = '';
                             }
                         } else {
                             console.log('Error:', xhr.status);
@@ -691,10 +904,7 @@
                 xhr.open("GET", url, true);
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.send();
-                $('#modalDetailStockHarga').removeAttr('disabled');
             }
-
-
         </script>
     @endpush
 @endsection
