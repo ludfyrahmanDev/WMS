@@ -25,7 +25,7 @@ class SellingStoreRequest extends FormRequest
             'tipe_pembelian' => ['required'],
             'tipe_pembayaran' => ['required'],
             'total_bayar' => ['required'],
-            'price_method' => ['required'],
+            'price_method' => ['nullable'],
         ];
     }
 

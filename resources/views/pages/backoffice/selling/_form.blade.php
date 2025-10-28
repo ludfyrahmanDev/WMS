@@ -730,28 +730,44 @@
                 }
                 
                 if (remainingOld > 0) {
-                    // oldExample += `<div class="text-danger mt-2">⚠️ Kekurangan: ${remainingOld} pcs (Stok tidak mencukupi)</div>`;
+                    oldExample += `<div class="text-danger mt-2">⚠️ Kekurangan: ${remainingOld} pcs (Stok tidak mencukupi)</div>`;
                 }
                 $('#oldPriceExample').html(oldExample || '<div class="text-slate-500">Tidak ada stok yang dapat digunakan</div>');
 
-                // Latest Price Example - Based on last_stock
+                // Latest Price Example - Show ALL available stocks with their quantities
                 let latestExample = '';
-                let remainingLatest = qty;
+                let latestExampleList = [];
                 
+                // Show all stocks that have last_stock > 0
                 for (let stock of stockData) {
-                    if (remainingLatest <= 0) break;
-                    
-                    if (stock.last_stock <= 0) continue;
-                    
-                    let qtyToUse = Math.min(remainingLatest, stock.last_stock);
-                    latestExample += `<div>Stock #${stock.stock_id}: ${qtyToUse} pcs × harga stok tersedia (Tersedia: ${stock.last_stock})</div>`;
-                    remainingLatest -= qtyToUse;
+                    if (stock.last_stock > 0) {
+                        latestExampleList.push({
+                            stock_id: stock.stock_id,
+                            last_stock: stock.last_stock,
+                            price_kg: stock.price_kg
+                        });
+                    }
                 }
                 
-                if (remainingLatest > 0) {
-                    // latestExample += `<div class="text-danger mt-2">⚠️ Kekurangan: ${remainingLatest} pcs (Stok tidak mencukupi)</div>`;
+                // Display all available stocks
+                if (latestExampleList.length > 0) {
+                    latestExample += '<div class="mb-2 text-xs font-semibold text-slate-600">Semua stok yang tersedia:</div>';
+                    for (let item of latestExampleList) {
+                        latestExample += `<div>Stock #${item.stock_id}: ${item.last_stock} pcs tersedia × ${toCurrency(item.price_kg)}</div>`;
+                    }
+                    
+                    // Calculate if enough
+                    let totalAvailable = latestExampleList.reduce((sum, item) => sum + item.last_stock, 0);
+                    if (qty > totalAvailable) {
+                        latestExample += `<div class="text-danger mt-2">⚠️ Kekurangan: ${qty - totalAvailable} pcs (Total tersedia: ${totalAvailable})</div>`;
+                    } else {
+                        latestExample += `<div class="text-success mt-2">✓ Stok mencukupi (Total tersedia: ${totalAvailable})</div>`;
+                    }
+                } else {
+                    latestExample = '<div class="text-slate-500">Tidak ada stok yang tersedia</div>';
                 }
-                $('#latestPriceExample').html(latestExample || '<div class="text-slate-500">Tidak ada stok yang tersedia</div>');
+                
+                $('#latestPriceExample').html(latestExample);
             }
 
             function tambahProduk() {
@@ -889,8 +905,45 @@
                             var response = JSON.parse(xhr.responseText);
                             
                             if (response.length > 0) {
-                                // Show price method modal regardless of qty vs stock
-                                showPriceMethodModal(response, qty, produk);
+                                // Calculate total capacity for old price (FIFO)
+                                let totalOldCapacity = 0;
+                                for (let stock of response) {
+                                    let capacity = stock.first_stock - stock.stock_in_use;
+                                    if (capacity > 0) {
+                                        totalOldCapacity += capacity;
+                                    }
+                                }
+                                
+                                // If qty <= total old capacity, automatically use old price (FIFO)
+                                if (parseInt(qty) <= totalOldCapacity) {
+                                    // Auto allocate using old price method
+                                    arrLaba = [];
+                                    let remainingQty = parseInt(qty);
+                                    let sortedByOldest = [...response].sort((a, b) => a.stock_id - b.stock_id);
+                                    
+                                    for (let stock of sortedByOldest) {
+                                        if (remainingQty <= 0) break;
+                                        
+                                        let availableCapacity = stock.first_stock - stock.stock_in_use;
+                                        if (availableCapacity <= 0) continue;
+                                        
+                                        let qtyToUse = Math.min(remainingQty, availableCapacity);
+                                        arrLaba.push({
+                                            stock_id: stock.stock_id,
+                                            stock: qtyToUse,
+                                            price_kg: stock.price_kg,
+                                            available_capacity: availableCapacity
+                                        });
+                                        remainingQty -= qtyToUse;
+                                    }
+                                    
+                                    // Enable add product button and show detail
+                                    $('#modalDetailStockHarga').removeAttr('disabled');
+                                    displayStockDetail();
+                                } else {
+                                    // Show price method modal
+                                    showPriceMethodModal(response, qty, produk);
+                                }
                             } else {
                                 alert('Stok tidak tersedia!');
                                 document.getElementById('qty_jual').value = '';
