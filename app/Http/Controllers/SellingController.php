@@ -16,11 +16,10 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\Transaksi\SellingStoreRequest;
 use App\Models\Kas;
 use App\Services\CoretaxExportService;
-
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Support\Facades\Schema;
-
+use Illuminate\Support\Facades\DB;
 class SellingController extends Controller
 {
     public function index(Request $request)
@@ -79,6 +78,7 @@ class SellingController extends Controller
     {
         $user = auth()->user();
         try {
+            DB::beginTransaction();
             if (intval(curencyToInteger($request->total_bayar)) > intval(curencyToInteger($request->grand_total))) {
                 return back()->with('failed', 'Gagal, Total Bayar melebihi dari Grand Total!');
             }
@@ -111,7 +111,6 @@ class SellingController extends Controller
                 
                 // Decode arrLaba data from the form
                 $arrLabaData = json_decode($request->arr_laba_data[$i], true);
-
                 // Insert based on arrLaba data
                 if (!empty($arrLabaData) && is_array($arrLabaData)) {
                     foreach ($arrLabaData as $labaItem) {
@@ -123,17 +122,17 @@ class SellingController extends Controller
                         // Update stock
                         $stock = Stock::with('dod')->find($labaItem['stock_id']);
                         if ($stock) {
-                            $stock->stock_in_use += $labaItem['stock'];
-                            $stock->last_stock -= $labaItem['stock'];
+                            $stock->stock_in_use += $qty;
+                            $stock->last_stock -= $qty;
                             $stock->save();
                         }
 
                         $selling_detail->price_kg = $labaItem['price_kg'];
                         $selling_detail->price_sell = $harga_jual;
-                        $selling_detail->qty = $labaItem['stock'];
+                        $selling_detail->qty = $qty;
                         
                         // Calculate subtotal proportionally
-                        $itemSubtotal = $labaItem['stock'] * $harga_jual;
+                        $itemSubtotal = $qty * $harga_jual;
                         $selling_detail->subtotal = $itemSubtotal;
                         $selling_detail->save();
 
@@ -148,7 +147,7 @@ class SellingController extends Controller
                             $delivery_order_detail->stock_id = $labaItem['stock_id'];
                             $delivery_order_detail->no_sj = $labaItem['no_sj'] ?? '';
                             $delivery_order_detail->no_faktur = $labaItem['no_faktur'] ?? '';
-                            $delivery_order_detail->purchase_amount = $labaItem['stock'];
+                            $delivery_order_detail->purchase_amount = $qty;
                             $delivery_order_detail->subtotal = $deliveryOrderQuota ? $deliveryOrderQuota->price_kg * $labaItem['stock'] : 0;
                             $delivery_order_detail->save();
                         }
@@ -208,13 +207,10 @@ class SellingController extends Controller
 
             // Create kas entry for selling (always credit/debit - uang masuk)
             $this->createKasEntryForSelling($selling, $user['name']);
-
+            DB::commit();
             return redirect(route('selling.index'))->with('success', 'Berhasil menambah data!');
         } catch (\Throwable $th) {
-            // $errorMessage = $th->getMessage() . " at line " . $th->getLine();
-            // // var_dump($errorMessage);
-            // // die;
-            // return back()->with('failed', $errorMessage);
+            DB::rollBack();
             return back()->with('failed', 'Gagal menambah data!' . $th->getMessage());
         }
     }
@@ -253,6 +249,7 @@ class SellingController extends Controller
         $request->angsuran = (int)str_replace('.', '', $request->angsuran);
         $request['angsuran'] = (int)$request->angsuran;
         try {
+                DB::beginTransaction();
             if ($request->mode == 'Konfirmasi Lunas') {
 
                 if (intval($selling->grand_total) != intval($selling->total_payment)) {
@@ -361,12 +358,10 @@ class SellingController extends Controller
             } else {
                 return redirect(route('selling.index'))->with('success', 'Berhasil update data!');
             }
+            DB::commit();
             return redirect(route('selling.index'))->with('success', 'Berhasil menambah data!');
         } catch (\Throwable $th) {
-            // $errorMessage = $th->getMessage() . " at line " . $th->getLine();
-            // // var_dump($errorMessage);
-            // // die;
-            // return back()->with('failed', 'Gagal menyimpan data, karena : ' . $errorMessage);
+            DB::rollBack();
             return back()->with('failed', 'Gagal menyimpan data!' . $th->getMessage());
         }
     }
@@ -435,27 +430,6 @@ class SellingController extends Controller
             if($qty <= 0){
                 break;
             }
-
-            // if($stock->last_stock >= $qty){
-            //     $arr[] = [
-            //         'stock_id' => $stock->stock_id,
-            //         'allocated_stock' => $stock->last_stock,
-            //         'price_kg' => $stock->price_kg,
-            //         'product_id' => $stock->product_id,
-            //         'purchase_date' => $stock->purchase_date,
-            //     ];
-            //     $qty = 0;
-            // } else {
-            //     $arr[] = [
-            //         'stock_id' => $stock->stock_id,
-            //         'allocated_stock' => $stock->last_stock,
-            //         'price_kg' => $stock->price_kg,
-            //         'product_id' => $stock->product_id,
-            //         'purchase_date' => $stock->purchase_date,
-            //     ];
-            //     $qty -= $stock->last_stock;
-            // }
-            
              if($stock->last_stock >= $qty){
                 $arr[] = [
                     'stock_id' => $stock->stock_id,

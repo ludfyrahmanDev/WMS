@@ -653,11 +653,11 @@
                         remainingQty -= qtyToUse;
                     }
                     
-                    if (remainingQty > 0) {
-                        alert('Stok dengan harga lama tidak mencukupi! Sisa qty yang tidak dapat dialokasikan: ' + remainingQty);
-                        arrLaba = [];
-                        return false;
-                    }
+                    // if (remainingQty > 0) {
+                    //     alert('Stok dengan harga lama tidak mencukupi! Sisa qty yang tidak dapat dialokasikan: ' + remainingQty);
+                    //     arrLaba = [];
+                    //     return false;
+                    // }
                 } else {
                     // Latest: Use based on available stock (last_stock)
                     for (let stock of stockList) {
