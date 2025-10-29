@@ -137,6 +137,7 @@ class DeliveryOrderController extends Controller
                 } else {
                     // Buat stok baru
                     $stock = new Stock();
+                    $stock->delivery_order_id = $delivery_order->id;
                     $stock->product_id = $request->produk_id[$i];
                     $stock->purchase_date = $request->tanggal_pembelian;
                     $stock->price_kg = curencyToInteger($request->hargaKG[$i]);

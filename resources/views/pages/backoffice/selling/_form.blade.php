@@ -559,6 +559,41 @@
                             </div>
                         </x-base.dialog.panel>
                     </x-base.dialog>
+
+                    <!-- Nomor SJ dan Faktur Modal -->
+                    <x-base.dialog id="nomorSjFakturModal" size="lg">
+                        <x-base.dialog.panel>
+                            <div class="p-5">
+                                <div class="mb-5 flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-lg font-medium">Input Nomor SJ & Faktur</h3>
+                                        <p class="text-slate-600 text-sm mt-1">Masukkan nomor SJ dan nomor faktur untuk setiap alokasi stok</p>
+                                    </div>
+                                    <x-base.button 
+                                        class="h-8 w-8" 
+                                        type="button"
+                                        variant="outline-secondary"
+                                        onclick="closeSjFakturModal()"
+                                    >
+                                        <x-base.lucide class="h-4 w-4" icon="X" />
+                                    </x-base.button>
+                                </div>
+
+                                <div id="sjFakturInputContainer" class="space-y-4">
+                                    <!-- Will be populated by JavaScript -->
+                                </div>
+
+                                <div class="mt-5 flex justify-end gap-2">
+                                    <x-base.button type="button" variant="outline-secondary" onclick="closeSjFakturModal()">
+                                        Batal
+                                    </x-base.button>
+                                    <x-base.button type="button" variant="primary" onclick="confirmSjFaktur()">
+                                        Konfirmasi & Tambah Produk
+                                    </x-base.button>
+                                </div>
+                            </div>
+                        </x-base.dialog.panel>
+                    </x-base.dialog>
                 </div>
                 <!-- END: Form Layout -->
             </form>
@@ -656,6 +691,80 @@
                 const modal = tailwind.Modal.getInstance(document.querySelector('#priceMethodModal'));
                 modal.hide();
 
+                // Show SJ dan Faktur input modal
+                showSjFakturModal();
+            }
+
+            function showSjFakturModal() {
+                // Generate input fields based on arrLaba
+                let inputHtml = '';
+                
+                for (let i = 0; i < arrLaba.length; i++) {
+                    inputHtml += `
+                        <div class="border border-slate-200 rounded-lg p-4">
+                            <div class="mb-3 flex items-center justify-between">
+                                <div>
+                                    <span class="font-medium">Stock #${arrLaba[i].stock_id}</span>
+                                    <span class="text-slate-600 text-sm ml-2">(${arrLaba[i].stock} pcs × ${toCurrency(arrLaba[i].price_kg)})</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label>Nomor SJ</label>
+                                    <input 
+                                        class="w-full border border-slate-300 rounded-md p-2" 
+                                        type="text" 
+                                        id="no_sj_${i}"
+                                        placeholder="Masukkan nomor SJ"
+                                    />
+                                    
+                                </div>
+                                <div>
+                                    <label>Nomor Faktur</label>
+                                    <input 
+                                        class="w-full border border-slate-300 rounded-md p-2" 
+                                        type="text" 
+                                        id="no_faktur_${i}"
+                                        placeholder="Masukkan nomor faktur"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                $('#sjFakturInputContainer').html(inputHtml);
+                
+                // Show modal
+                const sjFakturModal = tailwind.Modal.getOrCreateInstance(document.querySelector('#nomorSjFakturModal'));
+                sjFakturModal.show();
+            }
+
+            function closeSjFakturModal() {
+                const modal = tailwind.Modal.getInstance(document.querySelector('#nomorSjFakturModal'));
+                if (modal) {
+                    modal.hide();
+                }
+            }
+
+            function confirmSjFaktur() {
+                // Collect SJ and Faktur data
+                for (let i = 0; i < arrLaba.length; i++) {
+                    let noSj = document.getElementById(`no_sj_${i}`).value;
+                    let noFaktur = document.getElementById(`no_faktur_${i}`).value;
+                    
+                    if (!noSj || !noFaktur) {
+                        alert(`Harap isi nomor SJ dan faktur untuk Stock #${arrLaba[i].stock_id}`);
+                        return false;
+                    }
+                    
+                    arrLaba[i].no_sj = noSj;
+                    arrLaba[i].no_faktur = noFaktur;
+                }
+                
+                // Close modal
+                closeSjFakturModal();
+                
                 // Show detail stock modal
                 displayStockDetail();
             }
@@ -777,8 +886,19 @@
                 var profit = $('#laba_bersih').val();
                 var subtotal = parseInt(harga_jual) * parseInt(qty);
 
-                if (produk == "" || qty == "" || harga_jual == "") {
-                    alert("Harap pilih produk, qty, harga terjual terlebih dahulu!");
+                // Validation: product, qty, and price must not be empty
+                if (produk == "" || produk[0] == "") {
+                    alert("Harap pilih produk terlebih dahulu!");
+                    return false;
+                }
+
+                if (qty == "" || qty == 0 || isNaN(qty)) {
+                    alert("Harap masukkan jumlah qty yang valid!");
+                    return false;
+                }
+
+                if (harga_jual == "" || harga_jual == 0 || isNaN(harga_jual)) {
+                    alert("Harap masukkan harga jual yang valid!");
                     return false;
                 }
 
@@ -811,10 +931,14 @@
                     labaPerItem += (parseInt(harga_jual) - parseInt(price_kg)) * parseInt(stock);
                 }
 
+                // Prepare arrLaba data as JSON string to pass to backend
+                var arrLabaJson = JSON.stringify(arrLaba);
+
                 var products = `
                     <tr class="row-data">
                         <td class="py-2 px-4 produk_id" hidden>${produk[0]}<input type="hidden" name="produk_id[]" id="produk_id[]" value="${produk[0]}" /></td>
                         <td class="py-2 px-4 profit_peritem" hidden><input type="hidden" name="profit_peritem[]" id="profit_peritem[]" class="column_profit_peritem" value="${labaPerItem}" /></td>
+                        <td class="py-2 px-4 arr_laba_data" hidden><input type="hidden" name="arr_laba_data[]" value='${arrLabaJson}' /></td>
                         <td class="px-4 py-3">
                             <div class="font-medium">${produk[1]}</div>
                         </td>
@@ -903,7 +1027,7 @@
                     if (xhr.readyState == 4) {
                         if (xhr.status == 200) {
                             var response = JSON.parse(xhr.responseText);
-                            
+                            console.log('response length:', response.length);
                             if (response.length > 0) {
                                 // Calculate total capacity for old price (FIFO)
                                 let totalOldCapacity = 0;
@@ -911,11 +1035,13 @@
                                     let capacity = stock.first_stock - stock.stock_in_use;
                                     if (capacity > 0) {
                                         totalOldCapacity += capacity;
+                                        break;
                                     }
                                 }
                                 
                                 // If qty <= total old capacity, automatically use old price (FIFO)
                                 if (parseInt(qty) <= totalOldCapacity) {
+                                    selectPriceMethod('old');
                                     // Auto allocate using old price method
                                     arrLaba = [];
                                     let remainingQty = parseInt(qty);
@@ -937,15 +1063,14 @@
                                         remainingQty -= qtyToUse;
                                     }
                                     
-                                    // Enable add product button and show detail
+                                    // Enable add product button and show SJ Faktur modal
                                     $('#modalDetailStockHarga').removeAttr('disabled');
-                                    displayStockDetail();
+                                    showSjFakturModal();
                                 } else {
                                     // Show price method modal
                                     showPriceMethodModal(response, qty, produk);
                                 }
                             } else {
-                                alert('Stok tidak tersedia!');
                                 document.getElementById('qty_jual').value = '';
                             }
                         } else {
@@ -953,7 +1078,6 @@
                         }
                     }
                 };
-
                 xhr.open("GET", url, true);
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.send();

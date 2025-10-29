@@ -281,7 +281,7 @@
     <!-- Add Product Form -->
     @if($data['payment_detail']->sum('subtotal') < $data['header']->grand_total )
     <div class="mt-6">
-        <div class="intro-y rounded-lg border border-slate-200 bg-white">
+        <div class="intro-y rounded-lg border border-slate-200 bg-white hidden">
             <div class="p-5">
                 <h3 class="mb-4 text-lg font-medium">Tambah Produk</h3>
                 <form action="{{ $routeQuota }}" method="post" enctype="multipart/form-data">
