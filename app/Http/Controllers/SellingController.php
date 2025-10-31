@@ -102,7 +102,6 @@ class SellingController extends Controller
 
             //insert Table Selling Detail
             $totalDataProduk = COUNT($request->produk_id);
-
             for ($i = 0; $i < $totalDataProduk; $i++) {
                 $produk_id = $request->produk_id[$i];
                 $qty = $request->jumlah_qty[$i];
@@ -118,12 +117,17 @@ class SellingController extends Controller
                         $selling_detail = new SellingDetail();
                         $selling_detail->selling_id = $selling->id;
                         $selling_detail->stock_id = $labaItem['stock_id'];
-                        
                         // Update stock
                         $stock = Stock::with('dod')->find($labaItem['stock_id']);
                         if ($stock) {
-                            $stock->stock_in_use += $qty;
-                            $stock->last_stock -= $qty;
+                            $stock_use = $qty < $stock->last_stock ? $qty : $stock->last_stock;
+                            if($request->price_method == 'old'){
+                                $stock_use = $qty;
+                            }else{
+                                $qty -= $stock_use;
+                            }
+                            $stock->stock_in_use += $stock_use;
+                            $stock->last_stock -= $stock_use;
                             $stock->save();
                         }
 
@@ -141,14 +145,19 @@ class SellingController extends Controller
                             $deliveryOrderQuota = \App\Models\DeliveryOrderQuota::where('delivery_order_id', $stock->delivery_order_id)
                                 ->where('product_id', $stock->product_id)
                                 ->first();
-
+                            
                             $delivery_order_detail = new \App\Models\DeliveryOrderDetail();
                             $delivery_order_detail->delivery_order_id = $stock->delivery_order_id;
                             $delivery_order_detail->stock_id = $labaItem['stock_id'];
                             $delivery_order_detail->no_sj = $labaItem['no_sj'] ?? '';
                             $delivery_order_detail->no_faktur = $labaItem['no_faktur'] ?? '';
-                            $delivery_order_detail->purchase_amount = $qty;
-                            $delivery_order_detail->subtotal = $deliveryOrderQuota ? $deliveryOrderQuota->price_kg * $labaItem['stock'] : 0;
+                            
+                            if($request->price_method == 'old'){
+                                $delivery_order_detail->purchase_amount = $qty;
+                            }else{
+                                $delivery_order_detail->purchase_amount = $stock_use;
+                            }
+                            $delivery_order_detail->subtotal = $deliveryOrderQuota ? $deliveryOrderQuota->price_kg * $qty : 0;
                             $delivery_order_detail->save();
                         }
                     }
@@ -300,7 +309,6 @@ class SellingController extends Controller
             $selling->created_by            = $user['name'];
             $selling->updated_by            = $user['name'];
             $selling->save();
-
             $selling->selling_detail()->delete();
 
             //insert Table Selling Detail
@@ -353,12 +361,12 @@ class SellingController extends Controller
                 }
             }
 
+            DB::commit();
             if ($request->mode != null) {
                 return redirect(route('selling.index'))->with('success', 'Berhasil menyimpan data!');
             } else {
                 return redirect(route('selling.index'))->with('success', 'Berhasil update data!');
             }
-            DB::commit();
             return redirect(route('selling.index'))->with('success', 'Berhasil menambah data!');
         } catch (\Throwable $th) {
             DB::rollBack();

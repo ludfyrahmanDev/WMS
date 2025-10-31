@@ -67,6 +67,8 @@ class Selling extends Model
             // ->leftJoin('delivery_order_detail AS dod', 's.id', '=', 'dod.stock_id')
             // ->leftJoin('delivery_order AS do', 'do.id', '=', 'dod.delivery_order_id')
             ->where('s.is_active', 1)
+            // last_stock greater than 0
+            ->where('s.last_stock', '>', 0)
             // ->where('do.cv_id', session('cv_id'))
             ->groupBy('p.id', 'p.product') 
             ->get();

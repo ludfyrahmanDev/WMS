@@ -279,11 +279,8 @@
                                         <x-base.input-group.text>
                                             <x-base.button 
                                                 type="button" 
-                                                id="modalDetailStockHarga" 
-                                                data-tw-toggle="modal"
-                                                data-tw-target="#detailStockHarga" 
+                                                onclick="showSjFakturModal()"
                                                 variant="primary" 
-                                                disabled
                                             >
                                                 <x-base.lucide class="h-4 w-4" icon="Eye" />
                                             </x-base.button>
@@ -631,7 +628,9 @@
                 if (selectedPriceMethod === 'old') {
                     // FIFO: Use oldest stock first, check stock_in_use vs first_stock
                     stockList.sort((a, b) => a.stock_id - b.stock_id);
-                    
+                    // only get first index array
+                    // stockList = stockList.slice(0, 1);
+                    // console.log('FIFO Stock List:', stockList);
                     for (let stock of stockList) {
                         if (remainingQty <= 0) break;
                         
@@ -651,8 +650,8 @@
                             available_capacity: availableCapacity
                         });
                         remainingQty -= qtyToUse;
+                        break;
                     }
-                    
                     // if (remainingQty > 0) {
                     //     alert('Stok dengan harga lama tidak mencukupi! Sisa qty yang tidak dapat dialokasikan: ' + remainingQty);
                     //     arrLaba = [];
@@ -801,6 +800,7 @@
                 // Populate stock detail table in modal
                 $('#modalStockDetail').html('');
                 for (let i = 0; i < stockData.length; i++) {
+                    if(stockData[i].last_stock <= 0) continue; // Skip if no available stock
                     let row = `
                         <tr>
                             <td class="px-4 py-3">#${stockData[i].stock_id}</td>
@@ -924,6 +924,12 @@
                 var labaPerItem = 0;
 
                 for (let i = 0; i < arrLaba.length; i++) {
+                    // check if no_sj_ and no_faktur exist is null
+                    if (!arrLaba[i].no_sj || !arrLaba[i].no_faktur) {
+                        alert('Nomor SJ dan Faktur untuk semua alokasi stok harus diisi!');
+                        showSjFakturModal();
+                        return false;
+                    }
                     const price_kg = arrLaba[i].price_kg;
                     const stock = arrLaba[i].stock;
 
