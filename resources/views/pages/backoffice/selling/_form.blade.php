@@ -16,12 +16,6 @@
                     <x-base.lucide class="mr-2 h-4 w-4" icon="ArrowLeft"/>
                     <a href="{{ route('selling.index') }}">Kembali</a>
                 </x-base.button>
-                @if ($type != 'create')
-                    <x-base.button class="px-3" variant="outline-danger">
-                        <x-base.lucide class="mr-2 h-4 w-4" icon="FileX"/>
-                        Batalkan
-                    </x-base.button>
-                @endif
             </div>
         </div>
 
@@ -78,7 +72,7 @@
                                     </div>
 
                                     @if (count($data['cvs']) > 1)
-                                        <div class="mb-3">
+                                        <div class="mb-3 hidden">
                                             <x-base.form-label for="cv_id">Perusahaan</x-base.form-label>
                                             <x-base.tom-select 
                                                 name="cv_id" 

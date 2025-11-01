@@ -20,6 +20,7 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use App\Models\DeliveryOrderDetail;
 class SellingController extends Controller
 {
     public function index(Request $request)
@@ -146,9 +147,10 @@ class SellingController extends Controller
                                 ->where('product_id', $stock->product_id)
                                 ->first();
                             
-                            $delivery_order_detail = new \App\Models\DeliveryOrderDetail();
+                            $delivery_order_detail = new DeliveryOrderDetail();
                             $delivery_order_detail->delivery_order_id = $stock->delivery_order_id;
                             $delivery_order_detail->stock_id = $labaItem['stock_id'];
+                            $delivery_order_detail->selling_id = $selling->id;
                             $delivery_order_detail->no_sj = $labaItem['no_sj'] ?? '';
                             $delivery_order_detail->no_faktur = $labaItem['no_faktur'] ?? '';
                             
@@ -258,7 +260,6 @@ class SellingController extends Controller
         $request->angsuran = (int)str_replace('.', '', $request->angsuran);
         $request['angsuran'] = (int)$request->angsuran;
         try {
-                DB::beginTransaction();
             if ($request->mode == 'Konfirmasi Lunas') {
 
                 if (intval($selling->grand_total) != intval($selling->total_payment)) {
@@ -267,8 +268,7 @@ class SellingController extends Controller
                     $selling->status = 'Completed';
                     $selling->updated_by = $user['name'];
                     $selling->save();
-
-                    return redirect(route('selling.index'))->with('success', 'Berhasil update data!');
+                    return redirect(route('selling.index'))->with('success', 'Berhasil update status data!');
                 }
 
                 return false;
@@ -285,7 +285,6 @@ class SellingController extends Controller
                 return redirect(route('selling.index'))->with('success', 'Berhasil update data!');
                 return false;
             }
-
             if (intval(curencyToInteger($request->total_bayar)) > intval(curencyToInteger($request->grand_total))) {
                 return back()->with('failed', 'Gagal, Total Bayar melebihi dari Grand Total!');
             }
@@ -361,7 +360,6 @@ class SellingController extends Controller
                 }
             }
 
-            DB::commit();
             if ($request->mode != null) {
                 return redirect(route('selling.index'))->with('success', 'Berhasil menyimpan data!');
             } else {
@@ -369,7 +367,6 @@ class SellingController extends Controller
             }
             return redirect(route('selling.index'))->with('success', 'Berhasil menambah data!');
         } catch (\Throwable $th) {
-            DB::rollBack();
             return back()->with('failed', 'Gagal menyimpan data!' . $th->getMessage());
         }
     }
@@ -377,12 +374,30 @@ class SellingController extends Controller
     public function destroy(Selling $selling)
     {
         try {
+            DB::beginTransaction();
+            foreach ($selling->selling_detail as $detail) {
+                $stock = Stock::find($detail->stock_id);
+                if ($stock) {
+                    $stock->stock_in_use -= $detail->qty;
+                    $stock->last_stock += $detail->qty;
+                    if($stock->last_stock > $stock->first_stock){
+                        $stock->last_stock = $stock->first_stock;
+                    }
+                    $stock->save();
+                    $delivery_order_detail = DeliveryOrderDetail::where('selling_id', $selling->id)
+                        ->where('stock_id', $detail->stock_id)
+                        ->first();
+                    if ($delivery_order_detail) {
+                        $delivery_order_detail->delete();
+                    }
+                }
+            }
             $selling->selling_detail()->delete();
             $selling->delete();
+            DB::commit();
             return  redirect('selling')->with('success', 'Berhasil menghapus data!');
         } catch (\Throwable $th) {
-            // $errorMessage = $th->getMessage() . " at line " . $th->getLine();
-            // return back()->with('failed', 'Gagal menghapus data, karena : ' . $errorMessage);
+            DB::rollBack();
             return back()->with('failed', 'Gagal menghapus data!' . $th->getMessage());
         }
     }
@@ -438,29 +453,29 @@ class SellingController extends Controller
             if($qty <= 0){
                 break;
             }
-             if($stock->last_stock >= $qty){
+            //  if($stock->last_stock >= $qty){
+            //     $arr[] = [
+            //         'stock_id' => $stock->stock_id,
+            //         'first_stock' => $stock->first_stock,
+            //         'stock_in_use' => $stock->stock_in_use,
+            //         'last_stock' => $stock->last_stock,
+            //         'price_kg' => $stock->price_kg,
+            //         'product_id' => $stock->product_id,
+            //         'purchase_date' => $stock->purchase_date,
+            //     ];
+            //     $qty = 0;
+            // } else {
                 $arr[] = [
                     'stock_id' => $stock->stock_id,
-                    'first_stock' => $stock->first_stock,
                     'stock_in_use' => $stock->stock_in_use,
+                    'first_stock' => $stock->first_stock,
                     'last_stock' => $stock->last_stock,
                     'price_kg' => $stock->price_kg,
                     'product_id' => $stock->product_id,
                     'purchase_date' => $stock->purchase_date,
                 ];
-                $qty = 0;
-            } else {
-                $arr[] = [
-                    'stock_id' => $stock->stock_id,
-                    'stock_in_use' => $stock->stock_in_use,
-                    'first_stock' => $stock->first_stock,
-                    'last_stock' => $stock->last_stock,
-                    'price_kg' => $stock->price_kg,
-                    'product_id' => $stock->product_id,
-                    'purchase_date' => $stock->purchase_date,
-                ];
-                $qty -= $stock->last_stock;
-            }
+                // $qty -= $stock->last_stock;
+            // }
         }
 
         return response()->json($arr);

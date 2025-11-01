@@ -111,23 +111,6 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="space-y-4">
-                                <div>
-                                    <x-base.form-label for="tanggal_pengambilan">Tanggal Pengambilan</x-base.form-label>
-                                    <x-base.form-input 
-                                        class="w-full" 
-                                        id="tanggal_pengambilan" 
-                                        type="date"
-                                        name="tanggal_pengambilan" 
-                                        value="{{ $data['header']->pick_up_date ?? date('Y-m-d') }}"
-                                placeholder="Pilih Tanggal Pengambilan" required disabled />
-                            @error('tanggal_pengambilan')
-                                <div class="pristine-error text-danger mt-2">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
                     <div class="mt-2 grid grid-cols-12 gap-2">
                         <div class="input-form col-span-6">
                             <x-base.form-label for="tipe_pembelian">Tipe Pembelian</x-base.form-label>

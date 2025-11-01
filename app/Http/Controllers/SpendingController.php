@@ -104,12 +104,17 @@ class SpendingController extends Controller
             });
         
         // Hitung Laba Bersih dari Penjualan
+        // Laba sudah dihitung dengan benar di frontend berdasarkan:
+        // - Harga Lama (FIFO): (harga_jual - price_kg_lama) × qty
+        // - Harga Terbaru: (harga_jual - price_kg_terbaru) × qty
+        // Untuk multiple stock allocation, laba dihitung proporsional untuk setiap stock
         $netProfit = Selling::when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 return $query->whereBetween('date', [$request->start_date, $request->end_date]);
             })
             ->when($selectedCvId && auth()->user()->hasCompanyAccess(), function ($query) use ($selectedCvId) {
                 return $query->where('cv_id', $selectedCvId);
             })
+            ->where('status', 'Completed')
             ->sum('net_profit') ?? 0;
         
         // Hitung Piutang Penjualan
