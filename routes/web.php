@@ -94,6 +94,8 @@ Route::middleware('auth')->group(function () {
     Route::get('selling/{id}/coretax-preview', [SellingController::class, 'coretaxPreview'])->name('selling.coretax-preview')->middleware('permission:selling.view');
     Route::get('selling/{id}/coretax-export-csv', [SellingController::class, 'coretaxExportCSV'])->name('selling.coretax-export-csv')->middleware('permission:selling.view');
     Route::get('selling/{id}/coretax-export-xml', [SellingController::class, 'coretaxExportXML'])->name('selling.coretax-export-xml')->middleware('permission:selling.view');
+    Route::get('selling/coretax-bulk-export-page', function() { return view('pages.backoffice.selling.coretax-bulk-export'); })->name('selling.coretax-bulk-export-page')->middleware('permission:selling.view');
+    Route::post('selling/coretax-bulk-invoice-export', [SellingController::class, 'coretaxBulkInvoiceExportXML'])->name('selling.coretax-bulk-invoice-export')->middleware('permission:selling.view');
     Route::get('transport_export', [TransportController::class, 'export'])->name('transport.export')->middleware('permission:transport.view');
     Route::get('transport_export_pdf', [TransportController::class, 'exportPdf'])->name('transport.export-pdf')->middleware('permission:transport.view');
     Route::get('selling_export_one/{id}', [SellingController::class, 'exportPdfSingle'])->name('selling.export-one')->middleware('permission:selling.view');

@@ -125,8 +125,8 @@
 
                 <!-- Right Actions -->
                 <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-                    <form method="GET" action="{{ route($route . '.index') }}" class="flex-1 sm:flex-initial">
-                        <div class="relative">
+                    <form method="GET" action="{{ route($route . '.index') }}" id="filterForm" class="flex flex-col sm:flex-row gap-3 flex-1">
+                        <div class="relative flex-1 sm:flex-initial">
                             <x-base.lucide class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" icon="Search" />
                             <x-base.form-input
                                 id="search"
@@ -137,11 +137,37 @@
                                 value="{{ request()->get('search') }}"
                             />
                         </div>
+                        <div class="flex gap-2">
+                            <div class="relative">
+                                <x-base.lucide class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" icon="Calendar" />
+                                <x-base.form-input
+                                    id="start_date"
+                                    class="pl-10 pr-4 py-2 w-full sm:w-40 border-slate-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+                                    name="start_date"
+                                    type="date"
+                                    placeholder="Dari Tanggal"
+                                    value="{{ request()->get('start_date') }}"
+                                />
+                            </div>
+                            <div class="relative">
+                                <x-base.lucide class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" icon="Calendar" />
+                                <x-base.form-input
+                                    id="end_date"
+                                    class="pl-10 pr-4 py-2 w-full sm:w-40 border-slate-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg"
+                                    name="end_date"
+                                    type="date"
+                                    placeholder="Sampai Tanggal"
+                                    value="{{ request()->get('end_date') }}"
+                                />
+                            </div>
+                        </div>
+                        @if(request()->get('search') || request()->get('start_date') || request()->get('end_date'))
+                            <x-base.button type="button" variant="outline-secondary" class="w-full sm:w-auto" onclick="clearFilters()">
+                                <x-base.lucide class="w-4 h-4 mr-2" icon="X" />
+                                Clear
+                            </x-base.button>
+                        @endif
                     </form>
-                    <x-base.button variant="outline-secondary" class="w-full sm:w-auto">
-                        <x-base.lucide class="w-4 h-4 mr-2" icon="Filter" />
-                        Filter
-                    </x-base.button>
                 </div>
             </div>
         </div>
@@ -151,8 +177,31 @@
         <div class="intro-y col-span-12">
             <div class="box">
                 <!-- Table Header -->
-                <div class="p-5 border-b">
-                    <h3 class="text-lg font-semibold">Daftar Penjualan</h3>
+                <div class="p-5 border-b flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold">Daftar Penjualan</h3>
+                        <p class="text-sm text-slate-500 mt-1">
+                            <span id="selected-count">0</span> data dipilih
+                        </p>
+                    </div>
+                    <div class="flex gap-2">
+                        <x-base.button 
+                            id="bulk-export-btn" 
+                            variant="outline-primary" 
+                            class="hidden"
+                            onclick="exportBulkCoretax()">
+                            <x-base.lucide class="w-4 h-4 mr-2" icon="FileText" />
+                            Export <span id="export-count" class="ml-1 font-bold">0</span> ke Coretax XML
+                        </x-base.button>
+                        <x-base.button 
+                            id="select-all-btn" 
+                            variant="outline-secondary" 
+                            size="sm"
+                            onclick="toggleSelectAll()">
+                            <x-base.lucide class="w-4 h-4 mr-2" icon="CheckSquare" />
+                            Pilih Semua
+                        </x-base.button>
+                    </div>
                 </div>
 
                 <!-- Table Content -->
@@ -160,6 +209,14 @@
                     <x-base.table class="border-spacing-y-[10px] border-separate">
                         <x-base.table.thead>
                             <x-base.table.tr>
+                                <x-base.table.th class="border-b-0 font-semibold">
+                                    <input 
+                                        type="checkbox" 
+                                        id="select-all-checkbox" 
+                                        class="form-check-input"
+                                        onchange="toggleSelectAll()"
+                                    />
+                                </x-base.table.th>
                                 <x-base.table.th class="border-b-0 font-semibold">
                                     No
                                 </x-base.table.th>
@@ -189,6 +246,16 @@
                         <x-base.table.tbody>
                             @foreach ($data as $item)
                                 <x-base.table.tr class="intro-x hover:bg-slate-50 transition-colors">
+                                    <x-base.table.td class="py-4">
+                                        <input 
+                                            type="checkbox" 
+                                            class="form-check-input selling-checkbox" 
+                                            value="{{ $item->id }}"
+                                            data-customer="{{ $item['customer']['name'] }}"
+                                            data-date="{{ date('d M Y', strtotime($item['date'])) }}"
+                                            onchange="updateSelectedCount()"
+                                        />
+                                    </x-base.table.td>
                                     <x-base.table.td class="py-4">
                                         {{ $loop->iteration }}
                                     </x-base.table.td>
@@ -403,7 +470,7 @@
     <!-- END: Delete Confirmation Modal -->
 @endsection
 
-@push('js')
+@push('scripts')
 <script>
     // Search functionality
     let searchTimeout;
@@ -439,6 +506,11 @@
         window.location.href = `${window.location.pathname}?${params.toString()}`;
     }
 
+    // Clear filters function
+    function clearFilters() {
+        window.location.href = window.location.pathname;
+    }
+
     // Debounced search for text input
     if (searchInput) {
         searchInput.addEventListener('input', function() {
@@ -454,6 +526,116 @@
 
     if (endDateInput) {
         endDateInput.addEventListener('change', performSearch);
+    }
+
+    // Bulk Export Coretax functionality
+    function updateSelectedCount() {
+        const checkboxes = document.querySelectorAll('.selling-checkbox:checked');
+        const count = checkboxes.length;
+        
+        document.getElementById('selected-count').textContent = count;
+        document.getElementById('export-count').textContent = count;
+        
+        const bulkExportBtn = document.getElementById('bulk-export-btn');
+        const selectAllCheckbox = document.getElementById('select-all-checkbox');
+        
+        if (count > 0) {
+            bulkExportBtn.classList.remove('hidden');
+        } else {
+            bulkExportBtn.classList.add('hidden');
+        }
+        
+        // Update select all checkbox state
+        const allCheckboxes = document.querySelectorAll('.selling-checkbox');
+        selectAllCheckbox.checked = count > 0 && count === allCheckboxes.length;
+        selectAllCheckbox.indeterminate = count > 0 && count < allCheckboxes.length;
+    }
+
+    function toggleSelectAll() {
+        const selectAllCheckbox = document.getElementById('select-all-checkbox');
+        const checkboxes = document.querySelectorAll('.selling-checkbox');
+        
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+        
+        updateSelectedCount();
+    }
+
+    function exportBulkCoretax() {
+        const checkboxes = document.querySelectorAll('.selling-checkbox:checked');
+        
+        if (checkboxes.length === 0) {
+            alert('Pilih minimal 1 invoice untuk export');
+            return;
+        }
+
+        // Get selected IDs and details
+        const selectedIds = [];
+        const selectedDetails = [];
+        
+        checkboxes.forEach(checkbox => {
+            selectedIds.push(checkbox.value);
+            selectedDetails.push({
+                id: checkbox.value,
+                customer: checkbox.dataset.customer,
+                date: checkbox.dataset.date
+            });
+        });
+
+        // Show confirmation
+        const detailsList = selectedDetails.map(detail => 
+            `• Invoice #${detail.id} - ${detail.customer} (${detail.date})`
+        ).join('\n');
+
+        if (!confirm(`Export ${selectedIds.length} invoice ke Coretax XML?\n\n${detailsList}\n\nLanjutkan?`)) {
+            return;
+        }
+
+        // Create form and submit
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route("selling.coretax-bulk-invoice-export") }}';
+
+        // Add CSRF token
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        form.appendChild(csrfToken);
+
+        // Add selling IDs
+        selectedIds.forEach(id => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'selling_ids[]';
+            input.value = id;
+            form.appendChild(input);
+        });
+
+        // Optional: Add seller TIN (default akan digunakan jika tidak diisi)
+        const sellerTinInput = document.createElement('input');
+        sellerTinInput.type = 'hidden';
+        sellerTinInput.name = 'seller_tin';
+        sellerTinInput.value = '0830044103613000'; // Sesuaikan dengan TIN perusahaan
+        form.appendChild(sellerTinInput);
+
+        // Append form to body and submit
+        document.body.appendChild(form);
+        
+        // Show loading state
+        const exportBtn = document.getElementById('bulk-export-btn');
+        const originalText = exportBtn.innerHTML;
+        exportBtn.disabled = true;
+        exportBtn.innerHTML = '<svg class="animate-spin h-4 w-4 mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Exporting...';
+        
+        form.submit();
+        
+        // Reset button after 3 seconds
+        setTimeout(() => {
+            exportBtn.disabled = false;
+            exportBtn.innerHTML = originalText;
+        }, 3000);
     }
 
     // Auto-dismiss alerts
@@ -474,6 +656,9 @@
 
     // Enhanced table interactions
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize selected count
+        updateSelectedCount();
+
         // Add hover effects to table rows
         const tableRows = document.querySelectorAll('table tbody tr');
         tableRows.forEach(row => {
@@ -510,6 +695,17 @@
                 el.classList.add('bg-blue-100');
             } else if (el.textContent.includes('Completed')) {
                 el.classList.add('bg-green-100');
+            }
+        });
+
+        // Add keyboard shortcut for bulk export (Ctrl/Cmd + E)
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+                e.preventDefault();
+                const checkboxes = document.querySelectorAll('.selling-checkbox:checked');
+                if (checkboxes.length > 0) {
+                    exportBulkCoretax();
+                }
             }
         });
     });

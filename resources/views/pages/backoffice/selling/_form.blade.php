@@ -41,7 +41,7 @@
     </div>
     <div class="mt-5 grid grid-cols-12 gap-6">
         <div class="intro-y col-span-12 lg:col-span-12">
-            <form action="{{ $route }}" method="post" enctype="multipart/form-data">
+            <form action="{{ $route }}" method="post" enctype="multipart/form-data" id="sellingForm">
                 @csrf
                 @if ($type != 'create')
                     @method('PUT')
@@ -1082,6 +1082,190 @@
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.send();
             }
+
+            // Form validation - Check if at least 1 product is added
+            document.getElementById('sellingForm').addEventListener('submit', function(e) {
+                const transDetailBody = document.querySelector('#transDetail tbody');
+                const productRows = transDetailBody.querySelectorAll('tr');
+                
+                // Check if there are any product rows (excluding empty state)
+                const validRows = Array.from(productRows).filter(row => {
+                    return !row.querySelector('td[colspan]'); // Exclude rows with colspan (empty state)
+                });
+
+                if (validRows.length === 0) {
+                    e.preventDefault();
+                    
+                    // Show custom alert notification
+                    showProductValidationAlert();
+
+                    // Scroll to product section
+                    const productInput = document.querySelector('#produk');
+                    if (productInput) {
+                        productInput.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center' 
+                        });
+                        // Focus on product select
+                        setTimeout(() => {
+                            productInput.focus();
+                        }, 500);
+                    }
+                    
+                    return false;
+                }
+
+                // If validation passes, check the mode for closing
+                const mode = document.getElementById('mode').value;
+                if (mode === 'Konfirmasi Lunas') {
+                    // Additional confirmation for closing
+                    if (!confirm('Apakah Anda yakin ingin mengkonfirmasi penjualan ini sebagai lunas?')) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            // Show custom alert notification
+            function showProductValidationAlert() {
+                // Remove existing alerts
+                const existingAlert = document.getElementById('product-validation-alert');
+                if (existingAlert) {
+                    existingAlert.remove();
+                }
+
+                const alertDiv = document.createElement('div');
+                alertDiv.id = 'product-validation-alert';
+                alertDiv.className = 'fixed top-4 right-4 z-50 max-w-md animate-slide-in';
+                alertDiv.innerHTML = `
+                    <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-500 p-5 rounded-lg shadow-2xl">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0">
+                                <svg class="h-7 w-7 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <div class="ml-4 flex-1 ">
+                                <h3 class="text-base font-bold text-yellow-900 mb-1">
+                                    ⚠️ Peringatan!
+                                </h3>
+                                <div class="text-sm text-yellow-800 space-y-1">
+                                    <p class="font-semibold">Minimal 1 produk harus ditambahkan!</p>
+                                    <p class="text-xs text-yellow-700">Silakan tambahkan produk terlebih dahulu sebelum menyimpan transaksi penjualan.</p>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <button onclick="this.closest('#product-validation-alert').remove()" 
+                                        class="text-yellow-500 hover:text-yellow-700 transition-colors duration-200 focus:outline-none">
+                                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <button onclick="this.closest('#product-validation-alert').remove()" 
+                                    class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 text-sm">
+                                Mengerti
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(alertDiv);
+
+                // Add slide-in animation
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes slide-in {
+                        from {
+                            transform: translateX(100%);
+                            opacity: 0;
+                        }
+                        to {
+                            transform: translateX(0);
+                            opacity: 1;
+                        }
+                    }
+                    .animate-slide-in {
+                        animation: slide-in 0.3s ease-out;
+                    }
+                    @keyframes shake {
+                        0%, 100% { transform: translateX(0); }
+                        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                        20%, 40%, 60%, 80% { transform: translateX(5px); }
+                    }
+                    .animate-shake {
+                        animation: shake 0.5s ease-in-out;
+                    }
+                `;
+                if (!document.getElementById('validation-alert-styles')) {
+                    style.id = 'validation-alert-styles';
+                    document.head.appendChild(style);
+                }
+
+                // Add shake animation to product input
+                const productInput = document.querySelector('#produk');
+                if (productInput) {
+                    productInput.parentElement.classList.add('animate-shake');
+                    setTimeout(() => {
+                        productInput.parentElement.classList.remove('animate-shake');
+                    }, 500);
+                }
+
+                // Auto remove after 8 seconds
+                setTimeout(() => {
+                    if (alertDiv && alertDiv.parentElement) {
+                        alertDiv.style.transition = 'transform 0.3s ease-in, opacity 0.3s ease-in';
+                        alertDiv.style.transform = 'translateX(100%)';
+                        alertDiv.style.opacity = '0';
+                        setTimeout(() => {
+                            if (alertDiv && alertDiv.parentElement) {
+                                alertDiv.remove();
+                            }
+                        }, 300);
+                    }
+                }, 8000);
+
+                // Play notification sound (optional)
+                try {
+                    const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGWi777eeTRAMT6fk77RgGwY5kdfy0H4tBSR0yO/eizwKFWK56+mmUxIKRp/f8r1rIAUsgs/z2ogzBxppu+64n0wQC1Cn5O+zXxsGOpPY88+ALgUldsrv3og6ChViu+vqpVMSCkef4PK9aiAFK4LO89mIMQcaarvvuZ9MEAxPqOTwsl4bBjuU2fPPgC4FJHfK7+CIOQoVYrvr6qVTEgpHn+Dyv2sgBSuCzvPZhzEHGmq777meThAMT6jl8LJeGgY7lNnzz3"8uBSR3yu/ghzkKFWK76+qlUxIKR6Dh8sBqIAUrgs7z2YYwBxpqu++5nk4QDE+o5fCyXhoGPJTZ88+ALgUkd8rv4Ic5ChViu+vqpVMSCkeg4fLAaiAFK4PO89mGMAcaarwApe5PEDQAAAAABJRU5ErkJggg==');
+                    audio.volume = 0.3;
+                    audio.play().catch(() => {
+                        // Ignore if audio play fails
+                    });
+                } catch (e) {
+                    // Ignore audio errors
+                }
+            }
+
+            // Prevent double submission
+            let isSubmitting = false;
+            document.getElementById('sellingForm').addEventListener('submit', function(e) {
+                if (isSubmitting) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Check validation first
+                const transDetailBody = document.querySelector('#transDetail tbody');
+                const productRows = transDetailBody.querySelectorAll('tr');
+                const validRows = Array.from(productRows).filter(row => {
+                    return !row.querySelector('td[colspan]');
+                });
+
+                if (validRows.length > 0) {
+                    isSubmitting = true;
+                    // Show loading on submit buttons
+                    const submitButtons = this.querySelectorAll('button[type="submit"]');
+                    submitButtons.forEach(btn => {
+                        btn.disabled = true;
+                        const originalText = btn.innerHTML;
+                        btn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Menyimpan...';
+                    });
+                }
+            });
         </script>
     @endpush
 @endsection

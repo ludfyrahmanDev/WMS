@@ -31,22 +31,36 @@ class SellingController extends Controller
             ->when($selectedCvId && auth()->user()->hasCompanyAccess(), function ($query) use ($selectedCvId) {
                 $query->where('cv_id', $selectedCvId);
             })
+            ->when($request->has('search'), function ($query) use ($request) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->whereHas('customer', function ($customerQuery) use ($search) {
+                        $customerQuery->where('name', 'like', '%' . $search . '%');
+                    })
+                    ->orWhere('notes', 'like', '%' . $search . '%')
+                    ->orWhere('id', 'like', '%' . $search . '%');
+                });
+            })
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+        
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;
             $end_date = $request->end_date;
             $all = $all->whereBetween('date', [$start_date, $end_date]);
         }
+        
         $total = $all->get()->sum('grand_total');
         $completed = $all->get()->sum('total_payment');
-        $inCompleted = $all->get()->where('status', '!=', 'Completed')->sum(function ($item) {
+        $pending = $all->get()->where('status', '!=', 'Completed')->sum(function ($item) {
             return $item->grand_total - $item->total_payment;
         });
+        
         $data = $all->paginate($request->get('per_page', 10));
         $title = 'Data Penjualan';
         $route = 'selling';
         $request = $request->toArray();
-        return view('pages.backoffice.selling.index', compact('data', 'title', 'route', 'request', 'total', 'completed', 'inCompleted'));
+        
+        return view('pages.backoffice.selling.index', compact('data', 'title', 'route', 'request', 'total', 'completed', 'pending'));
     }
 
     public function create(Selling $selling)
@@ -742,4 +756,45 @@ class SellingController extends Controller
             return back()->with('failed', 'Gagal export: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Export Bulk Invoice to Coretax XML
+     * Exports multiple invoices in a single XML file
+     * 
+     * @param Request $request - expects 'selling_ids' array and optional 'seller_tin'
+     * @return \Illuminate\Http\Response
+     */
+    public function coretaxBulkInvoiceExportXML(Request $request)
+    {
+        try {
+            // Validate request
+            $request->validate([
+                'selling_ids' => 'required|array|min:1',
+                'selling_ids.*' => 'required|integer|exists:selling,id',
+                'seller_tin' => 'nullable|string|max:20'
+            ]);
+
+            $sellingIds = $request->input('selling_ids');
+            $sellerTin = $request->input('seller_tin', '0830044103613000'); // Default TIN
+
+            $coretaxService = new CoretaxExportService();
+            $result = $coretaxService->generateBulkInvoiceXML($sellingIds, $sellerTin);
+            
+            if (!$result) {
+                return back()->with('failed', 'Tidak ada data untuk diekspor');
+            }
+            
+            $message = "Berhasil export {$result['total_invoices']} invoice ke Coretax XML";
+            
+            // Return download response
+            return response()->download($result['filepath'], $result['filename'])
+                ->deleteFileAfterSend(true);
+                
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->with('failed', 'Validasi gagal: ' . implode(', ', $e->errors()));
+        } catch (\Exception $e) {
+            return back()->with('failed', 'Gagal export bulk invoice: ' . $e->getMessage());
+        }
+    }
 }
+

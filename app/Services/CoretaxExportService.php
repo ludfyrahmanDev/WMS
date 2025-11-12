@@ -199,4 +199,251 @@ class CoretaxExportService
             'items' => $this->generateExportData($sellingId)
         ];
     }
+
+    /**
+     * Generate Bulk Invoice XML for Coretax
+     * Format: XML with TaxInvoiceBulk structure
+     * 
+     * @param array $sellingIds Array of selling IDs to include in bulk export
+     * @param string $sellerTin Seller's Tax Identification Number (20 digits)
+     * @return array Contains filename, filepath, and url
+     */
+    public function generateBulkInvoiceXML($sellingIds, $sellerTin = '0830044103613000')
+    {
+        // Fetch all sellings with related data
+        $sellings = Selling::with(['customer', 'details.product', 'cv'])
+            ->whereIn('id', $sellingIds)
+            ->get();
+
+        // Create XML structure
+        $xml = new \DOMDocument('1.0', 'UTF-8');
+        $xml->formatOutput = true;
+
+        // Root element with namespace
+        $root = $xml->createElement('TaxInvoiceBulk');
+        $root->setAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+        $root->setAttribute('xsi:noNamespaceSchemaLocation', 'TaxInvoice.xsd');
+        $xml->appendChild($root);
+
+        // Add TIN (Seller's Tax Identification Number)
+        $tin = $xml->createElement('TIN', $this->cleanTin($sellerTin));
+        $root->appendChild($tin);
+
+        // List of Tax Invoices
+        $listOfTaxInvoice = $xml->createElement('ListOfTaxInvoice');
+        $root->appendChild($listOfTaxInvoice);
+
+        // Process each selling
+        foreach ($sellings as $selling) {
+            $taxInvoice = $this->createTaxInvoiceElement($xml, $selling);
+            $listOfTaxInvoice->appendChild($taxInvoice);
+        }
+
+        // Save XML file
+        $filename = 'coretax_bulk_invoice_' . date('YmdHis') . '.xml';
+        $filepath = storage_path('app/exports/' . $filename);
+
+        // Ensure directory exists
+        if (!file_exists(storage_path('app/exports'))) {
+            mkdir(storage_path('app/exports'), 0755, true);
+        }
+
+        $xml->save($filepath);
+
+        return [
+            'filename' => $filename,
+            'filepath' => $filepath,
+            'url' => asset('storage/exports/' . $filename),
+            'total_invoices' => $sellings->count()
+        ];
+    }
+
+    /**
+     * Create TaxInvoice element for a single selling
+     */
+    private function createTaxInvoiceElement($xml, $selling)
+    {
+        $taxInvoice = $xml->createElement('TaxInvoice');
+
+        // Tax Invoice Date (format: YYYY-MM-DD)
+        $taxInvoiceDate = $xml->createElement('TaxInvoiceDate', Carbon::parse($selling->date)->format('Y-m-d'));
+        $taxInvoice->appendChild($taxInvoiceDate);
+
+        // Tax Invoice Option (Normal, Replacement, etc.)
+        $taxInvoiceOpt = $xml->createElement('TaxInvoiceOpt', 'Normal');
+        $taxInvoice->appendChild($taxInvoiceOpt);
+
+        // Transaction Code (04 = Penyerahan yang PPN-nya harus dipungut sendiri)
+        $trxCode = $xml->createElement('TrxCode', '04');
+        $taxInvoice->appendChild($trxCode);
+
+        // Additional Info (optional)
+        $addInfo = $xml->createElement('AddInfo');
+        $taxInvoice->appendChild($addInfo);
+
+        // Custom Document (optional)
+        $customDoc = $xml->createElement('CustomDoc');
+        $taxInvoice->appendChild($customDoc);
+
+        // Custom Document Month Year (optional)
+        $customDocMonthYear = $xml->createElement('CustomDocMonthYear');
+        $taxInvoice->appendChild($customDocMonthYear);
+
+        // Reference Description (Invoice Number)
+        $refNumber = 'INV' . str_pad($selling->id, 8, '0', STR_PAD_LEFT);
+        $refDesc = $xml->createElement('RefDesc', $refNumber);
+        $taxInvoice->appendChild($refDesc);
+
+        // Facility Stamp (optional)
+        $facilityStamp = $xml->createElement('FacilityStamp');
+        $taxInvoice->appendChild($facilityStamp);
+
+        // Seller ID TKU (22 digits: TIN + 6 additional digits)
+        $sellerIdTku = $xml->createElement('SellerIDTKU', $this->cleanTin($selling->cv->npwp ?? '0830044103613000') . '000000');
+        $taxInvoice->appendChild($sellerIdTku);
+
+        // Buyer TIN (15 digits)
+        $buyerTin = $xml->createElement('BuyerTin', $this->cleanTin($selling->customer->npwp ?? ''));
+        $taxInvoice->appendChild($buyerTin);
+
+        // Buyer Document Type
+        $buyerDocument = $xml->createElement('BuyerDocument', 'TIN');
+        $taxInvoice->appendChild($buyerDocument);
+
+        // Buyer Country Code (ISO 3166-1 alpha-3)
+        $buyerCountry = $xml->createElement('BuyerCountry', 'IND');
+        $taxInvoice->appendChild($buyerCountry);
+
+        // Buyer Document Number (optional, for foreign buyers)
+        $buyerDocumentNumber = $xml->createElement('BuyerDocumentNumber');
+        $taxInvoice->appendChild($buyerDocumentNumber);
+
+        // Buyer Name
+        $buyerName = $xml->createElement('BuyerName', htmlspecialchars($selling->customer->name ?? '', ENT_XML1, 'UTF-8'));
+        $taxInvoice->appendChild($buyerName);
+
+        // Buyer Address
+        $buyerAddress = $xml->createElement('BuyerAdress', htmlspecialchars($selling->customer->address ?? '', ENT_XML1, 'UTF-8'));
+        $taxInvoice->appendChild($buyerAddress);
+
+        // Buyer Email (optional)
+        $buyerEmail = $xml->createElement('BuyerEmail', htmlspecialchars($selling->customer->email ?? '', ENT_XML1, 'UTF-8'));
+        $taxInvoice->appendChild($buyerEmail);
+
+        // Buyer ID TKU (22 digits)
+        $buyerIdTku = $xml->createElement('BuyerIDTKU', $this->cleanTin($selling->customer->npwp ?? '') . '000000');
+        $taxInvoice->appendChild($buyerIdTku);
+
+        // List of Goods/Services
+        $listOfGoodService = $xml->createElement('ListOfGoodService');
+        $taxInvoice->appendChild($listOfGoodService);
+
+        // Add each product detail
+        foreach ($selling->details as $detail) {
+            $goodService = $this->createGoodServiceElement($xml, $detail);
+            $listOfGoodService->appendChild($goodService);
+        }
+
+        return $taxInvoice;
+    }
+
+    /**
+     * Create GoodService element for a product detail
+     */
+    private function createGoodServiceElement($xml, $detail)
+    {
+        $goodService = $xml->createElement('GoodService');
+
+        // Option (A = Barang, B = Jasa)
+        $opt = $xml->createElement('Opt', 'A');
+        $goodService->appendChild($opt);
+
+        // Product Code (Kode Klasifikasi Barang/Jasa)
+        $code = $xml->createElement('Code', htmlspecialchars($detail->product->id ?? '761000', ENT_XML1, 'UTF-8'));
+        $goodService->appendChild($code);
+
+        // Product Name
+        $name = $xml->createElement('Name', htmlspecialchars($detail->product->product ?? '-', ENT_XML1, 'UTF-8'));
+        $goodService->appendChild($name);
+
+        // Unit of Measurement (Kode Satuan)
+        $unit = $xml->createElement('Unit', 'UM.0020');
+        $goodService->appendChild($unit);
+
+        // Calculate prices and tax
+        $pricePerUnit = $detail->price_sell;
+        $qty = $detail->total_qty;
+        $totalDiscount = 0;
+        
+        // Tax Base (DPP) = Price excluding VAT
+        $taxBase = $detail->subtotal;
+        
+        // Other Tax Base (for calculation purposes)
+        $otherTaxBase = $taxBase / 1.09; // Adjust if needed based on business rules
+        
+        // VAT Rate (11% or 12% depending on regulation)
+        $vatRate = 12; // Update based on current regulation
+        
+        // VAT Amount
+        $vat = $taxBase * ($vatRate / 100);
+        
+        // Luxury Sales Tax (PPnBM) - usually 0 for regular goods
+        $stlgRate = 0;
+        $stlg = 0;
+
+        // Price per unit
+        $price = $xml->createElement('Price', number_format($pricePerUnit, 2, '.', ''));
+        $goodService->appendChild($price);
+
+        // Quantity
+        $qtyElement = $xml->createElement('Qty', $qty);
+        $goodService->appendChild($qtyElement);
+
+        // Total Discount
+        $totalDiscountElement = $xml->createElement('TotalDiscount', number_format($totalDiscount, 2, '.', ''));
+        $goodService->appendChild($totalDiscountElement);
+
+        // Tax Base (DPP)
+        $taxBaseElement = $xml->createElement('TaxBase', number_format($taxBase, 2, '.', ''));
+        $goodService->appendChild($taxBaseElement);
+
+        // Other Tax Base
+        $otherTaxBaseElement = $xml->createElement('OtherTaxBase', number_format($otherTaxBase, 2, '.', ''));
+        $goodService->appendChild($otherTaxBaseElement);
+
+        // VAT Rate
+        $vatRateElement = $xml->createElement('VATRate', $vatRate);
+        $goodService->appendChild($vatRateElement);
+
+        // VAT Amount
+        $vatElement = $xml->createElement('VAT', number_format($vat, 2, '.', ''));
+        $goodService->appendChild($vatElement);
+
+        // STLG Rate (Luxury Sales Tax Rate)
+        $stlgRateElement = $xml->createElement('STLGRate', $stlgRate);
+        $goodService->appendChild($stlgRateElement);
+
+        // STLG Amount
+        $stlgElement = $xml->createElement('STLG', number_format($stlg, 2, '.', ''));
+        $goodService->appendChild($stlgElement);
+
+        return $goodService;
+    }
+
+    /**
+     * Clean and format TIN/NPWP to numeric only
+     * Returns 15 or 16 digit numeric string
+     */
+    private function cleanTin($tin)
+    {
+        // Remove all non-numeric characters
+        $cleaned = preg_replace('/[^0-9]/', '', $tin);
+        
+        // Pad with zeros if needed (standard is 15 digits for NPWP, 16 for NIK)
+        if (strlen($cleaned) < 15) {
+            $cleaned = str_pad($cleaned, 15, '0', STR_PAD_LEFT);
+        }
+        
+        return $cleaned;
+    }
 }
