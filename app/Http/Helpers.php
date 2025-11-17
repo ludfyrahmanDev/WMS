@@ -64,3 +64,36 @@ if(!function_exists('curencyToInteger')){
         return (int) str_replace(['Rp', '.', ','], '', $amount);
     }
 }
+if(!function_exists("terbilang")){
+    function terbilang($angka)
+    {
+        $angka = abs($angka);
+        $huruf = ["", "satu", "dua", "tiga", "empat", "lima", "enam", "tujuh", "delapan", "sembilan", "sepuluh", "sebelas"];
+        $hasil = "";
+        
+        if ($angka < 12) {
+            $hasil = " " . $huruf[$angka];
+        } elseif ($angka < 20) {
+            $hasil = terbilang($angka - 10) . " belas";
+        } elseif ($angka < 100) {
+            $hasil = terbilang($angka / 10) . " puluh" . terbilang($angka % 10);
+        } elseif ($angka < 200) {
+            $hasil = " seratus" . terbilang($angka - 100);
+        } elseif ($angka < 1000) {
+            $hasil = terbilang($angka / 100) . " ratus" . terbilang($angka % 100);
+        } elseif ($angka < 2000) {
+            $hasil = " seribu" . terbilang($angka - 1000);
+        } elseif ($angka < 1000000) {
+            $hasil = terbilang($angka / 1000) . " ribu" . terbilang($angka % 1000);
+        } elseif ($angka < 1000000000) {
+            $hasil = terbilang($angka / 1000000) . " juta" . terbilang($angka % 1000000);
+        } elseif ($angka < 1000000000000) {
+            $hasil = terbilang($angka / 1000000000) . " milyar" . terbilang(fmod($angka, 1000000000));
+        } elseif ($angka < 1000000000000000) {
+            $hasil = terbilang($angka / 1000000000000) . " trilyun" . terbilang(fmod($angka, 1000000000000));
+        }
+        
+        return trim($hasil);
+    }
+}
+

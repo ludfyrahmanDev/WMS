@@ -316,6 +316,15 @@
                                                     href="{{ route($route . '.show', $item->id) }}">
                                                     Detail
                                                 </x-base.button>
+                                                <x-base.button 
+                                                    size="sm" 
+                                                    variant="outline-info"
+                                                    as="a"
+                                                    href="{{ route('selling.print-nota', $item->id) }}"
+                                                    target="_blank">
+                                                    <x-base.lucide class="w-4 h-4 mr-1" icon="Printer" />
+                                                    Print Nota
+                                                </x-base.button>
                                             @elseif ($item['status'] == 'Completed')
                                                 <x-base.button 
                                                     size="sm" 
@@ -331,6 +340,15 @@
                                                     href="{{ route($route . '.export-one', $item->id) }}">
                                                     Export
                                                 </x-base.button>
+                                                <x-base.button 
+                                                    size="sm" 
+                                                    variant="outline-info"
+                                                    as="a"
+                                                    href="{{ route('selling.print-nota', $item->id) }}"
+                                                    target="_blank">
+                                                    <x-base.lucide class="w-4 h-4 mr-1" icon="Printer" />
+                                                    Print Nota
+                                                </x-base.button>
                                             @else
                                                 <x-base.button 
                                                     size="sm" 
@@ -345,6 +363,15 @@
                                                     data-tw-toggle="modal"
                                                     data-tw-target="#delete-confirmation-modal-{{ $item->id }}">
                                                     Hapus
+                                                </x-base.button>
+                                                <x-base.button 
+                                                    size="sm" 
+                                                    variant="outline-info"
+                                                    as="a"
+                                                    href="{{ route('selling.print-nota', $item->id) }}"
+                                                    target="_blank">
+                                                    <x-base.lucide class="w-4 h-4 mr-1" icon="Printer" />
+                                                    Print Nota
                                                 </x-base.button>
                                             @endif
                                         </div>

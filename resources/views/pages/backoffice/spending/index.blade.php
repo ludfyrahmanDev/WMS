@@ -264,7 +264,7 @@
                                         Hutang Dagang
                                     </x-base.table.td>
                                     <x-base.table.td class="border-b bg-white text-right font-medium">
-                                        {{ toThousand(abs($purchaseInCompleted ?? 0)) }}
+                                        {{ toThousand(abs($payables ?? 0)) }}
                                     </x-base.table.td>
                                 </x-base.table.tr>
                                 <x-base.table.tr>

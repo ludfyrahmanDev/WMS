@@ -127,20 +127,15 @@ class SpendingController extends Controller
             ->where('status', '!=', 'Completed')
             ->sum(\DB::raw('(grand_total - total_payment)')) ?? 0;
         
-        // Hitung Hutang Dagang (Pembelian yang belum lunas)
-        $payables = DeliveryOrder::when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+        // Hitung Hutang Dagang (hanya dari penjualan yang belum lunas)
+        // Hutang dagang sama dengan piutang penjualan, karena ini adalah transaksi penjualan kredit
+        $payables = Selling::when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 return $query->whereBetween('date', [$request->start_date, $request->end_date]);
             })
-            // sum deliveryorderdetail subtotal
-            ->withSum('details as payment', 'subtotal')
-            ->select('delivery_order.*')
             ->when($selectedCvId && auth()->user()->hasCompanyAccess(), function ($query) use ($selectedCvId) {
                 return $query->where('cv_id', $selectedCvId);
             })
-            ->where('status', '!=', 'Completed')
-            // grand total - sum subtotal in details
-            ->sum(\DB::raw('(grand_total - total_payment)')) ?? 0;
-        
+            ->sum(\DB::raw('(grand_total)')) ?? 0;
         // Tambahkan Laba sebagai transaksi
         $profitTransaction = collect([
             (object) [
@@ -174,7 +169,7 @@ class SpendingController extends Controller
             (object) [
                 'id' => 'payables_summary',
                 'date' => $request->has('end_date') ? $request->end_date : now()->format('Y-m-d'),
-                'description' => 'Hutang Dagang (Pembelian Belum Lunas)',
+                'description' => 'Hutang Dagang (Penjualan Belum Lunas)',
                 'spendingCategory' => (object) ['spending_category' => 'Hutang'],
                 'payment_method' => '-',
                 'mutation' => 'Uang Keluar',
@@ -209,7 +204,7 @@ class SpendingController extends Controller
         $route = 'spending';
         $request = $request->toArray();
 
-        return view('pages.backoffice.spending.index', compact('data', 'request','title', 'route', 'request', 'saldo', 'income', 'outcome', 'sellingCompleted', 'sellingInCompleted', 'purchaseCompleted', 'purchaseInCompleted', 'inventoryValue', 'vehicleServiceExpense', 'transportRevenue'));
+        return view('pages.backoffice.spending.index', compact('data', 'request','title', 'route', 'request', 'saldo', 'income', 'outcome', 'sellingCompleted', 'sellingInCompleted', 'purchaseCompleted', 'purchaseInCompleted', 'inventoryValue', 'vehicleServiceExpense', 'transportRevenue', 'payables'));
     }
 
     public function saldo(Request $request){

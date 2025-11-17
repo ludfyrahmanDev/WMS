@@ -796,5 +796,23 @@ class SellingController extends Controller
             return back()->with('failed', 'Gagal export bulk invoice: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Print nota penjualan
+     * Menampilkan nota penjualan dalam format print
+     * 
+     * @param int $id
+     * @return \Illuminate\View\View
+     */
+    public function printNota($id)
+    {
+        try {
+            $selling = Selling::with(['customer', 'cv', 'details.stock.product'])->findOrFail($id);
+            
+            return view('pages.backoffice.selling.print-nota', compact('selling'));
+        } catch (\Exception $e) {
+            return back()->with('failed', 'Gagal menampilkan nota: ' . $e->getMessage());
+        }
+    }
 }
 

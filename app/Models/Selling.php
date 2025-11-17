@@ -26,6 +26,7 @@ class Selling extends Model
         'drivers_pocket_money',
         'net_profit',
         'grand_total',
+        'total_payment',
         'purchasing_method',
         'notes',
         'status',

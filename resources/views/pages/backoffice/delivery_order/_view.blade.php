@@ -424,7 +424,7 @@
                                     <td class="px-4 py-3 text-slate-600">{{ $item->stock->product->product }}</td>
                                     <td class="px-4 py-3 text-center text-slate-600">{{ $item->purchase_amount }}</td>
                                     <td class="px-4 py-3 text-right font-medium text-slate-600">
-                                        Rp {{ toThousand($item->subtotal) }}
+                                        {{ toThousand($item->subtotal) }}
                                     </td>
                                 </tr>
                             @empty
