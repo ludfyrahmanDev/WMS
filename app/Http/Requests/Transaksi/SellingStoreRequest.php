@@ -24,7 +24,8 @@ class SellingStoreRequest extends FormRequest
             'cv_id' => ['nullable', 'exists:cv,id'],
             'tipe_pembelian' => ['required'],
             'tipe_pembayaran' => ['required'],
-            'total_bayar' => ['required']
+            'total_bayar' => ['required'],
+            'price_method' => ['nullable'],
         ];
     }
 

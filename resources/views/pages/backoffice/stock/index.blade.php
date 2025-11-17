@@ -143,7 +143,7 @@
                             <x-base.table.th class="border-b-0 py-4 px-6 text-center font-medium text-slate-700 whitespace-nowrap">
                                 <div class="flex items-center justify-center">
                                     <x-base.lucide class="w-4 h-4 mr-2 text-slate-500" icon="Calendar" />
-                                    <span>Tanggal Update</span>
+                                    <span>Tanggal Delivery Order</span>
                                 </div>
                             </x-base.table.th>
                         </x-base.table.tr>
@@ -163,7 +163,7 @@
                                         </div>
                                         <div>
                                             <div class="font-semibold text-slate-800">{{ $item->product->product ?? 'N/A' }}</div>
-                                            <div class="text-sm text-slate-500">{{ $item->product->category->category ?? 'Uncategorized' }}</div>
+                                            <div class="text-sm text-slate-500">{{ $item->product->category->name ?? 'Uncategorized' }}</div>
                                         </div>
                                     </div>
                                 </x-base.table.td>
@@ -201,7 +201,7 @@
                                 <x-base.table.td class="py-4 px-6 border-b border-slate-200 text-center">
                                     <div class="flex items-center justify-center">
                                         <x-base.lucide class="w-4 h-4 mr-2 text-slate-400" icon="Calendar" />
-                                        <span class="text-slate-700">{{ \Carbon\Carbon::parse($item->updated_at)->format('d/m/Y') }}</span>
+                                        <span class="text-slate-700">{{ \Carbon\Carbon::parse($item->purchase_date)->format('d/m/Y') }}</span>
                                     </div>
                                 </x-base.table.td>
                             </x-base.table.tr>

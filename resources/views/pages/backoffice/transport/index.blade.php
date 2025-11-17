@@ -5,6 +5,15 @@
 @endsection
 
 @section('subcontent')
+    @php
+        // Perhitungan untuk statistik dan neraca
+        $totalOngkos = $data->sum(function ($item) {
+            return $item['ongkosan'] ?? 0;
+        });
+        $totalSakuSopir = $data->sum('drivers_pocket_money');
+        $totalSetoran = $totalOngkos - $totalSakuSopir;
+    @endphp
+
     <div class="mt-8">
         <h2 class="text-2xl font-bold">Data Transport</h2>
         <p class="text-slate-500 mt-1">Kelola data transport dan pengiriman</p>
@@ -31,11 +40,6 @@
                 <div>
                     <div class="text-slate-500 text-sm">Total Ongkos</div>
                     <div class="text-xl font-semibold text-green-600">
-                        @php
-                            $totalOngkos = $data->sum(function ($item) {
-                                return $item['customer']['ongkosan'] ?? 0;
-                            });
-                        @endphp
                         {{ toThousand($totalOngkos) }}
                     </div>
                 </div>
@@ -49,9 +53,6 @@
                 <div>
                     <div class="text-slate-500 text-sm">Total Saku Sopir</div>
                     <div class="text-xl font-semibold text-orange-600">
-                        @php
-                            $totalSakuSopir = $data->sum('drivers_pocket_money');
-                        @endphp
                         {{ toThousand($totalSakuSopir) }}
                     </div>
                 </div>
@@ -65,10 +66,95 @@
                 <div>
                     <div class="text-slate-500 text-sm">Total Setoran</div>
                     <div class="text-xl font-semibold text-purple-600">
-                        @php
-                            $totalSetoran = $totalOngkos - $totalSakuSopir;
-                        @endphp
                         {{ toThousand($totalSetoran) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Neraca Angkutan -->
+    <div class="mt-8">
+        <h3 class="text-lg font-semibold mb-4">Neraca Angkutan</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Aset Card -->
+            <div class="intro-y box p-5 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="text-lg font-semibold text-blue-900">Aset</h4>
+                    <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                        <x-base.lucide class="h-6 w-6 text-white" icon="Landmark" />
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                        <div class="flex items-center gap-2">
+                            <x-base.lucide class="h-4 w-4 text-slate-500" icon="Wallet" />
+                            <span class="text-sm text-slate-600">Saldo Fisik</span>
+                        </div>
+                        <span class="font-semibold text-blue-700">
+                            @php
+                                $saldoFisik = 0; // TODO: Get from database
+                            @endphp
+                            {{ toThousand($saldoFisik) }}
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                        <div class="flex items-center gap-2">
+                            <x-base.lucide class="h-4 w-4 text-slate-500" icon="Building2" />
+                            <span class="text-sm text-slate-600">Saldo Bank</span>
+                        </div>
+                        <span class="font-semibold text-blue-700">
+                            @php
+                                $saldoBank = 0; // TODO: Get from database
+                            @endphp
+                            {{ toThousand($saldoBank) }}
+                        </span>
+                    </div>
+                    <div class="border-t-2 border-blue-300 pt-3 mt-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-blue-900">Total Aset</span>
+                            <span class="text-xl font-bold text-blue-900">
+                                {{ toThousand($saldoFisik + $saldoBank) }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Piutang Card -->
+            <div class="intro-y box p-5 bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="text-lg font-semibold text-amber-900">Piutang</h4>
+                    <div class="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center">
+                        <x-base.lucide class="h-6 w-6 text-white" icon="FileText" />
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                        <div class="flex items-center gap-2">
+                            <x-base.lucide class="h-4 w-4 text-slate-500" icon="Banknote" />
+                            <span class="text-sm text-slate-600">Ongkosan</span>
+                        </div>
+                        <span class="font-semibold text-amber-700">
+                            {{ toThousand($totalOngkos) }}
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                        <div class="flex items-center gap-2">
+                            <x-base.lucide class="h-4 w-4 text-slate-500" icon="Wallet" />
+                            <span class="text-sm text-slate-600">Saku Supir</span>
+                        </div>
+                        <span class="font-semibold text-amber-700">
+                            {{ toThousand($totalSakuSopir) }}
+                        </span>
+                    </div>
+                    <div class="border-t-2 border-amber-300 pt-3 mt-3">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-amber-900">Total Piutang</span>
+                            <span class="text-xl font-bold text-amber-900">
+                                {{ toThousand($totalOngkos + $totalSakuSopir) }}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>

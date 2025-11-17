@@ -16,11 +16,11 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\Transaksi\SellingStoreRequest;
 use App\Models\Kas;
 use App\Services\CoretaxExportService;
-
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Support\Facades\Schema;
-
+use Illuminate\Support\Facades\DB;
+use App\Models\DeliveryOrderDetail;
 class SellingController extends Controller
 {
     public function index(Request $request)
@@ -31,22 +31,36 @@ class SellingController extends Controller
             ->when($selectedCvId && auth()->user()->hasCompanyAccess(), function ($query) use ($selectedCvId) {
                 $query->where('cv_id', $selectedCvId);
             })
+            ->when($request->has('search'), function ($query) use ($request) {
+                $search = $request->search;
+                $query->where(function ($q) use ($search) {
+                    $q->whereHas('customer', function ($customerQuery) use ($search) {
+                        $customerQuery->where('name', 'like', '%' . $search . '%');
+                    })
+                    ->orWhere('notes', 'like', '%' . $search . '%')
+                    ->orWhere('id', 'like', '%' . $search . '%');
+                });
+            })
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+        
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;
             $end_date = $request->end_date;
             $all = $all->whereBetween('date', [$start_date, $end_date]);
         }
+        
         $total = $all->get()->sum('grand_total');
         $completed = $all->get()->sum('total_payment');
-        $inCompleted = $all->get()->where('status', '!=', 'Completed')->sum(function ($item) {
+        $pending = $all->get()->where('status', '!=', 'Completed')->sum(function ($item) {
             return $item->grand_total - $item->total_payment;
         });
+        
         $data = $all->paginate($request->get('per_page', 10));
         $title = 'Data Penjualan';
         $route = 'selling';
         $request = $request->toArray();
-        return view('pages.backoffice.selling.index', compact('data', 'title', 'route', 'request', 'total', 'completed', 'inCompleted'));
+        
+        return view('pages.backoffice.selling.index', compact('data', 'title', 'route', 'request', 'total', 'completed', 'pending'));
     }
 
     public function create(Selling $selling)
@@ -79,6 +93,7 @@ class SellingController extends Controller
     {
         $user = auth()->user();
         try {
+            DB::beginTransaction();
             if (intval(curencyToInteger($request->total_bayar)) > intval(curencyToInteger($request->grand_total))) {
                 return back()->with('failed', 'Gagal, Total Bayar melebihi dari Grand Total!');
             }
@@ -102,55 +117,125 @@ class SellingController extends Controller
 
             //insert Table Selling Detail
             $totalDataProduk = COUNT($request->produk_id);
-
             for ($i = 0; $i < $totalDataProduk; $i++) {
                 $produk_id = $request->produk_id[$i];
                 $qty = $request->jumlah_qty[$i];
                 $harga_jual = curencyToInteger($request->harga_jual[$i]);
                 $subtotal = curencyToInteger($request->subtotal_produk[$i]);
+                
+                // Decode arrLaba data from the form
+                $arrLabaData = json_decode($request->arr_laba_data[$i], true);
+                // Insert based on arrLaba data
+                if (!empty($arrLabaData) && is_array($arrLabaData)) {
+                    foreach ($arrLabaData as $labaItem) {
+                        // Insert to selling_detail
+                        $selling_detail = new SellingDetail();
+                        $selling_detail->selling_id = $selling->id;
+                        $selling_detail->stock_id = $labaItem['stock_id'];
+                        // Update stock
+                        $stock = Stock::with('dod')->find($labaItem['stock_id']);
+                        if ($stock) {
+                            $stock_use = $qty < $stock->last_stock ? $qty : $stock->last_stock;
+                            if($request->price_method == 'old'){
+                                $stock_use = $qty;
+                            }else{
+                                $qty -= $stock_use;
+                            }
+                            $stock->stock_in_use += $stock_use;
+                            $stock->last_stock -= $stock_use;
+                            $stock->save();
+                        }
 
-                // cek stok by product id
-                $stocks = Stock::select('id', 'last_stock', 'price_kg', 'product_id')
-                    ->where('product_id', $produk_id)
-                    ->where('is_active', 1)
-                    ->where('last_stock', '>', 0)
-                    ->orderBy('purchase_date', 'asc')
-                    ->get();
+                        $selling_detail->price_kg = $labaItem['price_kg'];
+                        $selling_detail->price_sell = $harga_jual;
+                        $selling_detail->qty = $qty;
+                        
+                        // Calculate subtotal proportionally
+                        $itemSubtotal = $qty * $harga_jual;
+                        $selling_detail->subtotal = $itemSubtotal;
+                        $selling_detail->save();
 
-                $arr = [];
-                $cekTotalStock = $qty;
-                foreach ($stocks as $key => $value) {
-                    if (intval($value->last_stock) >= intval($cekTotalStock)) {
-                        array_push($arr, ['id' => $value->id, 'stock' => $cekTotalStock, 'price_kg' => $value->price_kg, 'price_sell' => $harga_jual, 'subtotal' => $subtotal]);
-                        break;
-                    } else {
-                        array_push($arr, ['id' => $value->id, 'stock' => $value->last_stock, 'price_kg' => $value->price_kg, 'price_sell' => $harga_jual, 'subtotal' => $subtotal]);
-                        $cekTotalStock = intval($cekTotalStock) - intval($value->last_stock);
+                        // Insert to delivery_order_detail for tracking
+                        if ($stock) {
+                            $deliveryOrderQuota = \App\Models\DeliveryOrderQuota::where('delivery_order_id', $stock->delivery_order_id)
+                                ->where('product_id', $stock->product_id)
+                                ->first();
+                            
+                            $delivery_order_detail = new DeliveryOrderDetail();
+                            $delivery_order_detail->delivery_order_id = $stock->delivery_order_id;
+                            $delivery_order_detail->stock_id = $labaItem['stock_id'];
+                            $delivery_order_detail->selling_id = $selling->id;
+                            $delivery_order_detail->no_sj = $labaItem['no_sj'] ?? '';
+                            $delivery_order_detail->no_faktur = $labaItem['no_faktur'] ?? '';
+                            
+                            if($request->price_method == 'old'){
+                                $delivery_order_detail->purchase_amount = $qty;
+                            }else{
+                                $delivery_order_detail->purchase_amount = $stock_use;
+                            }
+                            $delivery_order_detail->subtotal = $deliveryOrderQuota ? $deliveryOrderQuota->price_kg * $qty : 0;
+                            $delivery_order_detail->save();
+                        }
                     }
-                };
+                } else {
+                    // Fallback to old method if arrLaba data is not available
+                    // cek stok by product id
+                    $stocks = Stock::select('id', 'last_stock', 'price_kg', 'product_id')
+                        ->where('product_id', $produk_id)
+                        ->where('is_active', 1)
+                        ->where('last_stock', '>', 0)
+                        ->orderBy('purchase_date', 'asc')
+                        ->get();
+                    $arr = [];
+                    $cekTotalStock = $qty;
+                    
+                    foreach ($stocks as $key => $value) {
+                        if (intval($value->last_stock) >= intval($cekTotalStock)) {
+                            array_push($arr, [
+                                'id' => $value->id, 
+                                'stock' => $cekTotalStock, 
+                                'price_kg' => $value->price_kg, 
+                                'price_sell' => $harga_jual, 
+                                'subtotal' => $subtotal
+                            ]);
+                            break;
+                        } else {
+                            array_push($arr, [
+                                'id' => $value->id, 
+                                'stock' => $value->last_stock, 
+                                'price_kg' => $value->price_kg, 
+                                'price_sell' => $harga_jual, 
+                                'subtotal' => $subtotal
+                            ]);
+                            $cekTotalStock = intval($cekTotalStock) - intval($value->last_stock);
+                        }
+                    };
 
-                // insert Table Selling Detail
-                for ($j = 0; $j < COUNT($arr); $j++) {
-                    $selling_detail = new SellingDetail();
-                    $selling_detail->selling_id = $selling->id;
-                    $selling_detail->stock_id = $arr[$j]['id'];
-                    $selling_detail->price_kg = $arr[$j]['price_kg'];
-                    $selling_detail->price_sell = $arr[$j]['price_sell'];
-                    $selling_detail->qty        = $arr[$j]['stock'];
-                    $selling_detail->subtotal   = $arr[$j]['subtotal'];
-                    $selling_detail->save();
+                    // insert Table Selling Detail
+                    for ($j = 0; $j < COUNT($arr); $j++) {
+                        $selling_detail = new SellingDetail();
+                        $selling_detail->selling_id = $selling->id;
+                        $selling_detail->stock_id = $arr[$j]['id'];
+                        $stock = Stock::find($arr[$j]['id']);
+                        $stock->stock_in_use += $arr[$j]['stock'];
+                        $stock->last_stock -= $arr[$j]['stock'];
+                        $stock->save();
+
+                        $selling_detail->price_kg = $arr[$j]['price_kg'];
+                        $selling_detail->price_sell = $arr[$j]['price_sell'];
+                        $selling_detail->qty = $arr[$j]['stock'];
+                        $selling_detail->subtotal = $arr[$j]['subtotal'];
+                        $selling_detail->save();
+                    }
                 }
             }
 
             // Create kas entry for selling (always credit/debit - uang masuk)
             $this->createKasEntryForSelling($selling, $user['name']);
-
+            DB::commit();
             return redirect(route('selling.index'))->with('success', 'Berhasil menambah data!');
         } catch (\Throwable $th) {
-            // $errorMessage = $th->getMessage() . " at line " . $th->getLine();
-            // // var_dump($errorMessage);
-            // // die;
-            // return back()->with('failed', $errorMessage);
+            DB::rollBack();
             return back()->with('failed', 'Gagal menambah data!' . $th->getMessage());
         }
     }
@@ -197,8 +282,7 @@ class SellingController extends Controller
                     $selling->status = 'Completed';
                     $selling->updated_by = $user['name'];
                     $selling->save();
-
-                    return redirect(route('selling.index'))->with('success', 'Berhasil update data!');
+                    return redirect(route('selling.index'))->with('success', 'Berhasil update status data!');
                 }
 
                 return false;
@@ -215,7 +299,6 @@ class SellingController extends Controller
                 return redirect(route('selling.index'))->with('success', 'Berhasil update data!');
                 return false;
             }
-
             if (intval(curencyToInteger($request->total_bayar)) > intval(curencyToInteger($request->grand_total))) {
                 return back()->with('failed', 'Gagal, Total Bayar melebihi dari Grand Total!');
             }
@@ -239,7 +322,6 @@ class SellingController extends Controller
             $selling->created_by            = $user['name'];
             $selling->updated_by            = $user['name'];
             $selling->save();
-
             $selling->selling_detail()->delete();
 
             //insert Table Selling Detail
@@ -299,10 +381,6 @@ class SellingController extends Controller
             }
             return redirect(route('selling.index'))->with('success', 'Berhasil menambah data!');
         } catch (\Throwable $th) {
-            // $errorMessage = $th->getMessage() . " at line " . $th->getLine();
-            // // var_dump($errorMessage);
-            // // die;
-            // return back()->with('failed', 'Gagal menyimpan data, karena : ' . $errorMessage);
             return back()->with('failed', 'Gagal menyimpan data!' . $th->getMessage());
         }
     }
@@ -310,12 +388,30 @@ class SellingController extends Controller
     public function destroy(Selling $selling)
     {
         try {
+            DB::beginTransaction();
+            foreach ($selling->selling_detail as $detail) {
+                $stock = Stock::find($detail->stock_id);
+                if ($stock) {
+                    $stock->stock_in_use -= $detail->qty;
+                    $stock->last_stock += $detail->qty;
+                    if($stock->last_stock > $stock->first_stock){
+                        $stock->last_stock = $stock->first_stock;
+                    }
+                    $stock->save();
+                    $delivery_order_detail = DeliveryOrderDetail::where('selling_id', $selling->id)
+                        ->where('stock_id', $detail->stock_id)
+                        ->first();
+                    if ($delivery_order_detail) {
+                        $delivery_order_detail->delete();
+                    }
+                }
+            }
             $selling->selling_detail()->delete();
             $selling->delete();
+            DB::commit();
             return  redirect('selling')->with('success', 'Berhasil menghapus data!');
         } catch (\Throwable $th) {
-            // $errorMessage = $th->getMessage() . " at line " . $th->getLine();
-            // return back()->with('failed', 'Gagal menghapus data, karena : ' . $errorMessage);
+            DB::rollBack();
             return back()->with('failed', 'Gagal menghapus data!' . $th->getMessage());
         }
     }
@@ -348,29 +444,53 @@ class SellingController extends Controller
     {
         $produk = $request->input('produk');
         $qty = $request->input('qty');
-
-
-        $stocks = Stock::select('stock.id', 'stock.last_stock', 'stock.price_kg', 'stock.product_id')
-            ->leftJoin('delivery_order_detail AS dod', 'stock.id', '=', 'dod.stock_id')
-            ->leftJoin('delivery_order AS do', 'do.id', '=', 'dod.delivery_order_id')
+        
+        $stocks = Stock::select(
+                'stock.id as stock_id', 
+                'stock.first_stock', 
+                'stock.stock_in_use', 
+                'stock.last_stock', 
+                'stock.price_kg', 
+                'stock.product_id', 
+                'stock.purchase_date',
+            )
             ->where('stock.product_id', $produk)
             ->where('stock.is_active', 1)
-            ->where('stock.last_stock', '>', 0)
-            ->where('do.cv_id', session('cv_id'))
             ->orderBy('stock.purchase_date', 'asc')
+            ->orderBy('stock.id', 'asc')
             ->get();
 
+        // Return all available stocks with complete information including first_stock and stock_in_use
         $arr = [];
-        $cekTotalStock = $qty;
-        foreach ($stocks as $key => $value) {
-            if (intval($value->last_stock) >= intval($cekTotalStock)) {
-                array_push($arr, ['id' => $value->id, 'stock' => $cekTotalStock, 'price_kg' => $value->price_kg, 'product_id' => $value->product_id]);
+        foreach ($stocks as $stock) {
+            // check qty di table stok. jika qty lebih besar dari last_stock, maka ambil semua last_stock dan ambil stok selannjutnya
+            if($qty <= 0){
                 break;
-            } else {
-                array_push($arr, ['id' => $value->id, 'stock' => $value->last_stock, 'price_kg' => $value->price_kg, 'product_id' => $value->product_id]);
-                $cekTotalStock = intval($cekTotalStock) - intval($value->last_stock);
             }
-        };
+            //  if($stock->last_stock >= $qty){
+            //     $arr[] = [
+            //         'stock_id' => $stock->stock_id,
+            //         'first_stock' => $stock->first_stock,
+            //         'stock_in_use' => $stock->stock_in_use,
+            //         'last_stock' => $stock->last_stock,
+            //         'price_kg' => $stock->price_kg,
+            //         'product_id' => $stock->product_id,
+            //         'purchase_date' => $stock->purchase_date,
+            //     ];
+            //     $qty = 0;
+            // } else {
+                $arr[] = [
+                    'stock_id' => $stock->stock_id,
+                    'stock_in_use' => $stock->stock_in_use,
+                    'first_stock' => $stock->first_stock,
+                    'last_stock' => $stock->last_stock,
+                    'price_kg' => $stock->price_kg,
+                    'product_id' => $stock->product_id,
+                    'purchase_date' => $stock->purchase_date,
+                ];
+                // $qty -= $stock->last_stock;
+            // }
+        }
 
         return response()->json($arr);
     }
@@ -636,4 +756,63 @@ class SellingController extends Controller
             return back()->with('failed', 'Gagal export: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Export Bulk Invoice to Coretax XML
+     * Exports multiple invoices in a single XML file
+     * 
+     * @param Request $request - expects 'selling_ids' array and optional 'seller_tin'
+     * @return \Illuminate\Http\Response
+     */
+    public function coretaxBulkInvoiceExportXML(Request $request)
+    {
+        try {
+            // Validate request
+            $request->validate([
+                'selling_ids' => 'required|array|min:1',
+                'selling_ids.*' => 'required|integer|exists:selling,id',
+                'seller_tin' => 'nullable|string|max:20'
+            ]);
+
+            $sellingIds = $request->input('selling_ids');
+            $sellerTin = $request->input('seller_tin', '0830044103613000'); // Default TIN
+
+            $coretaxService = new CoretaxExportService();
+            $result = $coretaxService->generateBulkInvoiceXML($sellingIds, $sellerTin);
+            
+            if (!$result) {
+                return back()->with('failed', 'Tidak ada data untuk diekspor');
+            }
+            
+            $message = "Berhasil export {$result['total_invoices']} invoice ke Coretax XML";
+            
+            // Return download response
+            return response()->download($result['filepath'], $result['filename'])
+                ->deleteFileAfterSend(true);
+                
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->with('failed', 'Validasi gagal: ' . implode(', ', $e->errors()));
+        } catch (\Exception $e) {
+            return back()->with('failed', 'Gagal export bulk invoice: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Print nota penjualan
+     * Menampilkan nota penjualan dalam format print
+     * 
+     * @param int $id
+     * @return \Illuminate\View\View
+     */
+    public function printNota($id)
+    {
+        try {
+            $selling = Selling::with(['customer', 'cv', 'details.stock.product'])->findOrFail($id);
+            
+            return view('pages.backoffice.selling.print-nota', compact('selling'));
+        } catch (\Exception $e) {
+            return back()->with('failed', 'Gagal menampilkan nota: ' . $e->getMessage());
+        }
+    }
 }
+

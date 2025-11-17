@@ -27,7 +27,7 @@
     @endif
     <!-- END: Alerts -->
     <!-- BEGIN: Statistics Cards -->
-    <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="intro-y box p-5">
             <div class="flex items-center">
                 <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
@@ -39,7 +39,7 @@
                 </div>
             </div>
         </div>
-        <div class="intro-y box p-5">
+        <div class="intro-y box p-5 hidden">
             <div class="flex items-center">
                 <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
                     <x-base.lucide class="h-5 w-5 text-green-600" icon="CheckCircle" />

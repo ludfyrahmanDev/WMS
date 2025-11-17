@@ -111,23 +111,6 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="space-y-4">
-                                <div>
-                                    <x-base.form-label for="tanggal_pengambilan">Tanggal Pengambilan</x-base.form-label>
-                                    <x-base.form-input 
-                                        class="w-full" 
-                                        id="tanggal_pengambilan" 
-                                        type="date"
-                                        name="tanggal_pengambilan" 
-                                        value="{{ $data['header']->pick_up_date ?? date('Y-m-d') }}"
-                                placeholder="Pilih Tanggal Pengambilan" required disabled />
-                            @error('tanggal_pengambilan')
-                                <div class="pristine-error text-danger mt-2">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-                    </div>
                     <div class="mt-2 grid grid-cols-12 gap-2">
                         <div class="input-form col-span-6">
                             <x-base.form-label for="tipe_pembelian">Tipe Pembelian</x-base.form-label>
@@ -281,7 +264,7 @@
     <!-- Add Product Form -->
     @if($data['payment_detail']->sum('subtotal') < $data['header']->grand_total )
     <div class="mt-6">
-        <div class="intro-y rounded-lg border border-slate-200 bg-white">
+        <div class="intro-y rounded-lg border border-slate-200 bg-white hidden">
             <div class="p-5">
                 <h3 class="mb-4 text-lg font-medium">Tambah Produk</h3>
                 <form action="{{ $routeQuota }}" method="post" enctype="multipart/form-data">
@@ -441,7 +424,7 @@
                                     <td class="px-4 py-3 text-slate-600">{{ $item->stock->product->product }}</td>
                                     <td class="px-4 py-3 text-center text-slate-600">{{ $item->purchase_amount }}</td>
                                     <td class="px-4 py-3 text-right font-medium text-slate-600">
-                                        Rp {{ toThousand($item->subtotal) }}
+                                        {{ toThousand($item->subtotal) }}
                                     </td>
                                 </tr>
                             @empty

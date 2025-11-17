@@ -15,11 +15,13 @@ class Stock extends Model
     protected $table = 'stock';
 
     protected $fillable = [
+        'delivery_order_id',
         'product_id',
         'purchase_date',
         'price_kg',
         'first_stock',
         'stock_in_use',
+        'is_active',
         'last_stock'
     ];
 

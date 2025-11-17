@@ -78,12 +78,6 @@ class SpendingController extends Controller
             ->where('selling.cv_id', $selectedCvId)
             ->sum('customer.ongkosan') ?? 0;
             
-        // Hitung saku sopir (pengeluaran dari ongkos)
-        $driversPocketMoney = \App\Models\Selling::when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
-                return $query->whereBetween('date', [$request->start_date, $request->end_date]);
-            })
-            ->where('cv_id', $selectedCvId)
-            ->sum('drivers_pocket_money') ?? 0;
         
         // Gabungkan data servis kendaraan ke dalam laporan kas
         $vehicleServiceData = VehicleService::with(['vehicleServiceDetail.spendingCategory', 'vehicle', 'driver', 'cv'])
@@ -108,52 +102,88 @@ class SpendingController extends Controller
                     'type' => 'vehicle_service'
                 ];
             });
-
-        // Gabungkan data transport ke dalam laporan kas
-        $transportData = \App\Models\Selling::with(['customer', 'vehicle', 'driver'])
-            ->when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+        
+        // Hitung Laba Bersih dari Penjualan
+        // Laba sudah dihitung dengan benar di frontend berdasarkan:
+        // - Harga Lama (FIFO): (harga_jual - price_kg_lama) × qty
+        // - Harga Terbaru: (harga_jual - price_kg_terbaru) × qty
+        // Untuk multiple stock allocation, laba dihitung proporsional untuk setiap stock
+        $netProfit = Selling::when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
                 return $query->whereBetween('date', [$request->start_date, $request->end_date]);
             })
-            ->where('cv_id', $selectedCvId)
-            ->get()
-            ->flatMap(function ($transport) {
-                $data = [];
-                
-                // Pemasukan dari ongkos kirim
-                if ($transport->customer->ongkosan > 0) {
-                    $data[] = (object) [
-                        'id' => 'tr_in_' . $transport->id,
-                        'date' => $transport->date,
-                        'description' => 'Ongkos Kirim ke ' . $transport->customer->name . ' (Nopol: ' . $transport->vehicle->license_plate . ')',
-                        'spendingCategory' => (object) ['spending_category' => 'Ongkos Kirim'],
-                        'payment_method' => 'Cash',
-                        'mutation' => 'Uang Masuk',
-                        'nominal' => $transport->customer->ongkosan,
-                        'type' => 'transport_income'
-                    ];
-                }
-                
-                // Pengeluaran saku sopir
-                if ($transport->drivers_pocket_money > 0) {
-                    $data[] = (object) [
-                        'id' => 'tr_out_' . $transport->id,
-                        'date' => $transport->date,
-                        'description' => 'Saku Sopir ' . $transport->driver->name . ' (Nopol: ' . $transport->vehicle->license_plate . ')',
-                        'spendingCategory' => (object) ['spending_category' => 'Saku Sopir'],
-                        'payment_method' => 'Cash',
-                        'mutation' => 'Uang Keluar',
-                        'nominal' => $transport->drivers_pocket_money,
-                        'type' => 'drivers_pocket'
-                    ];
-                }
-                
-                return $data;
-            });
-
+            ->when($selectedCvId && auth()->user()->hasCompanyAccess(), function ($query) use ($selectedCvId) {
+                return $query->where('cv_id', $selectedCvId);
+            })
+            ->where('status', 'Completed')
+            ->sum('net_profit') ?? 0;
+        
+        // Hitung Piutang Penjualan
+        $receivables = Selling::when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                return $query->whereBetween('date', [$request->start_date, $request->end_date]);
+            })
+            ->when($selectedCvId && auth()->user()->hasCompanyAccess(), function ($query) use ($selectedCvId) {
+                return $query->where('cv_id', $selectedCvId);
+            })
+            ->where('status', '!=', 'Completed')
+            ->sum(\DB::raw('(grand_total - total_payment)')) ?? 0;
+        
+        // Hitung Hutang Dagang (hanya dari penjualan yang belum lunas)
+        // Hutang dagang sama dengan piutang penjualan, karena ini adalah transaksi penjualan kredit
+        $payables = Selling::when($request->has('start_date') && $request->has('end_date'), function ($query) use ($request) {
+                return $query->whereBetween('date', [$request->start_date, $request->end_date]);
+            })
+            ->when($selectedCvId && auth()->user()->hasCompanyAccess(), function ($query) use ($selectedCvId) {
+                return $query->where('cv_id', $selectedCvId);
+            })
+            ->sum(\DB::raw('(grand_total)')) ?? 0;
+        // Tambahkan Laba sebagai transaksi
+        $profitTransaction = collect([
+            (object) [
+                'id' => 'profit_summary',
+                'date' => $request->has('end_date') ? $request->end_date : now()->format('Y-m-d'),
+                'description' => 'Laba Bersih dari Penjualan',
+                'spendingCategory' => (object) ['spending_category' => 'Laba'],
+                'payment_method' => '-',
+                'mutation' => 'Uang Masuk',
+                'nominal' => $netProfit,
+                'type' => 'profit_summary'
+            ]
+        ]);
+        
+        // Tambahkan Piutang sebagai transaksi
+        $receivablesTransaction = collect([
+            (object) [
+                'id' => 'receivables_summary',
+                'date' => $request->has('end_date') ? $request->end_date : now()->format('Y-m-d'),
+                'description' => 'Piutang Penjualan (Belum Lunas)',
+                'spendingCategory' => (object) ['spending_category' => 'Piutang'],
+                'payment_method' => '-',
+                'mutation' => 'Uang Masuk',
+                'nominal' => $receivables,
+                'type' => 'receivables_summary'
+            ]
+        ]);
+        
+        // Tambahkan Hutang sebagai transaksi
+        $payablesTransaction = collect([
+            (object) [
+                'id' => 'payables_summary',
+                'date' => $request->has('end_date') ? $request->end_date : now()->format('Y-m-d'),
+                'description' => 'Hutang Dagang (Penjualan Belum Lunas)',
+                'spendingCategory' => (object) ['spending_category' => 'Hutang'],
+                'payment_method' => '-',
+                'mutation' => 'Uang Keluar',
+                'nominal' => abs($payables),
+                'type' => 'payables_summary'
+            ]
+        ]);
+        
         // Gabungkan semua data
         $allTransactions = $all->get()
             ->concat($vehicleServiceData)
-            ->concat($transportData)
+            ->concat($profitTransaction)
+            ->concat($receivablesTransaction)
+            ->concat($payablesTransaction)
             ->sortByDesc('date')
             ->values();
 
@@ -161,7 +191,6 @@ class SpendingController extends Controller
         $perPage = $request->get('per_page', 10);
         $currentPage = request()->get('page', 1);
         $pagedData = $allTransactions->forPage($currentPage, $perPage);
-        
         $data = new \Illuminate\Pagination\LengthAwarePaginator(
             $pagedData,
             $allTransactions->count(),
@@ -170,12 +199,12 @@ class SpendingController extends Controller
             ['path' => request()->url(), 'query' => request()->query()]
         );
 
-        $saldo =( $income + $sellingCompleted + $transportRevenue) - ($outcome + $purchaseCompleted + $vehicleServiceExpense + $driversPocketMoney);
+        $saldo =( $income + $sellingCompleted + $transportRevenue) - ($outcome + $purchaseCompleted + $vehicleServiceExpense);
         $title = 'Data Transaksi Lain Lain';
         $route = 'spending';
         $request = $request->toArray();
 
-        return view('pages.backoffice.spending.index', compact('data', 'request','title', 'route', 'request', 'saldo', 'income', 'outcome', 'sellingCompleted', 'sellingInCompleted', 'purchaseCompleted', 'purchaseInCompleted', 'inventoryValue', 'vehicleServiceExpense', 'transportRevenue', 'driversPocketMoney'));
+        return view('pages.backoffice.spending.index', compact('data', 'request','title', 'route', 'request', 'saldo', 'income', 'outcome', 'sellingCompleted', 'sellingInCompleted', 'purchaseCompleted', 'purchaseInCompleted', 'inventoryValue', 'vehicleServiceExpense', 'transportRevenue', 'payables'));
     }
 
     public function saldo(Request $request){
