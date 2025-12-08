@@ -20,11 +20,38 @@ class TransportController extends Controller
         $all = Transport::with('vehicle', 'driver')
             ->where('cv_id', $cv_id)
             ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+
+        // Filter nopol
+        if ($request->filled('nopol')) {
+            $all = $all->where('vehicle_id', $request->nopol);
+        }
+
+        // Filter tanggal
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;
             $end_date = $request->end_date;
             $all = $all->whereBetween('date', [$start_date, $end_date]);
         }
+
+        // Pencarian umum (search)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $all = $all->where(function($q) use ($search) {
+                $q->whereHas('vehicle', function($v) use ($search) {
+                    $v->where('license_plate', 'like', "%$search%")
+                      ->orWhere('name', 'like', "%$search%");
+                })
+                ->orWhereHas('driver', function($d) use ($search) {
+                    $d->where('name', 'like', "%$search%");
+                })
+                ->orWhere('customer', 'like', "%$search%")
+                ->orWhere('product', 'like', "%$search%")
+                ->orWhere('status', 'like', "%$search%")
+                ->orWhere('ongkosan', 'like', "%$search%")
+                ->orWhere('setoran', 'like', "%$search%");
+            });
+        }
+
         $data = $all->paginate($request->get('per_page', 10));
         $title = 'Laporan Angkutan';
         $route = 'transport';
@@ -89,6 +116,7 @@ class TransportController extends Controller
             $transport->ongkosan              = curencyToInteger($request->ongkosan);
             $transport->drivers_pocket_money  = curencyToInteger($request->drivers_pocket_money);
             $transport->setoran               = curencyToInteger($request->setoran);
+            $transport->type                  = $request->type ?? 'cash';
             $transport->status                = 'In Progress';
             $transport->created_by            = $user['name'];
             $transport->updated_by            = $user['name'];
@@ -145,6 +173,7 @@ class TransportController extends Controller
                 $transport->ongkosan              = curencyToInteger($request->ongkosan);
                 $transport->drivers_pocket_money  = curencyToInteger($request->drivers_pocket_money);
                 $transport->setoran               = curencyToInteger($request->setoran);
+                $transport->type                  = $request->type ?? 'cash';
                 $transport->status                = 'In Progress';
                 $transport->created_by            = $user['name'];
                 $transport->updated_by            = $user['name'];

@@ -185,7 +185,7 @@
                                         {{ date('d M Y', strtotime($item['date'])) }}
                                     </x-base.table.td>
                                     <x-base.table.td class="text-center py-4">
-                                        {{ $item['driver']['name'] }}
+                                        {{ $item['driver']['name'] ?? '-' }}
                                     </x-base.table.td>
                                     <x-base.table.td class="text-center py-4 font-semibold">
                                         {{ $item['vehicle']['name'] }}
@@ -220,7 +220,7 @@
                                                     </p>
                                                     <div class="bg-slate-50 p-3 rounded mb-4">
                                                         <div class="text-sm text-slate-600">
-                                                            <strong>Driver:</strong> {{ $item['driver']['name'] }}<br>
+                                                            <strong>Driver:</strong> {{ $item['driver']['name'] ?? '-' }}<br>
                                                             <strong>Kendaraan:</strong> {{ $item['vehicle']['name'] }}<br>
                                                             <strong>Tanggal:</strong> {{ date('d M Y', strtotime($item['date'])) }}
                                                         </div>
