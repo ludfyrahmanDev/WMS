@@ -30,14 +30,13 @@ class VehicleServiceExport implements FromView, ShouldAutoSize
             'DESCRIPTION',
             'amount_of_expenditure'
         ], [])
-            ->with(['vehicleServiceDetail', 'vehicleServiceDetail.spendingCategory', 'vehicle'])
-            ->whereDate('created_at', Carbon::today())
-            ->orderBy($request->get('sort_by', 'date'), $request->get('order', 'desc'));
+            ->with(['vehicleServiceDetail', 'vehicleServiceDetail.spendingCategory', 'vehicle']);
             if($request->has('start_date') && $request->has('end_date')){
                 $start_date = $request->start_date;
                 $end_date = $request->end_date;
                 $all = $all->whereBetween('date', [$start_date, $end_date]);
             }
+        $all = $all->orderBy($request->get('sort_by', 'date'), $request->get('order', 'desc'));
 
         $data = $all->get();
         $title = 'Data Servis Kendaraan';

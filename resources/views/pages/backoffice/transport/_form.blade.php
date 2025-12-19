@@ -96,6 +96,18 @@
                     </div>
                     <div class="grid grid-cols-12 gap-2 mt-3">
                         <div class="input-form col-span-4">
+                            <x-base.form-label for="type">Tipe Pembayaran</x-base.form-label>
+                            <x-base.tom-select name="type" class="w-full" id="type">
+                                <option value="cash" {{ ($data['header']->type ?? old('type')) == 'cash' ? 'selected' : '' }}>Cash</option>
+                                <option value="transfer" {{ ($data['header']->type ?? old('type')) == 'transfer' ? 'selected' : '' }}>Transfer</option>
+                            </x-base.tom-select>
+                            @error('type')
+                                <div class="pristine-error text-danger mt-2">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                        <div class="input-form col-span-4">
                             <x-base.form-label for="product">Produk</x-base.form-label>
                             <x-base.form-input class="w-full" id="product" type="text" name="product"
                                 value="{{ $data['header']->product ?? old('product') }}"

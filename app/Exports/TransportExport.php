@@ -25,13 +25,14 @@ class TransportExport implements FromView, ShouldAutoSize
     public function view(): View
     {
         $request = $this->request;
-        $all = Transport::with('customer', 'driver')
-            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+        $all = Transport::with('driver');
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;
             $end_date = $request->end_date;
             $all = $all->whereBetween('date', [$start_date, $end_date]);
         }
+
+        $all = $all->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
 
         $data = $all->get();
         $title = 'Data Angkutan - ' . date('Y-m-d');

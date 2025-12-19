@@ -25,7 +25,8 @@ class Transport extends Model
         'weight',
         'ongkosan',
         'drivers_pocket_money',
-        'setoran'
+        'setoran',
+        'type'
     ];
 
     public function driver()

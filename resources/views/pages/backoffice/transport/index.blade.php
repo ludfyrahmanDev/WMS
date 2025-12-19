@@ -6,12 +6,17 @@
 
 @section('subcontent')
     @php
-        // Perhitungan untuk statistik dan neraca
-        $totalOngkos = $data->sum(function ($item) {
-            return $item['ongkosan'] ?? 0;
-        });
-        $totalSakuSopir = $data->sum('drivers_pocket_money');
-        $totalSetoran = $totalOngkos - $totalSakuSopir;
+        // Pisahkan data cash dan transfer
+        $cash = $data->filter(fn($item) => ($item['type'] ?? 'cash') == 'cash');
+        $transfer = $data->filter(fn($item) => ($item['type'] ?? '') == 'transfer');
+
+        $totalOngkosCash = $cash->sum('ongkosan');
+        $totalSakuSopirCash = $cash->sum('drivers_pocket_money');
+        $totalSetoranCash = $totalOngkosCash - $totalSakuSopirCash;
+
+        $totalOngkosTransfer = $transfer->sum('ongkosan');
+        $totalSakuSopirTransfer = $transfer->sum('drivers_pocket_money');
+        $totalSetoranTransfer = $totalOngkosTransfer - $totalSakuSopirTransfer;
     @endphp
 
     <div class="mt-8">
@@ -20,54 +25,46 @@
     </div>
 
     <!-- Statistics Cards -->
-    <div class="mt-5 grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="intro-y box p-5">
-            <div class="flex items-center">
-                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                    <x-base.lucide class="h-5 w-5 text-blue-600" icon="Truck" />
+            <h4 class="text-lg font-bold mb-2 text-green-700">Statistik Cash</h4>
+            <div class="flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                    <span>Total Transport Cash</span>
+                    <span class="font-semibold">{{ $cash->count() }}</span>
                 </div>
-                <div>
-                    <div class="text-slate-500 text-sm">Total Transport</div>
-                    <div class="text-xl font-semibold">{{ $data->total() }}</div>
+                <div class="flex items-center justify-between">
+                    <span>Total Ongkos Cash</span>
+                    <span class="font-semibold text-green-600">{{ toThousand($totalOngkosCash) }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>Total Saku Sopir Cash</span>
+                    <span class="font-semibold text-orange-600">{{ toThousand($totalSakuSopirCash) }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>Total Setoran Cash</span>
+                    <span class="font-semibold text-purple-600">{{ toThousand($totalSetoranCash) }}</span>
                 </div>
             </div>
         </div>
         <div class="intro-y box p-5">
-            <div class="flex items-center">
-                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
-                    <x-base.lucide class="h-5 w-5 text-green-600" icon="Banknote" />
+            <h4 class="text-lg font-bold mb-2 text-blue-700">Statistik Transfer</h4>
+            <div class="flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                    <span>Total Transport Transfer</span>
+                    <span class="font-semibold">{{ $transfer->count() }}</span>
                 </div>
-                <div>
-                    <div class="text-slate-500 text-sm">Total Ongkos</div>
-                    <div class="text-xl font-semibold text-green-600">
-                        {{ toThousand($totalOngkos) }}
-                    </div>
+                <div class="flex items-center justify-between">
+                    <span>Total Ongkos Transfer</span>
+                    <span class="font-semibold text-green-600">{{ toThousand($totalOngkosTransfer) }}</span>
                 </div>
-            </div>
-        </div>
-        <div class="intro-y box p-5">
-            <div class="flex items-center">
-                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
-                    <x-base.lucide class="h-5 w-5 text-orange-600" icon="Wallet" />
+                <div class="flex items-center justify-between">
+                    <span>Total Saku Sopir Transfer</span>
+                    <span class="font-semibold text-orange-600">{{ toThousand($totalSakuSopirTransfer) }}</span>
                 </div>
-                <div>
-                    <div class="text-slate-500 text-sm">Total Saku Sopir</div>
-                    <div class="text-xl font-semibold text-orange-600">
-                        {{ toThousand($totalSakuSopir) }}
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="intro-y box p-5">
-            <div class="flex items-center">
-                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-                    <x-base.lucide class="h-5 w-5 text-purple-600" icon="PiggyBank" />
-                </div>
-                <div>
-                    <div class="text-slate-500 text-sm">Total Setoran</div>
-                    <div class="text-xl font-semibold text-purple-600">
-                        {{ toThousand($totalSetoran) }}
-                    </div>
+                <div class="flex items-center justify-between">
+                    <span>Total Setoran Transfer</span>
+                    <span class="font-semibold text-purple-600">{{ toThousand($totalSetoranTransfer) }}</span>
                 </div>
             </div>
         </div>
@@ -75,86 +72,51 @@
 
     <!-- Neraca Angkutan -->
     <div class="mt-8">
-        <h3 class="text-lg font-semibold mb-4">Neraca Angkutan</h3>
+        <h3 class="text-lg font-semibold mb-4">Neraca Angkutan Cash & Transfer</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Aset Card -->
-            <div class="intro-y box p-5 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+            <!-- Neraca Cash -->
+            <div class="intro-y box p-5 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
                 <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-lg font-semibold text-blue-900">Aset</h4>
-                    <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                    <h4 class="text-lg font-semibold text-green-900">Neraca Cash</h4>
+                    <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
                         <x-base.lucide class="h-6 w-6 text-white" icon="Landmark" />
                     </div>
                 </div>
                 <div class="space-y-3">
                     <div class="flex items-center justify-between p-3 bg-white rounded-lg">
-                        <div class="flex items-center gap-2">
-                            <x-base.lucide class="h-4 w-4 text-slate-500" icon="Wallet" />
-                            <span class="text-sm text-slate-600">Saldo Fisik</span>
-                        </div>
-                        <span class="font-semibold text-blue-700">
-                            @php
-                                $saldoFisik = 0; // TODO: Get from database
-                            @endphp
-                            {{ toThousand($saldoFisik) }}
-                        </span>
+                        <span class="text-sm text-slate-600">Ongkosan Cash</span>
+                        <span class="font-semibold text-green-700">{{ toThousand($totalOngkosCash) }}</span>
                     </div>
                     <div class="flex items-center justify-between p-3 bg-white rounded-lg">
-                        <div class="flex items-center gap-2">
-                            <x-base.lucide class="h-4 w-4 text-slate-500" icon="Building2" />
-                            <span class="text-sm text-slate-600">Saldo Bank</span>
-                        </div>
-                        <span class="font-semibold text-blue-700">
-                            @php
-                                $saldoBank = 0; // TODO: Get from database
-                            @endphp
-                            {{ toThousand($saldoBank) }}
-                        </span>
+                        <span class="text-sm text-slate-600">Saku Sopir Cash</span>
+                        <span class="font-semibold text-orange-700">{{ toThousand($totalSakuSopirCash) }}</span>
                     </div>
-                    <div class="border-t-2 border-blue-300 pt-3 mt-3">
-                        <div class="flex items-center justify-between">
-                            <span class="font-bold text-blue-900">Total Aset</span>
-                            <span class="text-xl font-bold text-blue-900">
-                                {{ toThousand($saldoFisik + $saldoBank) }}
-                            </span>
-                        </div>
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                        <span class="font-bold text-green-900">Total Setoran Cash</span>
+                        <span class="text-xl font-bold text-green-900">{{ toThousand($totalSetoranCash) }}</span>
                     </div>
                 </div>
             </div>
-
-            <!-- Piutang Card -->
-            <div class="intro-y box p-5 bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
+            <!-- Neraca Transfer -->
+            <div class="intro-y box p-5 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
                 <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-lg font-semibold text-amber-900">Piutang</h4>
-                    <div class="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center">
+                    <h4 class="text-lg font-semibold text-blue-900">Neraca Transfer</h4>
+                    <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
                         <x-base.lucide class="h-6 w-6 text-white" icon="FileText" />
                     </div>
                 </div>
                 <div class="space-y-3">
                     <div class="flex items-center justify-between p-3 bg-white rounded-lg">
-                        <div class="flex items-center gap-2">
-                            <x-base.lucide class="h-4 w-4 text-slate-500" icon="Banknote" />
-                            <span class="text-sm text-slate-600">Ongkosan</span>
-                        </div>
-                        <span class="font-semibold text-amber-700">
-                            {{ toThousand($totalOngkos) }}
-                        </span>
+                        <span class="text-sm text-slate-600">Ongkosan Transfer</span>
+                        <span class="font-semibold text-green-700">{{ toThousand($totalOngkosTransfer) }}</span>
                     </div>
                     <div class="flex items-center justify-between p-3 bg-white rounded-lg">
-                        <div class="flex items-center gap-2">
-                            <x-base.lucide class="h-4 w-4 text-slate-500" icon="Wallet" />
-                            <span class="text-sm text-slate-600">Saku Supir</span>
-                        </div>
-                        <span class="font-semibold text-amber-700">
-                            {{ toThousand($totalSakuSopir) }}
-                        </span>
+                        <span class="text-sm text-slate-600">Saku Sopir Transfer</span>
+                        <span class="font-semibold text-orange-700">{{ toThousand($totalSakuSopirTransfer) }}</span>
                     </div>
-                    <div class="border-t-2 border-amber-300 pt-3 mt-3">
-                        <div class="flex items-center justify-between">
-                            <span class="font-bold text-amber-900">Total Piutang</span>
-                            <span class="text-xl font-bold text-amber-900">
-                                {{ toThousand($totalOngkos + $totalSakuSopir) }}
-                            </span>
-                        </div>
+                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                        <span class="font-bold text-blue-900">Total Setoran Transfer</span>
+                        <span class="text-xl font-bold text-blue-900">{{ toThousand($totalSetoranTransfer) }}</span>
                     </div>
                 </div>
             </div>
@@ -189,14 +151,23 @@
                     </div>
 
                     <!-- Filters -->
-                    <div class="flex flex-col sm:flex-row gap-3 lg:w-auto w-full">
-                        <x-base.form-input class="!box w-full sm:w-56" type="text" id="search"
+                    <form method="GET" action="" class="flex flex-col sm:flex-row gap-3 lg:w-auto w-full">
+                        <x-base.form-input class="!box w-full sm:w-56" type="text" name="search" id="search"
                             value="{{ request()->get('search') }}" placeholder="Cari transport..." />
-                        <x-base.form-input class="!box" id="start_date" type="date"
+                        <select name="nopol" class="!box w-full sm:w-40">
+                            <option value="">- Semua Nopol -</option>
+                            @foreach(\App\Models\Vehicle::all() as $v)
+                                <option value="{{ $v->id }}" @if(request('nopol') == $v->id) selected @endif>{{ $v->license_plate }}</option>
+                            @endforeach
+                        </select>
+                        <x-base.form-input class="!box" name="start_date" id="start_date" type="date"
                             value="{{ $request['start_date'] ?? old('start_date') }}" />
-                        <x-base.form-input class="!box" id="end_date" type="date"
+                        <x-base.form-input class="!box" name="end_date" id="end_date" type="date"
                             value="{{ $request['end_date'] ?? old('end_date') }}" />
-                    </div>
+                        <x-base.button class="mr-2 shadow-md" variant="primary">
+                            Filter
+                        </x-base.button>
+                    </form>
                 </div>
 
                 <!-- Data Info -->
@@ -263,7 +234,7 @@
                                         {{ $item['vehicle']['license_plate'] }}
                                     </x-base.table.td>
                                     <x-base.table.td class="text-center py-4">
-                                        {{ $item['driver']['name'] }}
+                                        {{ $item['driver']['name'] ?? '-' }}
                                     </x-base.table.td>
                                     <x-base.table.td class="text-center py-4">
                                         {{ $item['customer'] }}
@@ -392,7 +363,7 @@
                             <!-- Empty State -->
                             @if ($data->isEmpty())
                                 <x-base.table.tr>
-                                    <x-base.table.td colspan="8" class="py-16 text-center">
+                                    <x-base.table.td colspan="10" class="py-16 text-center">
                                         <div>
                                             <h3 class="text-lg font-semibold mb-2">Belum Ada Data Transport</h3>
                                             <p class="text-slate-500 mb-4">
