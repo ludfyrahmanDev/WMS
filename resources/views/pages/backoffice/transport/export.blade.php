@@ -46,23 +46,29 @@
                             <th scope="col">Nopol</th>
                             <th scope="col">Pengemudi</th>
                             <th scope="col">Penerima</th>
+                            <th scope="col">Produk</th>
+                            <th scope="col">Berat</th>
                             <th scope="col">Ongkosan</th>
                             <th scope="col">Saku Sopir</th>
                             <th scope="col">Setoran</th>
+                            <th scope="col">Tipe</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($data as $key => $item)
-                                <tr class="text-center">
-                                    <td>{{ $key + 1 }}</td>
-                                    <td>{{ $item->date }}</td>
-                                    <td>{{ $item->vehicle->license_plate }}</td>
-                                    <td>{{ $item->driver->name }}</td>
-                                    <td>{{ $item->customer->name }}</td>
-                                    <td>{{ toThousand($item->customer->ongkosan) }}</td>
-                                    <td>{{ toThousand($item->drivers_pocket_money) }}</td>
-                                    <td>{{ toThousand($item->customer->ongkosan - $item->drivers_pocket_money) }}</td>
-                                </tr>
+                            <tr class="text-center">
+                                <td>{{ $key + 1 }}</td>
+                                <td>{{ $item->date }}</td>
+                                <td>{{ $item->vehicle->license_plate ?? '-' }}</td>
+                                <td>{{ $item->driver->name ?? '-' }}</td>
+                                <td>{{ $item->customer }}</td>
+                                <td>{{ $item->product }}</td>
+                                <td>{{ $item->weight }}</td>
+                                <td>{{ toThousand($item->ongkosan) }}</td>
+                                <td>{{ toThousand($item->drivers_pocket_money) }}</td>
+                                <td>{{ toThousand($item->setoran) }}</td>
+                                <td>{{ ucfirst($item->type) }}</td>
+                            </tr>
                         @endforeach
                     </tbody>
                 </table>
