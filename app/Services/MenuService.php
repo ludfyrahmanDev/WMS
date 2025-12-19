@@ -86,6 +86,7 @@ class MenuService
             'customer.index' => 'customers.view',
             'spendingCategory.index' => 'spending_categories.view',
             'tax.index' => 'tax.view',
+            'cv.index' => 'cv.view',
             
             // Transactions
             'spending.create' => 'spending.create',

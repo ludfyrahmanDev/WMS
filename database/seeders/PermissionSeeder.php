@@ -116,6 +116,12 @@ class PermissionSeeder extends Seeder
             ['name' => 'tax.edit', 'display_name' => 'Edit Tax', 'description' => 'Can edit existing tax settings', 'group' => 'Tax'],
             ['name' => 'tax.delete', 'display_name' => 'Delete Tax', 'description' => 'Can delete tax settings', 'group' => 'Tax'],
             
+            // CV Management
+            ['name' => 'cv.view', 'display_name' => 'View CV', 'description' => 'Can view CV list', 'group' => 'CV'],
+            ['name' => 'cv.create', 'display_name' => 'Create CV', 'description' => 'Can create new CV', 'group' => 'CV'],
+            ['name' => 'cv.edit', 'display_name' => 'Edit CV', 'description' => 'Can edit existing CV', 'group' => 'CV'],
+            ['name' => 'cv.delete', 'display_name' => 'Delete CV', 'description' => 'Can delete CV', 'group' => 'CV'],
+            
             // Closing Management
             ['name' => 'closing.view', 'display_name' => 'View Closing', 'description' => 'Can view closing reports', 'group' => 'Closing'],
             ['name' => 'closing.create', 'display_name' => 'Create Closing', 'description' => 'Can create closing reports', 'group' => 'Closing'],

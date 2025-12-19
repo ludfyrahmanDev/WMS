@@ -24,6 +24,27 @@
         <p class="text-slate-500 mt-1">Kelola data transport dan pengiriman</p>
     </div>
 
+    <!-- Saldo Kendaraan Card -->
+    <div class="mt-5">
+        <div class="intro-y box p-5 bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-14 h-14 bg-indigo-500 rounded-full flex items-center justify-center">
+                        <x-base.lucide class="h-7 w-7 text-white" icon="Wallet" />
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold text-indigo-900">Saldo Kendaraan</h4>
+                        <p class="text-sm text-indigo-700">Total saldo dari kategori Saldo Kendaraan</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-3xl font-bold text-indigo-900">{{ toThousand($saldoKendaraan ?? 0) }}</div>
+                    <div class="text-sm text-indigo-700 mt-1">Rupiah</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Statistics Cards -->
     <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="intro-y box p-5">

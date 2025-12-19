@@ -268,7 +268,7 @@
                                             id="qty_jual"
                                             placeholder="Jumlah"
                                             onkeypress="return event.charCode >= 48 && event.charCode <= 57"
-                                            onKeyUp="getHargaStock(this.value)" 
+                                            onChange="getHargaStock(this.value)" 
                                         />
                                         <x-base.input-group.text>
                                             <x-base.button 
@@ -342,11 +342,11 @@
                                                     <input type="hidden" name="jumlah_qty[]" value="{{ $item['total_qty'] }}" />
                                                 </td>
                                                 <td class="px-4 py-3 text-right font-medium">
-                                                    Rp {{ toThousand($item['price_sell']) }}
+                                                    {{ toThousand($item['price_sell']) }}
                                                     <input type="hidden" name="harga_jual[]" value="{{ $item['price_sell'] }}" />
                                                 </td>
                                                 <td class="px-4 py-3 text-right font-medium">
-                                                    Rp {{ toThousand($item['subtotal']) }}
+                                                    {{ toThousand($item['subtotal']) }}
                                                     <input type="hidden" class="column_subtotal" name="subtotal_produk[]" 
                                                         value="{{ $item['subtotal'] }}" />
                                                 </td>
@@ -390,7 +390,7 @@
                                 <div class="rounded-lg bg-primary/20 p-4">
                                     <div class="text-sm font-medium text-primary">Grand Total</div>
                                     <div class="mt-1 text-2xl font-bold text-primary grand_total">
-                                        Rp {{ toThousand($data['header']->grand_total) ?? 0 }}
+                                        {{ toThousand($data['header']->grand_total) ?? 0 }}
                                     </div>
                                     <input type="hidden" id="grand_total" name="grand_total"
                                         value="{{ $data['header']->grand_total ?? 0 }}" />

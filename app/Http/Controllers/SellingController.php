@@ -100,6 +100,7 @@ class SellingController extends Controller
 
             // insert Table Selling
             $selling                        = new Selling();
+            $selling->no_invoice            = $this->generateInvoiceNumber();
             $selling->date                  = $request->tgl_jual;
             $selling->customer_id           = $request->customer;
             $selling->cv_id                 = $request->cv_id ?? session('cv_id');
@@ -238,6 +239,24 @@ class SellingController extends Controller
             DB::rollBack();
             return back()->with('failed', 'Gagal menambah data!' . $th->getMessage());
         }
+    }
+
+    public function generateInvoiceNumber()
+    {
+        $prefix = 'INV';
+        $datePart = date('Ymd');
+        $lastSelling = Selling::where('no_invoice', 'like', $prefix . $datePart . '%')
+            ->orderBy('no_invoice', 'desc')
+            ->first();
+
+        if ($lastSelling) {
+            $lastNumber = (int)substr($lastSelling->no_invoice, -4);
+            $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        } else {
+            $newNumber = '0001';
+        }
+
+        return $prefix . $datePart . $newNumber;
     }
 
     public function edit(Selling $Selling)

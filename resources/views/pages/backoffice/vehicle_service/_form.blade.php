@@ -77,7 +77,7 @@
                             @enderror
                         </div>
                         @if (count($data['cvs']) > 1)
-                            <div class="input-form col-span-4">
+                            <div class="input-form col-span-4 hidden">
                                 <x-base.form-label for="cv_id">Perusahaan</x-base.form-label>
                                 <x-base.tom-select name="cv_id" id="cv_id" class="w-full"
                                     data-placeholder="Pilih Perusahaan" required>

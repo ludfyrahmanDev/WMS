@@ -122,6 +122,14 @@ class SideMenu
                             'layout' => 'side-menu'
                         ],
                         'title' => 'Pajak'
+                    ],
+                'master-layout-7' => [
+                        'icon' => 'building-2',
+                        'route_name' => 'cv.index',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'CV'
                     ]
                 ]
             ],
