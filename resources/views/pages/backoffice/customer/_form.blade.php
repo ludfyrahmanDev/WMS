@@ -89,12 +89,12 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="input-form col-span-4">
+                        <div class="input-form col-span-4 hidden">
                             <div class="input-form">
                                 <x-base.form-label for="ongkosan">Ongkosan (Rp)</x-base.form-label>
                                 <x-base.form-input class="w-full mb-3" id="ongkosan" type="text" name="ongkosan"
                                     price="true" value="{{ $data->ongkosan ?? old('ongkosan') }}"
-                                    placeholder="Masukkan harga ongkosan..."
+                                    placeholder="Masukkan harga ongkosan..." value='0'
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
                                 @if ($errors->has('ongkosan'))
                                     <small style="padding-left: 0; margin-left: 0;" class="text-danger mb-3"
@@ -102,12 +102,13 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="input-form col-span-4">
+                        <div class="input-form col-span-4 hidden">
                             <div class="input-form">
                                 <x-base.form-label for="borongan">Borongan (Rp)</x-base.form-label>
                                 <x-base.form-input class="w-full mb-3" id="borongan" type="text" name="borongan"
                                     price="true" value="{{ $data->borongan ?? old('borongan') }}"
                                     placeholder="Masukkan harga borongan..."
+                                    value='0'
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
                                 @if ($errors->has('borongan'))
                                     <small style="padding-left: 0; margin-left: 0;" class="text-danger mb-3"
@@ -180,19 +181,19 @@
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
                             </div>
                         </div>
-                        <div class="input-form col-span-4">
+                        <div class="input-form col-span-4 hidden">
                             <div class="input-form">
                                 <x-base.form-label for="ongkosan2">Ongkosan (Rp)</x-base.form-label>
                                 <x-base.form-input class="w-full mb-3" id="ongkosan2" type="text" name="ongkosan2"
-                                    price="true" placeholder="Masukkan harga ongkosan..."
+                                    price="true" placeholder="Masukkan harga ongkosan..." value='0'
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
                             </div>
                         </div>
-                        <div class="input-form col-span-4">
+                        <div class="input-form col-span-4 hidden">
                             <div class="input-form">
                                 <x-base.form-label for="borongan2">Borongan (Rp)</x-base.form-label>
                                 <x-base.form-input class="w-full mb-3" id="borongan2" type="text" name="borongan2"
-                                    price="true" placeholder="Masukkan harga borongan..."
+                                    price="true" placeholder="Masukkan harga borongan..." value='0'
                                     onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46" />
                             </div>
                         </div>

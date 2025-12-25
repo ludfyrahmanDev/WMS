@@ -23,6 +23,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\TransportController;
 use App\Http\Controllers\TaxController;
+use App\Http\Controllers\CVController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,6 +76,7 @@ Route::middleware('auth')->group(function () {
     Route::get('spending_send_email', [SpendingController::class, 'sendEmail'])->name('spending.send-email')->middleware('permission:spending.view');
     Route::resource('product', ProductController::class)->middleware('permission:products.view,products.create,products.edit,products.delete');
     Route::resource('tax', TaxController::class)->middleware('permission:tax.view,tax.create,tax.edit,tax.delete');
+    Route::resource('cv', CVController::class)->middleware('permission:cv.view,cv.create,cv.edit,cv.delete');
     Route::resource('category', ProductCategoryController::class)->middleware('permission:categories.view,categories.create,categories.edit,categories.delete');
     // end master data section
     // transaction

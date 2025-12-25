@@ -20,7 +20,16 @@ class CoretaxExportService
         $exportData = [];
         
         foreach ($selling->details as $index => $detail) {
+            // PPN include dalam subtotal
+            // DPP = subtotal / 1.11
+            // PPN = DPP * 0.11
+            $hargaTotal = $detail->subtotal;
+            $dpp = $hargaTotal / 1.11;
+            $ppn = $dpp * 0.11;
+            $hargaSatuan = $detail->price_sell / 1.11;
+            
             $exportData[] = [
+                'Nama Barang/Jasa' => htmlspecialchars($detail->product->product ?? ''),
                 'Nomor Transaksi' => 'INV-' . str_pad($selling->id, 8, '0', STR_PAD_LEFT),
                 'Tanggal Transaksi' => Carbon::parse($selling->date)->format('d/m/Y'),
                 'NPWP Pembeli' => $this->formatNPWP($selling->customer->npwp ?? ''),
@@ -28,12 +37,12 @@ class CoretaxExportService
                 'Alamat Pembeli' => $selling->customer->address ?? '',
                 'Nomor Item' => $index + 1,
                 'Nama Barang/Jasa' => $detail->product->product ?? '',
-                'Harga Satuan' => number_format($detail->price_sell, 2, '.', ''),
+                'Harga Satuan' => number_format($hargaSatuan, 2, '.', ''),
                 'Jumlah Barang' => $detail->total_qty,
-                'Harga Total' => number_format($detail->subtotal, 2, '.', ''),
+                'Harga Total' => number_format($hargaTotal, 2, '.', ''),
                 'Diskon' => '0.00',
-                'DPP (Dasar Pengenaan Pajak)' => number_format($detail->subtotal, 2, '.', ''),
-                'PPN' => number_format($detail->subtotal * 0.11, 2, '.', ''), // PPN 11%
+                'DPP (Dasar Pengenaan Pajak)' => number_format($dpp, 2, '.', ''),
+                'PPN' => number_format($ppn, 2, '.', ''), // PPN 11%
                 'Tarif PPN' => '11',
                 'PPnBM' => '0.00',
                 'Tarif PPnBM' => '0',
@@ -118,22 +127,32 @@ class CoretaxExportService
         // Detail
         $details = $xml->addChild('Details');
         foreach ($selling->details as $index => $detail) {
+            // PPN include dalam subtotal
+            $hargaTotal = $detail->subtotal;
+            $dpp = $hargaTotal / 1.11;
+            $ppn = $dpp * 0.11;
+            $hargaSatuan = $detail->price_sell / 1.11;
+            
             $item = $details->addChild('Item');
             $item->addChild('NomorUrut', $index + 1);
             $item->addChild('NamaBarang', htmlspecialchars($detail->product->product ?? ''));
-            $item->addChild('HargaSatuan', number_format($detail->price_sell, 2, '.', ''));
+            $item->addChild('HargaSatuan', number_format($hargaSatuan, 2, '.', ''));
             $item->addChild('Jumlah', $detail->total_qty);
-            $item->addChild('HargaTotal', number_format($detail->subtotal, 2, '.', ''));
-            $item->addChild('DPP', number_format($detail->subtotal, 2, '.', ''));
-            $item->addChild('PPN', number_format($detail->subtotal * 0.11, 2, '.', ''));
+            $item->addChild('HargaTotal', number_format($hargaTotal, 2, '.', ''));
+            $item->addChild('DPP', number_format($dpp, 2, '.', ''));
+            $item->addChild('PPN', number_format($ppn, 2, '.', ''));
         }
         
-        // Summary
+        // Summary - PPN include dalam grand_total
+        $totalNilai = $selling->grand_total;
+        $totalDPP = $totalNilai / 1.11;
+        $totalPPN = $totalDPP * 0.11;
+        
         $summary = $xml->addChild('Summary');
-        $summary->addChild('TotalDPP', number_format($selling->grand_total, 2, '.', ''));
-        $summary->addChild('TotalPPN', number_format($selling->grand_total * 0.11, 2, '.', ''));
+        $summary->addChild('TotalDPP', number_format($totalDPP, 2, '.', ''));
+        $summary->addChild('TotalPPN', number_format($totalPPN, 2, '.', ''));
         $summary->addChild('TotalPPnBM', '0.00');
-        $summary->addChild('TotalNilai', number_format($selling->grand_total * 1.11, 2, '.', ''));
+        $summary->addChild('TotalNilai', number_format($totalNilai, 2, '.', ''));
         
         $filename = 'coretax_export_' . $sellingId . '_' . date('YmdHis') . '.xml';
         $filepath = storage_path('app/exports/' . $filename);
@@ -185,9 +204,10 @@ class CoretaxExportService
         $selling = Selling::with(['customer', 'details.product', 'cv'])
             ->findOrFail($sellingId);
 
-        $totalDPP = $selling->grand_total;
+        // PPN include dalam grand_total
+        $totalNilai = $selling->grand_total;
+        $totalDPP = $totalNilai / 1.11;
         $totalPPN = $totalDPP * 0.11;
-        $totalNilai = $totalDPP + $totalPPN;
 
         return [
             'selling' => $selling,
@@ -370,22 +390,25 @@ class CoretaxExportService
         $unit = $xml->createElement('Unit', 'UM.0020');
         $goodService->appendChild($unit);
 
-        // Calculate prices and tax
-        $pricePerUnit = $detail->price_sell;
+        // Calculate prices and tax - PPN include dalam subtotal
+        $hargaTotal = $detail->subtotal;
         $qty = $detail->total_qty;
         $totalDiscount = 0;
         
-        // Tax Base (DPP) = Price excluding VAT
-        $taxBase = $detail->subtotal;
+        // Tax Base (DPP) = Harga Total / 1.11 (PPN 11% include)
+        $taxBase = $hargaTotal / 1.11;
+        
+        // Price per unit (exclude PPN)
+        $pricePerUnit = $detail->price_sell / 1.11;
         
         // Other Tax Base (for calculation purposes)
-        $otherTaxBase = $taxBase / 1.09; // Adjust if needed based on business rules
+        $otherTaxBase = $taxBase;
         
-        // VAT Rate (11% or 12% depending on regulation)
-        $vatRate = 12; // Update based on current regulation
+        // VAT Rate (11%)
+        $vatRate = 11;
         
         // VAT Amount
-        $vat = $taxBase * ($vatRate / 100);
+        $vat = $taxBase * 0.11;
         
         // Luxury Sales Tax (PPnBM) - usually 0 for regular goods
         $stlgRate = 0;

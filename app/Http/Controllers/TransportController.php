@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use PDF;
 use App\Models\Transport;
+use App\Models\Spending;
+use App\Models\SpendingCategory;
 use App\Exports\TransportExport;
 use App\Http\Requests\Transaksi\TransportStoreRequest;
 use Illuminate\Http\Request;
@@ -53,10 +55,21 @@ class TransportController extends Controller
         }
 
         $data = $all->paginate($request->get('per_page', 10));
+        
+        // Ambil total saldo kendaraan dari spending category 'Saldo Kendaraan'
+        $saldoKendaraanCategory = SpendingCategory::where('spending_category', 'Saldo Kendaraan')->first();
+        $saldoKendaraan = 0;
+        
+        if ($saldoKendaraanCategory) {
+            $saldoKendaraan = Spending::where('spending_category_id', $saldoKendaraanCategory->id)
+                ->where('cv_id', $cv_id)
+                ->sum('nominal');
+        }
+        
         $title = 'Laporan Angkutan';
         $route = 'transport';
         $request = $request->toArray();
-        return view('pages.backoffice.transport.index', compact('data', 'request', 'title', 'route', 'request'));
+        return view('pages.backoffice.transport.index', compact('data', 'request', 'title', 'route', 'request', 'saldoKendaraan'));
     }
 
     public function create(Transport $transport)

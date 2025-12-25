@@ -68,7 +68,7 @@
                                 @foreach ($data['vehicle'] as $row)
                                     <option value="{{ $row->id }}"
                                         {{ $data['header']->vehicle_id == $row->id ? 'selected' : '' }}>
-                                        {{ $row->name }}</option>
+                                        {{ $row->name }} - {{$row->license_plate}}</option>
                                 @endforeach
                             </x-base.tom-select>
                             @error('vehicle')
@@ -147,6 +147,8 @@
                             <x-base.form-input class="w-full" id="ongkosan" type="text" name="ongkosan"
                                 value="{{ $data['header']->ongkosan ?? old('ongkosan') }}"
                                 placeholder="Masukkan ongkosan"
+                                id='ongkosan'
+                                onChange="calculateSetoran()"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57" price="true" />
                             @error('ongkosan')
                                 <div class="pristine-error text-danger mt-2">
@@ -160,6 +162,8 @@
                                 name="drivers_pocket_money"
                                 value="{{ $data['header']->drivers_pocket_money ?? old('drivers_pocket_money') }}"
                                 placeholder="Masukkan besar uang saku"
+                                id='drivers_pocket_money'
+                                onChange="calculateSetoran()"
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57" price="true" />
                             @error('drivers_pocket_money')
                                 <div class="pristine-error text-danger mt-2">
@@ -170,8 +174,8 @@
                         <div class="input-form col-span-4">
                             <x-base.form-label for="setoran">Setoran</x-base.form-label>
                             <x-base.form-input class="w-full" id="setoran" type="text" name="setoran"
-                                value="{{ $data['header']->setoran ?? old('setoran') }}"
-                                placeholder="Masukkan besar setoran"
+                                value="{{ $data['header']->setoran ?? old('setoran') }}" id='setoran'
+                                placeholder="Masukkan besar setoran" readonly
                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57" price="true" />
                             @error('setoran')
                                 <div class="pristine-error text-danger mt-2">
@@ -248,6 +252,13 @@
                 });
 
             });
+            function calculateSetoran() {
+                var ongkosan = parseFloat(document.getElementById('ongkosan').value.replace('.', '')) || 0;
+                var driversPocketMoney = parseFloat(document.getElementById('drivers_pocket_money').value.replace('.', '')) || 0;
+                console.log(ongkosan, driversPocketMoney);
+                var setoran = ongkosan - driversPocketMoney;
+                document.getElementById('setoran').value = setoran;
+            }
         </script>
     @endpush
 @endsection

@@ -197,6 +197,7 @@
                             id="select-all-btn" 
                             variant="outline-secondary" 
                             size="sm"
+                            class="hidden"
                             onclick="toggleSelectAll()">
                             <x-base.lucide class="w-4 h-4 mr-2" icon="CheckSquare" />
                             Pilih Semua

@@ -31,7 +31,7 @@
                     <div class="input-form">
                         <x-base.form-label for="npwp">NPWP</x-base.form-label>
                         <x-base.form-input class="w-full" id="npwp" type="text" name="npwp"
-                            value="{{ $data->npwp ?? old('npwp') }}" placeholder="Masukkan no NPWP 22 digit supplier..." required />
+                            value="{{ $data->npwp ?? old('npwp') }}" placeholder="Masukkan no NPWP 22 digit supplier..." />
                             <small style="padding-left: 0; margin-left: 0;" class="text-pending"
                                     role="alert"><i>Kalau tidak ada NPWP supplier, harap isi dengan angka nol 16 digit
                                         (0000000000000000)</i></small>
@@ -44,7 +44,7 @@
                     <div class="input-form">
                         <x-base.form-label for="nik">NIK</x-base.form-label>
                         <x-base.form-input class="w-full" id="nik" type="text" name="nik"
-                            value="{{ $data->nik ?? old('nik') }}" placeholder="Masukkan no NIK 16 digit supplier..." required />
+                            value="{{ $data->nik ?? old('nik') }}" placeholder="Masukkan no NIK 16 digit supplier..." />
                             <small style="padding-left: 0; margin-left: 0;" class="text-pending"
                                     role="alert"><i>Kalau tidak ada NIK supplier, harap isi dengan angka nol 16 digit
                                         (0000000000000000)</i></small>

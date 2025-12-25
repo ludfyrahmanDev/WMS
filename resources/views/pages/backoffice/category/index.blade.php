@@ -129,7 +129,7 @@
                                             <x-base.lucide class="w-5 h-5" icon="Grid" />
                                         </div>
                                         <div>
-                                            <div class="font-semibold text-slate-800">{{ $item['category'] }}</div>
+                                            <div class="font-semibold text-slate-800">{{ $item['name'] }}</div>
                                             <div class="text-sm text-slate-500">Kategori Produk</div>
                                         </div>
                                     </div>
