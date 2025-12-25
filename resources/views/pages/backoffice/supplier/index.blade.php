@@ -154,6 +154,14 @@
                                 </x-base.table.td>
                                 <x-base.table.td class="py-4 px-6 border-b border-slate-200">
                                     <div class="flex items-center justify-center space-x-2">
+                                        <a href="{{ route('supplier.show', $item->id) }}">
+                                            <x-base.button 
+                                                class="px-3 py-2 text-xs bg-info/10 text-info hover:bg-info/20 border border-info/20" 
+                                                variant="outline-info">
+                                                <x-base.lucide class="w-3 h-3 mr-1" icon="Eye" />
+                                                Detail
+                                            </x-base.button>
+                                        </a>
                                         <a href="{{ route('supplier.edit', $item->id) }}">
                                             <x-base.button 
                                                 class="px-3 py-2 text-xs bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20" 

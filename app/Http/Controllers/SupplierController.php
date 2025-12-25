@@ -90,6 +90,35 @@ class SupplierController extends Controller
         }
     }
 
+    public function show(Supplier $supplier)
+    {
+        // Load supplier with delivery orders and their details
+        $supplier->load(['deliveryOrder' => function($query) {
+            $query->with(['delivery_order_detail.stock'])
+                  ->orderBy('purchase_date', 'desc');
+        }]);
+
+        // Calculate totals for each delivery order
+        $deliveryOrders = $supplier->deliveryOrder->map(function($do) {
+            $totalQty = $do->delivery_order_detail->sum('purchase_amount');
+            $totalPrice = $do->delivery_order_detail->sum(function($detail) {
+                return $detail->stock ? ($detail->stock->price_kg * $detail->purchase_amount) : 0;
+            });
+
+            return [
+                'id' => $do->id,
+                'purchase_date' => $do->purchase_date,
+                'total_qty' => $totalQty,
+                'total_price' => $totalPrice,
+            ];
+        });
+
+        $title = 'Detail Supplier';
+        $route = 'supplier';
+
+        return view('pages.backoffice.supplier.show', compact('supplier', 'deliveryOrders', 'title', 'route'));
+    }
+
     public function destroy(Supplier $supplier)
     {
         try {

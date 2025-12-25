@@ -16,8 +16,8 @@ class CustomerStoreRequest extends FormRequest
         return [
             'name'      => ['required'],
             'npwp'      => ['required'],
-            'ongkosan'  => ['required'],
-            'borongan'  => ['required']
+            'ongkosan'  => ['nullable'],
+            'borongan'  => ['nullable']
         ];
     }
 

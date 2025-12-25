@@ -70,13 +70,13 @@ class CustomerController extends Controller
             $cust->npwp     = $request->npwp;
             $cust->nik      = $request->nik;
             $cust->phone    = $request->phone;
-            $cust->ongkosan = curencyToInteger($request->ongkosan);
-            $cust->borongan = curencyToInteger($request->borongan);
+            $cust->ongkosan = curencyToInteger($request->ongkosan ?? 0);
+            $cust->borongan = curencyToInteger($request->borongan ?? 0);
             $cust->address  = $request->address;
             $cust->save();
 
             //Insert data customer alias
-            $totalAlias = COUNT($request->alias);
+            $totalAlias = COUNT($request->alias ?? []);
 
             for ($i = 0; $i < $totalAlias; $i++) {
                 $custAlias              = new CustomerAlias();
@@ -85,8 +85,8 @@ class CustomerController extends Controller
                 $custAlias->npwp        = $request->npwp_alias[$i];
                 $custAlias->nik         = $request->nik_alias[$i];
                 $custAlias->phone       = $request->phone_alias[$i];
-                $custAlias->ongkosan    = curencyToInteger($request->ongkosan_alias[$i]);
-                $custAlias->borongan    = curencyToInteger($request->borongan_alias[$i]);
+                $custAlias->ongkosan    = curencyToInteger($request->ongkosan_alias[$i] ?? 0);
+                $custAlias->borongan    = curencyToInteger($request->borongan_alias[$i] ?? 0);
                 $custAlias->address     = $request->address_alias[$i];
                 $custAlias->save();
             }
@@ -131,13 +131,13 @@ class CustomerController extends Controller
             $customer->npwp     = $request->npwp;
             $customer->nik      = $request->nik;
             $customer->phone    = $request->phone;
-            $customer->ongkosan = curencyToInteger($request->ongkosan);
-            $customer->borongan = curencyToInteger($request->borongan);
+            $customer->ongkosan = curencyToInteger($request->ongkosan ?? 0 );
+            $customer->borongan = curencyToInteger($request->borongan ?? 0);
             $customer->address  = $request->address;
             $customer->save();
 
             // Update atau insert customer alias
-            $totalAlias = COUNT($request->alias);
+            $totalAlias = COUNT($request->alias ?? []);
             $aliasIds = [];
             
             for ($i = 0; $i < $totalAlias; $i++) {
