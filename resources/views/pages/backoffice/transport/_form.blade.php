@@ -34,7 +34,7 @@
                             <x-base.tom-select name="mode" class="w-full" data-placeholder="Pilih Sumber" id="mode">
                                 <option value="">Pilih Sumber</option>
                                 <option value="0">Dari Penjualan</option>
-                                <option value="1">Custom</option>
+                                <option value="1" selected>Custom</option>
                             </x-base.tom-select>
                         </div>
                         <div class="border-b input-form col-span-4 hidden" id="invoice_div">

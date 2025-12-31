@@ -211,7 +211,7 @@
             <tr>
                 <td>ATPO{{ str_pad($detail->stock->product_id ?? '0', 4, '0', STR_PAD_LEFT) }}</td>
                 <td>{{ strtoupper($detail->stock->product->product ?? '-') }}</td>
-                <td class="text-center">{{ number_format($detail->qty, 0, ',', '.') }} LBR</td>
+                <td class="text-center">{{ number_format($detail->qty, 0, ',', '.') }} Kg</td>
                 <td class="text-right">Rp {{ number_format($detail->price_sell, 0, ',', '.') }}</td>
                 <td class="text-right">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
             </tr>
@@ -219,6 +219,10 @@
                 $totalItems += $detail->qty;
             @endphp
             @endforeach
+            <tr>
+                <td colspan="4" class="text-right">Total Harga jual</td>
+                <td class="text-right">Rp {{ number_format($selling->grand_total, 0, ',', '.') }}</td>
+            </tr>
         </tbody>
     </table>
     
@@ -232,8 +236,8 @@
         <div style="display: flex; justify-content: flex-end;">
             <div style="width: 300px; text-align: right;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <span>DDP :</span>
-                    <span>Rp. {{ number_format($selling->grand_total - ($selling->grand_total * 0.11), 0, ',', '.') }}</span>
+                    <span>DPP Nilai lain:</span>
+                    <span>Rp. {{ number_format($selling->grand_total * (0.11 /0.12), 0, ',', '.') }}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
                     <span>DISC :</span>
@@ -241,7 +245,7 @@
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                     <span>PPN :</span>
-                    <span>Rp. {{ number_format($selling->grand_total * 0.11, 0, ',', '.') }}</span>
+                    <span>Rp. {{ number_format($selling->grand_total * (0.11 /0.12) * 0.12, 0, ',', '.') }}</span>
                 </div>
                 <div class="grand-total" style="display: flex; justify-content: space-between;">
                     <span>TOTAL HARGA :</span>
