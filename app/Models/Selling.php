@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use App\Models\Cv;
+use App\Models\Vehicle;
 class Selling extends Model
 {
     use HasFactory, Filterable, SoftDeletes;
