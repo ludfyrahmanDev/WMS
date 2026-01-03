@@ -34,7 +34,7 @@ class DeliveryOrderController extends Controller
             ->when($request->has('cv_id'), function ($query) use ($cv_id, $request) {
                 $query->where('cv_id', $request->cv_id  ?? $cv_id);
             })
-            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+            ->orderBy($request->get('sort_by', 'purchase_date'), $request->get('order', 'desc'));
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;
             $end_date = $request->end_date;
