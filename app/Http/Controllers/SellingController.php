@@ -41,7 +41,7 @@ class SellingController extends Controller
                     ->orWhere('id', 'like', '%' . $search . '%');
                 });
             })
-            ->orderBy($request->get('sort_by', 'created_at'), $request->get('order', 'desc'));
+            ->orderBy($request->get('sort_by', 'date'), $request->get('order', 'desc'));
         
         if ($request->has('start_date') && $request->has('end_date')) {
             $start_date = $request->start_date;
