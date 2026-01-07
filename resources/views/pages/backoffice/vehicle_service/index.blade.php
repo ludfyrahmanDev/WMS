@@ -171,6 +171,9 @@
                                     Total Biaya
                                 </x-base.table.th>
                                 <x-base.table.th class="border-b-0 font-semibold text-center">
+                                    Jenis Pembayaran
+                                </x-base.table.th>
+                                <x-base.table.th class="border-b-0 font-semibold text-center">
                                     Aksi
                                 </x-base.table.th>
                             </x-base.table.tr>
@@ -192,6 +195,15 @@
                                     </x-base.table.td>
                                     <x-base.table.td class="text-center py-4 font-semibold text-red-600">
                                         {{ toThousand($item->vehicleServiceDetail->sum('amount_of_expenditure')) }}
+                                    </x-base.table.td>
+                                    <x-base.table.td class="text-center py-4">
+                                        @if ($item['payment_method'] == 'CASH')
+                                            <span class="px-3 py-1 rounded-full bg-green-100 text-green-800 font-semibold text-sm">{{ $item['payment_method'] }}</span>
+                                        @elseif ($item['payment_method'] == 'TRANSFER')
+                                            <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-800 font-semibold text-sm">{{ $item['payment_method'] }}</span>
+                                        @else
+                                            <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-800 font-semibold text-sm">-</span>
+                                        @endif
                                     </x-base.table.td>
                                     <x-base.table.td class="text-center py-4">
                                         <div class="flex items-center justify-center gap-2">
@@ -249,7 +261,7 @@
                             <!-- Empty State -->
                             @if ($data->isEmpty())
                                 <x-base.table.tr>
-                                    <x-base.table.td colspan="6" class="py-16 text-center">
+                                    <x-base.table.td colspan="7" class="py-16 text-center">
                                         <div>
                                             <h3 class="text-lg font-semibold mb-2">Belum Ada Data Service</h3>
                                             <p class="text-slate-500 mb-4">

@@ -87,25 +87,38 @@ class VehicleServiceController extends Controller
         try {
             $data = $request->validated();
             
+            // Get payment method from the request (first item from array)
+            $paymentMethod = $data['payment_method'][0] ?? 'CASH';
+            
             $vehicleData = [
                 'date' => $data['tanggal'],
                 'driver_id' => $data['driver'],
                 'vehicle_id' => $data['kendaraan'],
                 'cv_id' => $data['cv_id'] ?? session('cv_id'),
+                'payment_method' => $paymentMethod,
                 'who_create' => auth()->user()->name,
                 'who_update' => auth()->user()->name,
             ];
 
             $vehicleService = VehicleService::create($vehicleData);
+            
+            $totalExpenditure = 0;
 
             // keterangan
             foreach ($request->keterangan as $index => $keterangan) {
+                $amount = curencyToInteger($request->total_pengeluaran[$index]);
+                $totalExpenditure += $amount;
+                
                 $vehicleServiceDetail = new VehicleServiceDetail();
                 $vehicleServiceDetail->vehicle_service_id = $vehicleService->id;
-                $vehicleServiceDetail->amount_of_expenditure = curencyToInteger($request->total_pengeluaran[$index]);
+                $vehicleServiceDetail->amount_of_expenditure = $amount;
                 $vehicleServiceDetail->description = $keterangan;
+                $vehicleServiceDetail->payment_method = $request->payment_method[$index] ?? 'CASH';
                 $vehicleServiceDetail->save();
             }
+            
+            // Create Spending record to deduct from neraca angkutan
+            $this->createSpendingRecord($vehicleService->cv_id, $paymentMethod, $totalExpenditure, $vehicleService);
 
             DB::commit();
 
@@ -164,12 +177,16 @@ class VehicleServiceController extends Controller
 
             $saldo = new SpendingController();
             // selesai total harga
+            
+            // Get payment method from the request (first item from array)
+            $paymentMethod = $request->payment_method[0] ?? 'CASH';
 
             // update table vehicle service
             $vehicleService->date = $request->tanggal;
             $vehicleService->driver_id = $request->driver;
             $vehicleService->vehicle_id = $request->kendaraan;
             $vehicleService->cv_id = $request->cv_id ?? session('cv_id');
+            $vehicleService->payment_method = $paymentMethod;
             $vehicleService->who_update = $user['name'];
             $vehicleService->save();
 
@@ -178,15 +195,23 @@ class VehicleServiceController extends Controller
 
             // insert vehicle service detail
             $totalKeterangan = COUNT($request->keterangan);
+            $totalExpenditure = 0;
 
             for ($i = 0; $i < $totalKeterangan; $i++) {
+                $amount = curencyToInteger($request->total_pengeluaran[$i]);
+                $totalExpenditure += $amount;
+                
                 $vehicleServiceDetail = new VehicleServiceDetail();
                 $vehicleServiceDetail->vehicle_service_id = $vehicleService->id;
                 // $vehicleServiceDetail->spending_category_id = $request->kategori_id[$i];
-                $vehicleServiceDetail->amount_of_expenditure = curencyToInteger($request->total_pengeluaran[$i]);
+                $vehicleServiceDetail->amount_of_expenditure = $amount;
                 $vehicleServiceDetail->description = $request->keterangan[$i];
+                $vehicleServiceDetail->payment_method = $request->payment_method[$i] ?? 'CASH';
                 $vehicleServiceDetail->save();
             }
+            
+            // Create/Update Spending record to deduct from neraca angkutan
+            $this->createSpendingRecord($vehicleService->cv_id, $paymentMethod, $totalExpenditure, $vehicleService);
 
             return redirect(route('vehicle_service.index'))->with('success', 'Berhasil mengubah data!');
         } catch (\Throwable $th) {
@@ -237,5 +262,37 @@ class VehicleServiceController extends Controller
 
         // Unduh file PDF
         return $dompdf->stream("$name.pdf");
+    }
+
+    private function createSpendingRecord($cvId, $paymentMethod, $totalExpenditure, $vehicleService)
+    {
+        // Get the Saldo Kendaraan spending category
+        $saldoKendaraanCategory = SpendingCategory::where('spending_category', 'Saldo Kendaraan')->first();
+        
+        if (!$saldoKendaraanCategory) {
+            return;
+        }
+        
+        // Check if a spending record already exists for this vehicle service
+        $existingSpending = Spending::where('spending_category_id', $saldoKendaraanCategory->id)
+            ->where('cv_id', $cvId)
+            ->where('description', 'like', '%Vehicle Service #' . $vehicleService->id . '%')
+            ->first();
+        
+        if ($existingSpending) {
+            // Update existing record
+            $existingSpending->nominal = -$totalExpenditure;
+            $existingSpending->payment_method = $paymentMethod;
+            $existingSpending->save();
+        } else {
+            // Create new spending record (negative nominal for deduction)
+            Spending::create([
+                'spending_category_id' => $saldoKendaraanCategory->id,
+                'cv_id' => $cvId,
+                'payment_method' => $paymentMethod,
+                'nominal' => -$totalExpenditure,
+                'description' => 'Vehicle Service #' . $vehicleService->id . ' - ' . $vehicleService->vehicle->license_plate . ' (' . $vehicleService->date . ')'
+            ]);
+        }
     }
 }

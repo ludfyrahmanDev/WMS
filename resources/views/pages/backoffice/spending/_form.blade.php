@@ -70,7 +70,7 @@
                     </div>
                     
                     @if(auth()->user()->hasCompanyAccess())
-                        <div class="mt-3 input-form">
+                        <div class="mt-3 input-form hidden">
                             <x-base.form-label for="cv_id">Perusahaan</x-base.form-label>
                             <x-base.tom-select name="cv_id" class="w-full" data-placeholder="Pilih Perusahaan" required>
                                 <option value="">Pilih Perusahaan</option>

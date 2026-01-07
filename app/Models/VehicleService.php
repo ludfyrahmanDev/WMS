@@ -18,6 +18,7 @@ class VehicleService extends Model
         'driver_id',
         'vehicle_id',
         'cv_id',
+        'payment_method',
         'who_create',
         'who_update'
     ];

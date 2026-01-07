@@ -10,7 +10,7 @@ use App\Exports\TransportExport;
 use App\Http\Requests\Transaksi\TransportStoreRequest;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
-
+use App\Models\VehicleService;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
@@ -56,20 +56,105 @@ class TransportController extends Controller
 
         $data = $all->paginate($request->get('per_page', 10));
         
-        // Ambil total saldo kendaraan dari spending category 'Saldo Kendaraan'
+        // Ambil total saldo kendaraan dari spending category 'Saldo Kendaraan' berdasarkan payment method
         $saldoKendaraanCategory = SpendingCategory::where('spending_category', 'Saldo Kendaraan')->first();
-        $saldoKendaraan = 0;
+        $saldoKendaraanCash = 0;
+        $saldoKendaraanTransfer = 0;
         
         if ($saldoKendaraanCategory) {
-            $saldoKendaraan = Spending::where('spending_category_id', $saldoKendaraanCategory->id)
+            $saldoKendaraanCash = Spending::where('spending_category_id', $saldoKendaraanCategory->id)
                 ->where('cv_id', $cv_id)
+                ->where('payment_method', 'CASH')
+                ->sum('nominal');
+                
+            $saldoKendaraanTransfer = Spending::where('spending_category_id', $saldoKendaraanCategory->id)
+                ->where('cv_id', $cv_id)
+                ->where('payment_method', 'TRANSFER')
                 ->sum('nominal');
         }
+        
+        // Prepare neraca data for cash
+        $neracaCash = $this->prepareNeracaData($cv_id, 'cash', $saldoKendaraanCash, $request);
+        
+        // Prepare neraca data for transfer
+        $neracaTransfer = $this->prepareNeracaData($cv_id, 'transfer', $saldoKendaraanTransfer, $request);
         
         $title = 'Laporan Angkutan';
         $route = 'transport';
         $request = $request->toArray();
-        return view('pages.backoffice.transport.index', compact('data', 'request', 'title', 'route', 'request', 'saldoKendaraan'));
+        return view('pages.backoffice.transport.index', compact('data', 'request', 'title', 'route', 'request', 'saldoKendaraanCash', 'saldoKendaraanTransfer', 'neracaCash', 'neracaTransfer'));
+    }
+
+    private function prepareNeracaData($cv_id, $type, $saldoKendaraan, $request)
+    {
+        $neracaData = [];
+        $runningBalance = 0;
+        
+        // Add initial saldo kendaraan as first entry if exists
+        if ($saldoKendaraan > 0) {
+            $runningBalance = $saldoKendaraan;
+            $neracaData[] = [
+                'date' => null,
+                'description' => 'Saldo Kendaraan ' . ucfirst($type),
+                'debit' => $saldoKendaraan,
+                'credit' => 0,
+                'balance' => $runningBalance
+            ];
+        }
+        
+        // Get transport data filtered by type
+        $transports = Transport::where('cv_id', $cv_id)
+            ->where('type', $type)
+            ->where('status', 'Completed')
+            ->orderBy('date', 'asc');
+
+        $service = VehicleService::where('cv_id', $cv_id)
+            ->whereHas('vehicleServiceDetail', function($q) use ($type) {
+                $q->where('payment_method', strtoupper($type));
+            });
+        // Apply date filter if exists
+        if (isset($request['start_date']) && isset($request['end_date'])) {
+            $transports = $transports->whereBetween('date', [$request['start_date'], $request['end_date']]);
+            $service = $service->whereBetween('date', [$request['start_date'], $request['end_date']]);
+        }
+        
+        $transports = $transports->get();
+        
+        foreach ($transports as $transport) {
+            $runningBalance -= $transport->ongkosan;
+            $neracaData[] = [
+                'date' => $transport->date,
+                'description' => 'Ongkos dari ' . ($transport->vehicle->license_plate ?? '-') . ' - ' . ($transport->customer ?? '-'),
+                'debit' => 0,
+                'credit' => $transport->ongkosan,
+                'balance' => $runningBalance
+            ];
+            
+            $runningBalance += $transport->setoran;
+            $neracaData[] = [
+                'date' => $transport->date,
+                'description' => 'Setoran dari ' . ($transport->vehicle->license_plate ?? '-') . ' - ' . ($transport->customer ?? '-'),
+                'debit' => $transport->setoran,
+                'credit' => 0,
+                'balance' => $runningBalance
+            ];
+            
+        }
+
+        $service = $service->with('vehicleServiceDetail')->get();
+        foreach ($service as $svc) {
+            $totalExpenditure = $svc->vehicleServiceDetail->where('payment_method', strtoupper($type))->sum('amount_of_expenditure');
+            $runningBalance -= $totalExpenditure;
+            $neracaData[] = [
+                'date' => $svc->date,
+                'description' => 'Pengeluaran Service Kendaraan ' . ($svc->vehicle->license_plate ?? '-'),
+                'debit' => 0,
+                'credit' => $totalExpenditure,
+                'balance' => $runningBalance
+            ];
+        }
+        
+        return $neracaData;
     }
 
     public function create(Transport $transport)
