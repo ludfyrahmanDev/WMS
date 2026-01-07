@@ -27,6 +27,7 @@ class VehicleServiceRequest extends FormRequest
             'kendaraan' => ['required', 'exists:vehicle,id'],
             'keterangan' => ['required', 'array'],
             'total_pengeluaran' => ['required', 'array'],
+            'payment_method' => ['required', 'array', 'in:CASH,TRANSFER'],
             'cv_id' => ['nullable', 'exists:cv,id'],
         ];
     }
@@ -39,6 +40,8 @@ class VehicleServiceRequest extends FormRequest
             'kendaraan.required' => 'Kendaraan tidak boleh kosong!',
             'total_pengeluaran.required' => 'Total pengeluaran tidak boleh kosong!',
             'keterangan.required' => 'Keterangan tidak boleh kosong!',
+            'payment_method.required' => 'Jenis pembayaran tidak boleh kosong!',
+            'payment_method.in' => 'Jenis pembayaran harus CASH atau TRANSFER!',
             'cv_id.exists' => 'Perusahaan tidak valid!',
         ];
     }

@@ -24,22 +24,42 @@
         <p class="text-slate-500 mt-1">Kelola data transport dan pengiriman</p>
     </div>
 
-    <!-- Saldo Kendaraan Card -->
-    <div class="mt-5">
-        <div class="intro-y box p-5 bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200">
+    <!-- Saldo Kendaraan Cards -->
+    <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Saldo Kendaraan Cash -->
+        <div class="intro-y box p-5 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <div class="w-14 h-14 bg-indigo-500 rounded-full flex items-center justify-center">
+                    <div class="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center">
                         <x-base.lucide class="h-7 w-7 text-white" icon="Wallet" />
                     </div>
                     <div>
-                        <h4 class="text-lg font-bold text-indigo-900">Saldo Kendaraan</h4>
-                        <p class="text-sm text-indigo-700">Total saldo dari kategori Saldo Kendaraan</p>
+                        <h4 class="text-lg font-bold text-green-900">Saldo Kendaraan Cash</h4>
+                        <p class="text-sm text-green-700">Total saldo cash dari kategori Saldo Kendaraan</p>
                     </div>
                 </div>
                 <div class="text-right">
-                    <div class="text-3xl font-bold text-indigo-900">{{ toThousand($saldoKendaraan ?? 0) }}</div>
-                    <div class="text-sm text-indigo-700 mt-1">Rupiah</div>
+                    <div class="text-3xl font-bold text-green-900">{{ toThousand($saldoKendaraanCash ?? 0) }}</div>
+                    <div class="text-sm text-green-700 mt-1">Rupiah</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Saldo Kendaraan Transfer -->
+        <div class="intro-y box p-5 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center">
+                        <x-base.lucide class="h-7 w-7 text-white" icon="CreditCard" />
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold text-blue-900">Saldo Kendaraan Bank/Transfer</h4>
+                        <p class="text-sm text-blue-700">Total saldo transfer dari kategori Saldo Kendaraan</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-3xl font-bold text-blue-900">{{ toThousand($saldoKendaraanTransfer ?? 0) }}</div>
+                    <div class="text-sm text-blue-700 mt-1">Rupiah</div>
                 </div>
             </div>
         </div>
@@ -93,53 +113,129 @@
 
     <!-- Neraca Angkutan -->
     <div class="mt-8">
-        <h3 class="text-lg font-semibold mb-4">Neraca Angkutan Cash & Transfer</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Neraca Cash -->
-            <div class="intro-y box p-5 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-                <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-lg font-semibold text-green-900">Neraca Cash</h4>
-                    <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
-                        <x-base.lucide class="h-6 w-6 text-white" icon="Landmark" />
+        <h3 class="text-lg font-semibold mb-4">Neraca Angkutan</h3>
+        
+        <!-- Neraca Cash -->
+        <div class="intro-y box mb-6">
+            <div class="p-5 bg-gradient-to-r from-green-500 to-green-600">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                        <x-base.lucide class="h-6 w-6 text-green-600" icon="Landmark" />
                     </div>
-                </div>
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
-                        <span class="text-sm text-slate-600">Ongkosan Cash</span>
-                        <span class="font-semibold text-green-700">{{ toThousand($totalOngkosCash) }}</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
-                        <span class="text-sm text-slate-600">Saku Sopir Cash</span>
-                        <span class="font-semibold text-orange-700">{{ toThousand($totalSakuSopirCash) }}</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
-                        <span class="font-bold text-green-900">Total Setoran Cash</span>
-                        <span class="text-xl font-bold text-green-900">{{ toThousand($totalSetoranCash) }}</span>
-                    </div>
+                    <h4 class="text-xl font-bold text-white">Neraca Angkutan Cash</h4>
                 </div>
             </div>
-            <!-- Neraca Transfer -->
-            <div class="intro-y box p-5 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-                <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-lg font-semibold text-blue-900">Neraca Transfer</h4>
-                    <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
-                        <x-base.lucide class="h-6 w-6 text-white" icon="FileText" />
+            <div class="overflow-x-auto">
+                <x-base.table class="border-spacing-y-[10px] border-separate">
+                    <x-base.table.thead>
+                        <x-base.table.tr>
+                            <x-base.table.th class="border-b-2 border-green-200 font-bold text-center bg-green-50">
+                                Tanggal
+                            </x-base.table.th>
+                            <x-base.table.th class="border-b-2 border-green-200 font-bold text-left bg-green-50">
+                                Keterangan
+                            </x-base.table.th>
+                            <x-base.table.th class="border-b-2 border-green-200 font-bold text-right bg-green-50">
+                                Debet
+                            </x-base.table.th>
+                            <x-base.table.th class="border-b-2 border-green-200 font-bold text-right bg-green-50">
+                                Credit
+                            </x-base.table.th>
+                            <x-base.table.th class="border-b-2 border-green-200 font-bold text-right bg-green-50">
+                                Saldo
+                            </x-base.table.th>
+                        </x-base.table.tr>
+                    </x-base.table.thead>
+                    <x-base.table.tbody>
+                        @forelse ($neracaCash as $item)
+                            <x-base.table.tr class="hover:bg-green-50 transition-colors">
+                                <x-base.table.td class="text-center py-3">
+                                    {{ $item['date'] ? date('d M Y', strtotime($item['date'])) : '-' }}
+                                </x-base.table.td>
+                                <x-base.table.td class="py-3">
+                                    {{ $item['description'] }}
+                                </x-base.table.td>
+                                <x-base.table.td class="text-right py-3 font-semibold text-green-600">
+                                    {{ toThousand($item['debit']) }}
+                                </x-base.table.td>
+                                <x-base.table.td class="text-right py-3 font-semibold text-red-600">
+                                    {{ toThousand($item['credit']) }}
+                                </x-base.table.td>
+                                <x-base.table.td class="text-right py-3 font-bold text-slate-800">
+                                    {{ toThousand($item['balance']) }}
+                                </x-base.table.td>
+                            </x-base.table.tr>
+                        @empty
+                            <x-base.table.tr>
+                                <x-base.table.td colspan="5" class="py-8 text-center text-slate-500">
+                                    Belum ada data neraca cash
+                                </x-base.table.td>
+                            </x-base.table.tr>
+                        @endforelse
+                    </x-base.table.tbody>
+                </x-base.table>
+            </div>
+        </div>
+        
+        <!-- Neraca Transfer -->
+        <div class="intro-y box">
+            <div class="p-5 bg-gradient-to-r from-blue-500 to-blue-600">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                        <x-base.lucide class="h-6 w-6 text-blue-600" icon="CreditCard" />
                     </div>
+                    <h4 class="text-xl font-bold text-white">Neraca Angkutan Bank/Transfer</h4>
                 </div>
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
-                        <span class="text-sm text-slate-600">Ongkosan Transfer</span>
-                        <span class="font-semibold text-green-700">{{ toThousand($totalOngkosTransfer) }}</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
-                        <span class="text-sm text-slate-600">Saku Sopir Transfer</span>
-                        <span class="font-semibold text-orange-700">{{ toThousand($totalSakuSopirTransfer) }}</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 bg-white rounded-lg">
-                        <span class="font-bold text-blue-900">Total Setoran Transfer</span>
-                        <span class="text-xl font-bold text-blue-900">{{ toThousand($totalSetoranTransfer) }}</span>
-                    </div>
-                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <x-base.table class="border-spacing-y-[10px] border-separate">
+                    <x-base.table.thead>
+                        <x-base.table.tr>
+                            <x-base.table.th class="border-b-2 border-blue-200 font-bold text-center bg-blue-50">
+                                Tanggal
+                            </x-base.table.th>
+                            <x-base.table.th class="border-b-2 border-blue-200 font-bold text-left bg-blue-50">
+                                Keterangan
+                            </x-base.table.th>
+                            <x-base.table.th class="border-b-2 border-blue-200 font-bold text-right bg-blue-50">
+                                Debet
+                            </x-base.table.th>
+                            <x-base.table.th class="border-b-2 border-blue-200 font-bold text-right bg-blue-50">
+                                Credit
+                            </x-base.table.th>
+                            <x-base.table.th class="border-b-2 border-blue-200 font-bold text-right bg-blue-50">
+                                Saldo
+                            </x-base.table.th>
+                        </x-base.table.tr>
+                    </x-base.table.thead>
+                    <x-base.table.tbody>
+                        @forelse ($neracaTransfer as $item)
+                            <x-base.table.tr class="hover:bg-blue-50 transition-colors">
+                                <x-base.table.td class="text-center py-3">
+                                    {{ $item['date'] ? date('d M Y', strtotime($item['date'])) : '-' }}
+                                </x-base.table.td>
+                                <x-base.table.td class="py-3">
+                                    {{ $item['description'] }}
+                                </x-base.table.td>
+                                <x-base.table.td class="text-right py-3 font-semibold text-green-600">
+                                    {{ toThousand($item['debit']) }}
+                                </x-base.table.td>
+                                <x-base.table.td class="text-right py-3 font-semibold text-red-600">
+                                    {{ toThousand($item['credit']) }}
+                                </x-base.table.td>
+                                <x-base.table.td class="text-right py-3 font-bold text-slate-800">
+                                    {{ toThousand($item['balance']) }}
+                                </x-base.table.td>
+                            </x-base.table.tr>
+                        @empty
+                            <x-base.table.tr>
+                                <x-base.table.td colspan="5" class="py-8 text-center text-slate-500">
+                                    Belum ada data neraca transfer
+                                </x-base.table.td>
+                            </x-base.table.tr>
+                        @endforelse
+                    </x-base.table.tbody>
+                </x-base.table>
             </div>
         </div>
     </div>

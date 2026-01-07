@@ -16,7 +16,8 @@ class VehicleServiceDetail extends Model
     protected $fillable = [
         'vehicle_service_id',
         'amount_of_expenditure',
-        'description'
+        'description',
+        'payment_method'
     ];
 
     public function spendingCategory()

@@ -12,8 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('cv', function (Blueprint $table) {
-            $table->string('npwp')->nullable()->after('name');
-            $table->text('address')->nullable()->after('npwp');
+            // check has npwp or not
+            if (!Schema::hasColumn('cv', 'npwp')) {
+                $table->string('npwp')->nullable()->after('name');
+            }
+            if (!Schema::hasColumn('cv', 'address')) {
+                $table->text('address')->nullable()->after('npwp');
+            }
         });
     }
 

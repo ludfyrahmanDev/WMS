@@ -116,6 +116,22 @@
                         </div>
                     </div>
 
+                    <div class="mt-3 grid grid-cols-12 gap-2">
+                        <div class="input-form col-span-6">
+                            <x-base.form-label for="payment_method">Jenis Pembayaran</x-base.form-label>
+                            <select name="payment_method" id="payment_method" class="!box w-full" >
+                                <option value="">-- Pilih Jenis Pembayaran --</option>
+                                <option value="CASH">CASH</option>
+                                <option value="TRANSFER">TRANSFER</option>
+                            </select>
+                            @error('payment_method')
+                                <div class="pristine-error text-danger mt-2">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+
                     <div class="mt-3 grid grid-cols-12">
                         <div class="col-span-6 flex">
                             {{-- <h3><strong>Produk</strong></h3> --}}
@@ -138,6 +154,7 @@
                                 {{-- <th class="py-2 px-4 border-b text-left w-1/4">Kategori</th> --}}
                                 <th class="py-2 px-4 border-b text-left w-1/4">Keterangan</th>
                                 <th class="py-2 px-4 border-b text-left w-1/4">Total Pengeluaran</th>
+                                <th class="py-2 px-4 border-b text-left w-1/4">Jenis Pembayaran</th>
                                 <th class="py-2 px-4 border-b text-left w-1/4">Action</th>
                                 <!-- Tambahkan header lainnya sesuai kebutuhan -->
                             </tr>
@@ -153,6 +170,10 @@
                                             {{ toThousand($item['amount_of_expenditure']) }}<input type="hidden"
                                                 name="total_pengeluaran[]" id="total_pengeluaran[]"
                                                 value="{{ $item['amount_of_expenditure'] }}" /></td>
+                                        <td class="py-2 px-4 payment_method w-1/4">{{ $item['payment_method'] ?? '-' }}<input
+                                                type="hidden"
+                                                name="payment_method[]" id="payment_method[]"
+                                                value="{{ $item['payment_method'] ?? '' }}" /></td>
                                         <td class="py-2 px-4 w-1/4">
                                             <button onclick="hapusRow(this)" class="flex items-center text-danger">
                                                 Hapus</button>
@@ -187,10 +208,11 @@
                 // var kategori = $('#kategori').val().split('_');
                 var total_pengeluaran = $('#total_pengeluaran').val();
                 var keterangan = $('#keterangan').val();
+                var payment_method = $('#payment_method').val();
 
                 // kategori.length == 1 || 
-                if (total_pengeluaran == "" || keterangan == "") {
-                    alert('Harap mengisi form kategori, total pengeluaran, keterangan');
+                if (total_pengeluaran == "" || keterangan == "" || payment_method == "") {
+                    alert('Harap mengisi form keterangan, total pengeluaran, dan jenis pembayaran');
                     return false;
                 }
 
@@ -200,6 +222,7 @@
                     <tr class="row-data">
                             <td class="py-2 px-4 keterangan w-1/4">${keterangan}<input type="hidden" class="column_keterangan" name="keterangan[]" id="keterangan[]" value="${keterangan}" /></td>
                             <td class="py-2 px-4 total_pengeluaran w-1/4">${total_pengeluaran}<input type="hidden" name="total_pengeluaran[]" id="total_pengeluaran[]" value="${total_pengeluaran}" /></td>
+                            <td class="py-2 px-4 payment_method w-1/4">${payment_method}<input type="hidden" name="payment_method[]" id="payment_method[]" value="${payment_method}" /></td>
                             <td class="py-2 px-4 w-1/4"> 
                                 <button onclick="hapusRow(this)" class="flex items-center text-danger">
                                 Hapus</button>
@@ -208,6 +231,10 @@
                 `;
 
                 $('#servisKendaraan').html($('#servisKendaraan').html() + pengeluaran);
+                // Reset form
+                $('#keterangan').val('');
+                $('#total_pengeluaran').val('');
+                $('#payment_method').val('');
             }
 
             function hapusRow(event) {
