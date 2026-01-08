@@ -71,7 +71,7 @@ class Selling extends Model
             ->where('s.is_active', 1)
             // last_stock greater than 0
             ->where('s.last_stock', '>', 0)
-            // ->where('do.cv_id', session('cv_id'))
+            ->where('s.deleted_at', null)
             ->groupBy('p.id', 'p.product') 
             ->get();
     }
