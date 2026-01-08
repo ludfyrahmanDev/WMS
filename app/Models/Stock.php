@@ -6,10 +6,13 @@ use App\Models\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+// soft delete
+use App\Models\Product;
+use App\Models\DeliveryOrderDetail;
 
 class Stock extends Model
 {
-    use HasFactory, Filterable;
+    use HasFactory, Filterable, SoftDeletes;
     // , SoftDeletes
 
     protected $table = 'stock';
