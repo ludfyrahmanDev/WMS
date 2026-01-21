@@ -178,13 +178,13 @@
                                 <x-base.table.td class="py-4 px-6 border-b border-slate-200 text-center">
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                                         <x-base.lucide class="w-3 h-3 mr-1" icon="Plus" />
-                                        {{ number_format($item['first_stock'], 0, ',', '.') }} kg
+                                        {{ $item['first_stock'] }} kg
                                     </span>
                                 </x-base.table.td>
                                 <x-base.table.td class="py-4 px-6 border-b border-slate-200 text-center">
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
                                         <x-base.lucide class="w-3 h-3 mr-1" icon="Minus" />
-                                        {{ number_format($item['stock_in_use'], 0, ',', '.') }} kg
+                                        {{ $item['stock_in_use'] }} kg
                                     </span>
                                 </x-base.table.td>
                                 <x-base.table.td class="py-4 px-6 border-b border-slate-200 text-center">
@@ -195,7 +195,7 @@
                                     @endphp
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $alertClass }}">
                                         <x-base.lucide class="w-3 h-3 mr-1" icon="BarChart" />
-                                        {{ number_format($remaining, 0, ',', '.') }} kg
+                                        {{ $remaining }} kg
                                     </span>
                                 </x-base.table.td>
                                 <x-base.table.td class="py-4 px-6 border-b border-slate-200 text-center">

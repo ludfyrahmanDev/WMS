@@ -211,7 +211,8 @@
             <tr>
                 <td>ATPO{{ str_pad($detail->stock->product_id ?? '0', 4, '0', STR_PAD_LEFT) }}</td>
                 <td>{{ strtoupper($detail->stock->product->product ?? '-') }}</td>
-                <td class="text-center">{{ number_format($detail->qty, 0, ',', '.') }} Kg</td>
+                <td class="text-center">
+                    {{ rtrim(rtrim(number_format($detail->qty, 2, ',', '.'), '0'), ',') }} Kg
                 <td class="text-right">Rp {{ number_format($detail->price_sell, 0, ',', '.') }}</td>
                 <td class="text-right">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
             </tr>
