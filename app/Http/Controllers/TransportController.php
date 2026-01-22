@@ -119,7 +119,8 @@ class TransportController extends Controller
             $service = $service->whereBetween('date', [$request['start_date'], $request['end_date']]);
         }
         
-        $transports = $transports->get();
+        // $transports = $transports->get();
+        $transports = [];
         
         foreach ($transports as $transport) {
             $runningBalance -= $transport->ongkosan;
