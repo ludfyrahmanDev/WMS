@@ -90,12 +90,14 @@ class MenuService
             
             // Transactions
             'spending.create' => 'spending.create',
+            'transportSpending.create' => 'transport_spending.create',
             'delivery_order.create' => 'delivery_orders.create',
             'selling.create' => 'selling.create',
             'vehicle_service.create' => 'vehicle_services.create',
             
             // Reports
             'spending.index' => 'spending.view',
+            'transportSpending.index' => 'transport_spending.view',
             'delivery_order.index' => 'delivery_orders.view',
             'selling.index' => 'selling.view',
             'vehicle_service.index' => 'vehicle_services.view',

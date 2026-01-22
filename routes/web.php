@@ -14,6 +14,7 @@ use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DarkModeController;
 use App\Http\Controllers\SpendingController;
+use App\Http\Controllers\TransportSpendingController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ColorSchemeController;
 use App\Http\Controllers\DeliveryOrderController;
@@ -69,6 +70,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('supplier', SupplierController::class)->middleware('permission:suppliers.view,suppliers.create,suppliers.edit,suppliers.delete');
     Route::resource('spendingCategory', SpendingCategoryController::class)->middleware('permission:spending_categories.view,spending_categories.create,spending_categories.edit,spending_categories.delete');
     Route::resource('spending', SpendingController::class)->middleware('permission:spending.view,spending.create,spending.edit,spending.delete');
+    Route::resource('transportSpending', TransportSpendingController::class)->middleware('permission:transport_spending.view,transport_spending.create,transport_spending.edit,transport_spending.delete');
     Route::get('saldo', [SpendingController::class, 'saldo'])->name('spending.saldo')->middleware('permission:spending.view');
     Route::get('spending_export', [SpendingController::class, 'export'])->name('spending.export')->middleware('permission:spending.view');
     Route::get('spending_export_pdf', [spendingController::class, 'exportPdf'])->name('spending.export-pdf')->middleware('permission:spending.view');

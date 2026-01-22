@@ -104,6 +104,12 @@ class PermissionSeeder extends Seeder
             ['name' => 'spending.delete', 'display_name' => 'Delete Spending', 'description' => 'Can delete spending records', 'group' => 'Cash Flow'],
             ['name' => 'spending.export', 'display_name' => 'Export Cash Flow', 'description' => 'Can export cash flow reports', 'group' => 'Cash Flow'],
             
+            // Transport Spending Management (Transaksi Lain-Lain Khusus Angkutan)
+            ['name' => 'transport_spending.view', 'display_name' => 'View Transport Spending', 'description' => 'Can view transport spending/cash flow', 'group' => 'Transport Spending'],
+            ['name' => 'transport_spending.create', 'display_name' => 'Create Transport Spending', 'description' => 'Can create new transport spending records', 'group' => 'Transport Spending'],
+            ['name' => 'transport_spending.edit', 'display_name' => 'Edit Transport Spending', 'description' => 'Can edit existing transport spending records', 'group' => 'Transport Spending'],
+            ['name' => 'transport_spending.delete', 'display_name' => 'Delete Transport Spending', 'description' => 'Can delete transport spending records', 'group' => 'Transport Spending'],
+            
             // Spending Categories Management
             ['name' => 'spending_categories.view', 'display_name' => 'View Spending Categories', 'description' => 'Can view spending categories', 'group' => 'Spending Categories'],
             ['name' => 'spending_categories.create', 'display_name' => 'Create Spending Category', 'description' => 'Can create new spending categories', 'group' => 'Spending Categories'],

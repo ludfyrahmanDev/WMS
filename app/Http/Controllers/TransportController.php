@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use PDF;
 use App\Models\Transport;
 use App\Models\Spending;
+use App\Models\TransportSpending;
 use App\Models\SpendingCategory;
 use App\Exports\TransportExport;
 use App\Http\Requests\Transaksi\TransportStoreRequest;
@@ -152,6 +153,42 @@ class TransportController extends Controller
                 'credit' => $totalExpenditure,
                 'balance' => $runningBalance
             ];
+        }
+        
+        // Add Transport Spending (Transaksi Lain-Lain Khusus Angkutan) entries
+        $transportSpendings = TransportSpending::where('cv_id', $cv_id)
+            ->where('payment_method', strtoupper($type))
+            ->orderBy('date', 'asc');
+            
+        // Apply date filter if exists
+        if (isset($request['start_date']) && isset($request['end_date'])) {
+            $transportSpendings = $transportSpendings->whereBetween('date', [$request['start_date'], $request['end_date']]);
+        }
+        
+        $transportSpendings = $transportSpendings->get();
+        
+        foreach ($transportSpendings as $spending) {
+            if ($spending->mutation == 'Uang Keluar') {
+                // Outgoing (credit)
+                $runningBalance -= $spending->nominal;
+                $neracaData[] = [
+                    'date' => $spending->date,
+                    'description' => 'Pengeluaran Angkutan - ' . ($spending->description ?? 'Transaksi Angkutan'),
+                    'debit' => 0,
+                    'credit' => $spending->nominal,
+                    'balance' => $runningBalance
+                ];
+            } else {
+                // Incoming (debit)
+                $runningBalance += $spending->nominal;
+                $neracaData[] = [
+                    'date' => $spending->date,
+                    'description' => 'Pemasukan Angkutan - ' . ($spending->description ?? 'Transaksi Angkutan'),
+                    'debit' => $spending->nominal,
+                    'credit' => 0,
+                    'balance' => $runningBalance
+                ];
+            }
         }
         
         return $neracaData;
