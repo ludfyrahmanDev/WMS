@@ -146,6 +146,14 @@ class SideMenu
                         ],
                         'title' => 'Lain Lain'
                     ],
+                    'transportspending' => [
+                        'icon' => 'layout-list',
+                        'route_name' => 'transportSpending.create',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Lain Lain - Angkutan'
+                    ],
                     'purchases' => [
                         'icon' => 'shopping-bag',
                         'title' => 'Pembelian',
@@ -183,6 +191,14 @@ class SideMenu
                             'layout' => 'side-menu'
                         ],
                         'title' => 'Laporan Transaksi'
+                    ],
+                    'transportspending' => [
+                        'icon' => 'layout-list',
+                        'route_name' => 'transportSpending.index',
+                        'params' => [
+                            'layout' => 'side-menu'
+                        ],
+                        'title' => 'Laporan Transaksi Angkutan'
                     ],
                     'delivery_order' => [
                         'icon' => 'file-box',
