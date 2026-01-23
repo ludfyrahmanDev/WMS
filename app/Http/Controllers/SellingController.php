@@ -146,7 +146,6 @@ class SellingController extends Controller
                             $stock->last_stock -= $stock_use;
                             $stock->save();
                         }
-
                         $selling_detail->price_kg = $labaItem['price_kg'];
                         $selling_detail->price_sell = $harga_jual;
                         $selling_detail->qty = $qty;
@@ -276,7 +275,7 @@ class SellingController extends Controller
         $data['cvs']        = $cvs;
         $data['header']     = $Selling;
         $data['detail']     = $sellingDetails;
-
+    // dd($data['detail']->toArray());
         // echo json_encode($data['detail']); die;
 
         $title = 'Edit Penjualan';
@@ -449,7 +448,6 @@ class SellingController extends Controller
         $data['product']    = $selling->getProduct();
         $data['header']     = $Selling;
         $data['detail']     = $sellingDetails;
-
         // echo json_encode($data['product']); die;
 
         $title = 'Data Penjualan';

@@ -267,7 +267,7 @@
                                             name="qty_jual" 
                                             id="qty_jual"
                                             placeholder="Jumlah"
-                                            onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                            onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 46"
                                             onChange="getHargaStock(this.value)" 
                                         />
                                         <x-base.input-group.text>
