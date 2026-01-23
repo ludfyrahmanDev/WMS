@@ -285,7 +285,7 @@ die(); ?> --}}
                             <x-base.form-input class="w-full form-input-enhanced" type="text" name="qty"
                                 id="qty" value="" placeholder="Input Qty Produk"
                                 onkeyup="changeSubtotal()"
-                                onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                                onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode === 46" />
                         </div>
                         <div class="input-form col-span-3">
                             <x-base.form-label for="harga_kg" class="flex items-center">
